@@ -1,8 +1,5 @@
 "use client";
 
-import { InputText } from "@/components/input/input-text";
-import CardSchdule from "../CardSchedule";
-import { MOCK_SCHEDULE_DATA } from "@/mocks/schedule";
 import CardScheduleContainer from "../CardScheduleContainer";
 import { useEffect, useState } from "react";
 import { ___api } from "@/lib/axios";

@@ -1,6 +1,5 @@
 "use client";
 
-import { MOCK_SCHEDULE_DATA } from "@/mocks/schedule";
 import { useEffect, useState } from "react";
 import CardScheduleContainer from "../CardScheduleContainer";
 import { ___api } from "@/lib/axios";

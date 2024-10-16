@@ -31,7 +31,7 @@ export default function CardSchdule({ data }: ICardSchdule) {
         <div className="  flex-1 rounded-t-lg   w-full  space-y-2 model p-4 h-[19.2rem] ">
           <View.Scroll className="max-h-full  pl-4 overflow-y-auto space-y-2">
             {data.Exame.map((exame) => (
-              <div className="w-full  pb-4">
+              <div key={exame.id} className="w-full  pb-4">
                 <p className="font-bold text-2xl">- {exame.exame.nome}</p>
                 <p className="lowercase pl-6 italic">Estado: <span data-isActive={exame.status} className="text-red-500 data-[isActive='ATIVO']:text-green-500">{exame.status}</span></p>
               </div>

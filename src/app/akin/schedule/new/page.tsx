@@ -103,7 +103,7 @@ export default function New({}: INew) {
       // console.log("BOMMM ", patientFinded);
       setSelectedPatient(patientFinded);
     }
-  }, [selectedItemId]);
+  }, [selectedItemId, availablePatients]);
 
   async function onSubmitFn(data: FormData) {
     const patient_id = data.get("identity") as string;

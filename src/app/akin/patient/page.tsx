@@ -49,7 +49,7 @@ function PatientTableData({ patients }: PatientTableDataProps) {
 
               <tbody className="divide-y divide-gray-200">
                 {patients.map((patient, index) => (
-                  <tr className="*:p-2 even:bg-sky-100 odd:bg-sky-50">
+                  <tr key={index} className="*:p-2 even:bg-sky-100 odd:bg-sky-50">
                     <td>{patient.nome}</td>
                     <td>{patient.numero_identificacao}</td>
                     <td>{2024 - Number(new Date(patient.data_nascimento).getFullYear())}</td>
