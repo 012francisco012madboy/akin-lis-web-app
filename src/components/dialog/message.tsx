@@ -7,7 +7,7 @@ interface Props {
   setVisible: (state: boolean) => void;
   type: "Erro" | "Sucesso";
   message?: string;
-  actionFn:()=>void
+  actionFn?:()=>void
 }
 
 export function Message({ visible, setVisible, type, message, actionFn }: Props) {

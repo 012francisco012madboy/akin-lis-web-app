@@ -12,7 +12,7 @@ interface PatientDisplay {
 export default function PatientDisplay({ patients }: PatientDisplay) {
   const [filteredPatients, setFilteredPatients] = useState<PatientType[]>(patients);
   const [isSearching, setIsSearching] = useState(false);
-  const [displayMode, setDisplayMode] = useState<"block" | "list">("block");
+  const [displayMode, setDisplayMode] = useState<"block" | "list">("list");
 
   function handleSearch(serachText: string) {
     serachText.length > 0 ? setIsSearching(true) : setIsSearching(false);
@@ -25,14 +25,16 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
     <div>
       <div className="overflow-x-auto p-4">
         <div className="mb-4 flex items-center justify-between ">
-          <div className="flex items-center gap-2 *:p-2 *:rounded-lg">
-            <div data-showDisplay={displayMode} className="hover:cursor-pointer data-[showDisplay='list']:bg-akin-yellow-light" onClick={() => setDisplayMode("list")}>
+
+          <div className="flex items-center gap-2 *:p-2 *:rounded-lg border rounded-lg bg-akin-yellow-light/20">
+            <div data-showDisplay={displayMode} className="hover:cursor-pointer data-[showDisplay='list']:bg-akin-yellow-light data-[showDisplay='list']:shadow data-[showDisplay='list']:border" onClick={() => setDisplayMode("list")}>
               <AlignJustify />
             </div>
-            <div data-showDisplay={displayMode} className="hover:cursor-pointer data-[showDisplay='block']:bg-akin-yellow-light" onClick={() => setDisplayMode("block")}>
+            <div data-showDisplay={displayMode} className="hover:cursor-pointer data-[showDisplay='block']:bg-akin-yellow-light data-[showDisplay='block']:shadow data-[showDisplay='block']:border" onClick={() => setDisplayMode("block")}>
               <Grid />
             </div>
           </div>
+          
           <div>
             <InputText className="w-96" placeholder="Procurar" onChange={(e) => handleSearch(e.target.value)} />
             {isSearching && <p className="text-sm text-gray-500 italic">Total de pacientes encontrados: {filteredPatients.length}</p>}

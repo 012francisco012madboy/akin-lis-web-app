@@ -105,6 +105,24 @@ export default function New({}: INew) {
     }
   }, [selectedItemId, availablePatients]);
 
+  function actionAfterSavePatient(patientResponse: PatientType) {
+    console.log("BOMMM-- ", patientResponse);
+    
+    setAvailablePatientsAutoComplete((prev) => [
+      ...prev,
+      {
+        value: patientResponse.nome,
+        id: patientResponse.id,
+      },
+    ]);
+
+    setAvailablePatients((prev) => [...prev, patientResponse]);
+
+    setSelectedPatient(patientResponse);
+
+    setWindowDialog(false)
+  }
+
   async function onSubmitFn(data: FormData) {
     const patient_id = data.get("identity") as string;
     const patient_phone = data.get("phone_number") as string;
@@ -212,11 +230,12 @@ export default function New({}: INew) {
 
     setIsSaving(true);
     ___api
-    .post("/pacients", patient_data)
-    .then((res) => {
-      if (res.status == 201) {
-          setMessageDialog(true)
-          // ___showSuccessToastNotification({ message: "Paciente cadastrado com sucesso" });
+      .post("/pacients", patient_data)
+      .then((res) => {
+        if (res.status == 201) {
+          // setMessageDialog(true);
+          ___showSuccessToastNotification({ message: "Paciente cadastrado com sucesso" });
+          actionAfterSavePatient(res.data);
           
         } else {
           ___showErrorToastNotification({ message: "Erro ao cadastrar paciente.\nTente novamente, mas se o erro persistir, entre em contato com o suporte." });
@@ -243,12 +262,16 @@ export default function New({}: INew) {
                     <LoaderCircle className="animate-spin" /> Carregando lista de pacientes...
                   </p>
                 ) : (
-                  <div className="flex border-2 border-akin-yellow-light rounded-lg bg-akin-yellow-light/20 ring-0">
+                  <div className="flex border-2 border-akin-yellow-light rounded-lg bg-akin-yellow-light/20 ring-0 relative">
                     <AutoComplete placeholder="Nome completo do paciente" name="name" className="border-0 ring-0  flex-1" lookingFor="paciente" dataFromServer={availablePatientsAutoComplete} setSelectedItemId={setSelectedItemId} />
 
-                    <div className="text-gray-400 hover:bg-akin-yellow-light transition ease-out  cursor-pointer p-3 hover:text-gray-800 rounded-lg h-fit" onClick={() => setWindowDialog(true)}>
+                    <div className="absolute bg-akin-yellow-light/50 p-2 rounded-lg text-sm -top-12 right-0 text-gray-400 hover:bg-akin-yellow-light transition ease-out  cursor-pointer hover:text-gray-800 flex items-center" onClick={() => setWindowDialog(true)}>
                       <UserRoundPlus />
+                      <p>Registar Novo Paciente</p>
                     </div>
+                    {/* <div className="relative  h-fit" > */}
+                    {/*  */}
+                    {/* </div> */}
                   </div>
                 )}
                 <div className=" *:flex-1">
@@ -326,7 +349,7 @@ export default function New({}: INew) {
         </form>
       </DialogWindow.Window>
 
-      <DialogWindow.Message actionFn={()=> window.location.reload() } type="Sucesso" visible={messageDialog} setVisible={setMessageDialog}  />
+      <DialogWindow.Message type="Sucesso" visible={messageDialog} setVisible={setMessageDialog} />
       {/* <DialogWindow.Message type="Sucesso" visible={messageDialog} setVisible={setMessageDialog} /> */}
     </div>
   );
