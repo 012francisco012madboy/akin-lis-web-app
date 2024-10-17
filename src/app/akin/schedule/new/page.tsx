@@ -127,7 +127,7 @@ export default function New({}: INew) {
     const patient_id = data.get("identity") as string;
     const patient_phone = data.get("phone_number") as string;
     const patient_birth_day = new Date(data.get("birth_day") as string).toLocaleDateString("en-CA");
-    const patient_name = data.get("name") as string;
+    let patient_name = data.get("name") as string;
     const patient_gender = data.get("gender") as string;
 
     const patient_schedule_time = data.get("schedule_time") as string;
@@ -146,6 +146,10 @@ export default function New({}: INew) {
     });
 
     const isToCreateSchedule = patient_schedule_date && patient_schedule_time;
+
+    if(isToCreateSchedule){
+      patient_name = selectedPatient!.nome
+    }
 
     const validatedData = schemaSchedule.safeParse({
       patient_id,

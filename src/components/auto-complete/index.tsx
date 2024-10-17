@@ -69,7 +69,7 @@ export default function AutoComplete({ className, setSelectedItemId, dataFromSer
   }, []);
 
   function onChangeValueFn(e: any) {
-    // console.log(e);
+    console.log(e);
     const patiendId = e.value.id;
     if (patiendId) {
       // const patient = dataFromServer.find((item) => item.id === patiendId)
