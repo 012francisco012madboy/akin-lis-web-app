@@ -7,15 +7,15 @@ interface Props {
   setVisible: (state: boolean) => void;
   type: "Erro" | "Sucesso";
   message?: string;
-  actionFn?:()=>void
+  // actionFn?:()=>void
 }
 
-export function Message({ visible, setVisible, type, message, actionFn }: Props) {
+export function Message({ visible, setVisible, type, message }: Props) {
   const errorMessage = "Ocorreu um erro. Tente novamente ou entre em contato com o suporte.";
   const successMessage = "Tudo certo! Ação realizada com sucesso."; 
 
   function onClickFn(){
-    actionFn()
+    // actionFn()
     setVisible(false)
   }
   
