@@ -1,18 +1,14 @@
 "use client";
 
-import { FormProvider, set, useForm } from "react-hook-form";
 // import PatientFormSave from "./components/PatientFormSave";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { DialogWindow } from "@/components/dialog";
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import AutoComplete from "@/components/auto-complete";
-import { CircleX, LoaderCircle, Save, UserRoundPlus } from "lucide-react";
-import { Calendar } from "primereact/calendar";
+import { LoaderCircle, Save, UserRoundPlus } from "lucide-react";
 
-import { Checkbox } from "primereact/checkbox";
 import { View } from "@/components/view";
 import { CheckBoxExam } from "./components/CheckBoxExam";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
@@ -107,7 +103,7 @@ export default function New({}: INew) {
 
   function actionAfterSavePatient(patientResponse: PatientType) {
     console.log("BOMMM-- ", patientResponse);
-    
+
     setAvailablePatientsAutoComplete((prev) => [
       ...prev,
       {
@@ -120,7 +116,7 @@ export default function New({}: INew) {
 
     setSelectedPatient(patientResponse);
 
-    setWindowDialog(false)
+    setWindowDialog(false);
   }
 
   async function onSubmitFn(data: FormData) {
@@ -147,8 +143,8 @@ export default function New({}: INew) {
 
     const isToCreateSchedule = patient_schedule_date && patient_schedule_time;
 
-    if(isToCreateSchedule){
-      patient_name = selectedPatient!.nome
+    if (isToCreateSchedule) {
+      patient_name = selectedPatient!.nome;
     }
 
     const validatedData = schemaSchedule.safeParse({
@@ -207,7 +203,8 @@ export default function New({}: INew) {
           if (res.status == 201) {
             ___showSuccessToastNotification({ message: "Agendamento marcado com sucesso" });
             setSelectedPatient(undefined);
-            setWindowDialog(false);
+            // setWindowDialog(false);
+            setMessageDialog(true);
           } else {
             ___showErrorToastNotification({ message: "Erro ao marcar Agendamento.\nTente novamente, mas se o erro persistir, entre em contato com o suporte." });
           }
@@ -240,7 +237,6 @@ export default function New({}: INew) {
           // setMessageDialog(true);
           ___showSuccessToastNotification({ message: "Paciente cadastrado com sucesso" });
           actionAfterSavePatient(res.data);
-          
         } else {
           ___showErrorToastNotification({ message: "Erro ao cadastrar paciente.\nTente novamente, mas se o erro persistir, entre em contato com o suporte." });
         }
@@ -267,7 +263,7 @@ export default function New({}: INew) {
                   </p>
                 ) : (
                   <div className="flex border-2 border-akin-yellow-light rounded-lg bg-akin-yellow-light/20 ring-0 relative">
-                    <AutoComplete placeholder="Nome completo do paciente" name="name" className="border-0 ring-0  flex-1" lookingFor="paciente" dataFromServer={availablePatientsAutoComplete} setSelectedItemId={setSelectedItemId} />
+                    <AutoComplete placeholder={selectedPatient?.nome ? selectedPatient.nome : "Nome completo do paciente"} name="name" className="border-0 ring-0  flex-1" lookingFor="paciente" dataFromServer={availablePatientsAutoComplete} setSelectedItemId={setSelectedItemId} />
 
                     <div className="absolute bg-akin-yellow-light/50 p-2 rounded-lg text-sm -top-12 right-0 text-gray-400 hover:bg-akin-yellow-light transition ease-out  cursor-pointer hover:text-gray-800 flex items-center" onClick={() => setWindowDialog(true)}>
                       <UserRoundPlus />
@@ -353,7 +349,7 @@ export default function New({}: INew) {
         </form>
       </DialogWindow.Window>
 
-      <DialogWindow.Message type="Sucesso" visible={messageDialog} setVisible={setMessageDialog} />
+      <DialogWindow.Message type="Sucesso" visible={messageDialog} setVisible={setMessageDialog} actionFn={()=>window.location.reload()} />
       {/* <DialogWindow.Message type="Sucesso" visible={messageDialog} setVisible={setMessageDialog} /> */}
     </div>
   );

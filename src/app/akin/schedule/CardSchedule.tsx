@@ -5,6 +5,7 @@ import Image from "next/image";
 import Primary from "@/components/button/primary";
 import { View } from "@/components/view";
 import { _formatPrice } from "@/utils/mask/currency";
+import { Check, CheckCircle, Trash } from "lucide-react";
 
 interface ICardSchdule {
   data: ScheduleType;
@@ -43,6 +44,12 @@ export default function CardSchdule({ data }: ICardSchdule) {
           {" "}
           <div className="w-full  relative h-44">
             <Image className="bg-center overflow-hidden rounded-t-lg" src="/images/exam/Plasmodium.png" fill alt="" />
+            {data.status == "PENDENTE" && (
+              <div className="absolute top-1 right-1 bg-black/50 space-x-2 rounded-lg px-2 flex *:flex *:items-center *:justify-between">
+                  <p className="text-red-300 cursor-pointer hover:text-red-100 "><Trash size={15}/> Rejeitar</p>
+                  <p className="text-green-300 cursor-pointer hover:text-green-100 "><CheckCircle size={15}/> Aceitar</p>
+              </div>
+            )}
           </div>
           <div className="w-full px-4 py-1 space-y-1.5 flex flex-col mt-1 text-cyan-800 ">
             <h1 className="text-xl font-bold ">{data.Paciente?.nome}</h1>
