@@ -82,8 +82,7 @@ function ListMode({ patientList }: { patientList: PatientType[] }) {
               <td>{patient.contacto_telefonico}</td>
 
               <td>
-                {/* <Link key={patient.id} href={APP_CONFIG.ROUTES.PATIENT.INDIVIDUAL_PATIENT_LINK(patient.id)} className="inline-block rounded bg-sky-600 px-4 py-2 text-xs font-medium text-white hover:bg-sky-700"> */}
-                <Link key={patient.id} href={APP_CONFIG.ROUTES.PATIENT.INDIVIDUAL_PATIENT_LINK(patient.id)} className="inline-block rounded bg-akin-turquoise text-akin-white-smoke px-4 py-2 text-xs font-medium  hover:bg-akin-yellow-light/70">
+                <Link key={patient.id} href={APP_CONFIG.ROUTES.PATIENT.INDIVIDUAL_PATIENT_LINK(patient.id)} className="inline-block rounded bg-akin-turquoise text-akin-white-smoke px-4 py-2 text-xs font-medium  hover:bg-sky-700">
                   <p>Ver Paciente</p>
                 </Link>
               </td>

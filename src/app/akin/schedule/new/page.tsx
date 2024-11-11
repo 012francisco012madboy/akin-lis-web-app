@@ -1,6 +1,5 @@
 "use client";
 
-// import PatientFormSave from "./components/PatientFormSave";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { DialogWindow } from "@/components/dialog";
@@ -14,9 +13,9 @@ import { CheckBoxExam } from "./components/CheckBoxExam";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { ___api } from "@/lib/axios";
 import { ProgressSpinner } from "primereact/progressspinner";
-// import CheckBoxExam from "./components/CheckBoxExam";
+import { schemaSchedule } from "./schemaZodNewPatient";
 
-interface INew {}
+interface INew { }
 
 //TODO generos precisam vir do back-end e depois listados no campo de genero
 const genders = [
@@ -24,35 +23,10 @@ const genders = [
   { id: 2, value: "Feminino" },
 ];
 
-const schemaSchedule = z.object({
-  patient_id: z.string().regex(/^\d{9}[A-Z]{2}\d{3}$/, {
-    message: "Número de Bilhete de Identidade inválido",
-  }),
-
-  patient_name: z
-    .string({ required_error: "Campo de 'nome' obrigatorio" })
-    .min(5, "O nome deve ter pelo menos mais de 5 caracter")
-    .regex(/^[a-zA-ZÀ-ú\s]+$/, "Apenas é permitido Letras no Nome"),
-
-  patient_phone: z
-    .string()
-    .regex(/^[0-9]*$/, "Só é permitido números para o campo de Nº de Telemóvel")
-    .length(9, "Você precisa ter nove (9) digitos no Nº de Telemóvel"),
-
-  patient_birth_day: z
-    .date({
-      required_error: "Data de nascimento é obrigatório",
-      invalid_type_error: "Data de nascimento é obrigatório",
-    })
-    .max(new Date(), "A data nascimento não pode ser superior ao dia de hoje."),
-  patient_gender: z.enum(["Masculino", "Feminino"], {
-    errorMap: () => ({ message: "Apenas é permitido Masculino ou Feminino" }),
-  }),
-});
 
 export type SchemaScheduleType = z.infer<typeof schemaSchedule>;
 
-export default function New({}: INew) {
+export default function New({ }: INew) {
   const [windowDialog, setWindowDialog] = useState(false);
   const [messageDialog, setMessageDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -139,7 +113,8 @@ export default function New({}: INew) {
         id: Number(id),
         // exame,
       };
-    });
+    }
+    );
 
     const isToCreateSchedule = patient_schedule_date && patient_schedule_time;
 
@@ -250,213 +225,108 @@ export default function New({}: INew) {
   }
 
   return (
-    <div className=" h-screen px-4  ">
+    <div className="h-screen px-4">
       <h1 className="font-light text-3xl my-6">Novo Agendamento</h1>
-      <div className=" ">
-        <form action={onSubmitFn} className="flex w-full gap-x-3 ">
-          <div className="flex flex-col flex-1 gap-5 ">
-            <div className="flex flex-col gap-3 ">
-              <div className="flex flex-col gap-y-4 *:flex *:gap-x-2">
+      <div>
+        <form action={onSubmitFn} className="flex flex-wrap w-full gap-3">
+          <div className="flex flex-col flex-1 gap-5">
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-y-4">
                 {isLoading ? (
-                  <p>
-                    <LoaderCircle className="animate-spin" /> Carregando lista de pacientes...
+                  <p className="flex items-center">
+                    <LoaderCircle className="animate-spin mr-2" /> Carregando lista de pacientes...
                   </p>
                 ) : (
                   <div className="flex border-2 border-akin-yellow-light rounded-lg bg-akin-yellow-light/20 ring-0 relative">
-                    <AutoComplete placeholder={selectedPatient?.nome ? selectedPatient.nome : "Nome completo do paciente"} name="name" className="border-0 ring-0  flex-1" lookingFor="paciente" dataFromServer={availablePatientsAutoComplete} setSelectedItemId={setSelectedItemId} />
-
-                    <div className="absolute bg-akin-yellow-light/50 p-2 rounded-lg text-sm -top-12 right-0 text-gray-400 hover:bg-akin-yellow-light transition ease-out  cursor-pointer hover:text-gray-800 flex items-center" onClick={() => setWindowDialog(true)}>
+                    <AutoComplete
+                      placeholder={selectedPatient?.nome || "Nome completo do paciente"}
+                      name="name"
+                      className="border-0 ring-0 flex-1"
+                      lookingFor="paciente"
+                      dataFromServer={availablePatientsAutoComplete}
+                      setSelectedItemId={setSelectedItemId}
+                    />
+                    <div
+                      className="absolute bg-akin-yellow-light/50 p-2 rounded-lg text-sm -top-12 right-0 text-gray-400 hover:bg-akin-yellow-light transition ease-out cursor-pointer hover:text-gray-800 flex items-center"
+                      onClick={() => setWindowDialog(true)}
+                    >
                       <UserRoundPlus />
                       <p>Registar Novo Paciente</p>
                     </div>
-                    {/* <div className="relative  h-fit" > */}
-                    {/*  */}
-                    {/* </div> */}
                   </div>
                 )}
-                <div className=" *:flex-1">
-                  <Input.CalenderDate disabled noUseLabel placeholder="Data de Nascimento" maxDate={new Date()} name="birth_day" valueDate={selectedPatient?.data_nascimento ? new Date(selectedPatient.data_nascimento) : null} />
-
-                  {/* <Input.CalenderDate noUseLabel placeholder="Data de Nascimento" maxDate={new Date()} name="birth_day" value={selectedPatient?.data_nascimento ? new Date(selectedPatient?.data_nascimento) : null} /> */}
-
-                  <Input.Dropdown disabled data={genders} name="gender" placeholder="Selecione o sexo" valueData={selectedPatient?.sexo.nome} />
+                <div className="flex flex-wrap gap-2">
+                  <Input.CalenderDate
+                    disabled
+                    noUseLabel
+                    placeholder="Data de Nascimento"
+                    maxDate={new Date()}
+                    name="birth_day"
+                    valueDate={selectedPatient?.data_nascimento ? new Date(selectedPatient.data_nascimento) : null}
+                  />
+                  <Input.Dropdown
+                    disabled
+                    data={genders}
+                    name="gender"
+                    placeholder="Selecione o sexo"
+                    valueData={selectedPatient?.sexo.nome}
+                  />
                 </div>
-
                 <Input.InputText maxLength={0} placeholder="Contacto telefónico" name="phone_number" value={selectedPatient?.contacto_telefonico} />
                 <Input.InputText maxLength={0} placeholder="Bilhete de Identidade" name="identity" value={selectedPatient?.numero_identificacao} />
               </div>
             </div>
-            <div className="">
+            <div>
               <h2 className="font-bold">Data do Agendamento</h2>
               <hr />
-              <div className="flex gap-2 mt-4 *:flex-1">
+              <div className="flex gap-2 mt-4">
                 <Input.CalenderDate valueDate={new Date()} minDate={new Date()} name="schedule_date" />
                 <Input.CalenderTime name="schedule_time" />
               </div>
             </div>
           </div>
-
-          <div className="  h-[29rem] w-[15rem] flex flex-col border-2 border-akin-yellow-light  rounded-lg bg-akin-yellow-light/20 ">
-            <div className="space-y-4 flex-1 p-2  ">
-              <div className="space-y-2 model p-4  h-[24rem]">
+          <div className="h-[29rem] w-[15rem] flex flex-col border-2 border-akin-yellow-light rounded-lg bg-akin-yellow-light/20">
+            <div className="space-y-4 flex-1 p-2">
+              <div className="space-y-2 model p-4 h-[24rem]">
                 <h1 className="font-bold text-xl -mx-4">Exames Disponíveis</h1>
                 <View.Scroll className="max-h-full overflow-y-auto space-y-2 h-full">
                   {isLoading ? (
                     <div className="flex items-center justify-center h-full">
                       <ProgressSpinner style={{ width: "25px", height: "25px" }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
                     </div>
+                  ) : avaliableExams.length === 0 ? (
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-gray-400">Não há exames disponíveis</p>
+                    </div>
                   ) : (
-                    <>
-                      {avaliableExams.length == 0 ? (
-                        <div className="flex items-center justify-center h-full">
-                          <p className="text-gray-400">Não há exames disponíveis</p>
-                        </div>
-                      ) : (
-                        <>
-                          {avaliableExams.map((exame, index) => (
-                            <CheckBoxExam key={index} description={exame.nome} value={String(exame.id)} />
-                          ))}
-                        </>
-                      )}
-                    </>
+                    avaliableExams.map((exame, index) => (
+                      <CheckBoxExam key={index} description={exame.nome} value={String(exame.id)} />
+                    ))
                   )}
                 </View.Scroll>
               </div>
             </div>
-
             <Button.Primary className="m-2" type="submit" label={isSaving ? "Marcando..." : "Agendar"} disabled={isSaving} />
           </div>
         </form>
       </div>
-
+  
       <DialogWindow.Window modalTitle="Confirmação" visible={windowDialog} setVisible={setWindowDialog}>
-        <form action={onSubmitFn} className="flex flex-col gap-y-4 *:flex *:gap-x-2">
+        <form action={onSubmitFn} className="flex flex-col gap-y-4">
           <Input.InputText placeholder="Nome do Paciente" name="name" />
-          <div className=" *:flex-1">
+          <div className="flex flex-wrap gap-2">
             <Input.CalenderDate noUseLabel placeholder="Data de Nascimento" maxDate={new Date()} name="birth_day" valueDate={null} />
             <Input.Dropdown data={genders} name="gender" placeholder="Selecione o sexo" />
           </div>
-
           <Input.InputText placeholder="Contacto telefónico" name="phone_number" type="number" />
           <Input.InputText placeholder="Bilhete de Identidade" maxLength={14} name="identity" />
-
           <div className="space-x-2 flex justify-end mt-4">
             <Button.Primary icon={<Save />} type="submit" className="bg-green-700" label={isSaving ? "Salvando..." : "Salvar"} disabled={isSaving} />
-            {/* <Button.Primary icon={<CircleX />} onClick={() => setWindowDialog(false)} className="bg-red-700">
-              Cancelar
-            </Button.Primary> */}
           </div>
         </form>
       </DialogWindow.Window>
-
-      <DialogWindow.Message type="Sucesso" visible={messageDialog} setVisible={setMessageDialog} actionFn={()=>window.location.reload()} />
-      {/* <DialogWindow.Message type="Sucesso" visible={messageDialog} setVisible={setMessageDialog} /> */}
+  
+      <DialogWindow.Message type="Sucesso" visible={messageDialog} setVisible={setMessageDialog} actionFn={() => window.location.reload()} />
     </div>
   );
-}
-
-// function AddPatient() {
-// return (
-// <>
-{
-  /* <DialogWindow.Window modalTitle="Confirmação" visible={windowDialog} setVisible={setWindowDialog}> */
-}
-{
-  /* <div className="flex flex-col gap-3 "> */
-}
-// <AddPatientForm />
-{
-  /* <div className="flex flex-col gap-y-4 *:flex *:gap-x-2"> */
-}
-{
-  /* <div className="flex border-2 border-akin-yellow-light rounded-lg bg-akin-yellow-light/20 ring-0"> */
-}
-{
-  /* <AutoComplete placeholder="Nome completo do paciente" className="border-0 ring-0  flex-1" /> */
-}
-{
-  /*  */
-}
-{
-  /* <div className="text-gray-400 hover:bg-akin-yellow-light transition ease-out  cursor-pointer p-3 hover:text-gray-800 rounded-lg h-fit" onClick={onClick}> */
-}
-{
-  /* <UserRoundPlus /> */
-}
-{
-  /* </div> */
-}
-{
-  /* </div> */
-}
-{
-  /* <div className=" *:flex-1"> */
-}
-{
-  /* <Input.InputText type="number" placeholder="Data de Nascimento" /> */
-}
-{
-  /* <Input.Dropdown data={[]} /> */
-}
-{
-  /* </div> */
-}
-{
-  /*  */
-}
-{
-  /* <div className=""> */
-}
-{
-  /* <Input.InputText className="flex-1" placeholder="Contacto telefónico" /> */
-}
-{
-  /* </div> */
-}
-{
-  /* <div> */
-}
-{
-  /* <Input.InputText className="" placeholder="Bilhete de Identidade" maxLength={14} /> */
-}
-{
-  /* </div> */
-}
-{
-  /* </div> */
-}
-{
-  /* <div className="space-x-2 flex justify-end mt-4"> */
-}
-{
-  /* <Button.Primary onClick={() => setMessageDialog(true)} className="bg-green-700"> */
-}
-{
-  /* Guardar */
-}
-{
-  /* </Button.Primary> */
-}
-{
-  /* <Button.Primary onClick={() => setWindowDialog(false)} className="bg-red-700"> */
-}
-{
-  /* Cancelar */
-}
-{
-  /* </Button.Primary> */
-}
-{
-  /* </div> */
-}
-{
-  /* </div> */
-}
-{
-  /* </DialogWindow.Window> */
-}
-{
-  /* </> */
-}
-// );
-// }
+}  
