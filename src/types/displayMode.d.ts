@@ -1,0 +1,2 @@
+
+type DisplayMode = "list" | "block";
