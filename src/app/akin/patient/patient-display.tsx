@@ -4,7 +4,7 @@ import { InputText } from "@/components/input/input-text";
 import { useState } from "react";
 import { ListMode } from "./components/listModePatients";
 import { BlockMode } from "./components/blockModePatients";
-import { GridOrBlockDisplay } from "./components/gridOrBlockMode";
+import { GridOrBlockDisplayButton } from "./components/gridOrBlockButtonMode";
 
 interface PatientDisplay {
   patients: PatientType[];
@@ -26,7 +26,7 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
     <div>
       <div className="overflow-x-auto p-4">
         <div className="mb-4 flex items-center justify-between">
-          <GridOrBlockDisplay displayMode={displayMode} setDisplayMode={setDisplayMode} />
+          <GridOrBlockDisplayButton displayMode={displayMode} setDisplayMode={setDisplayMode} />
 
           <div>
             <InputText

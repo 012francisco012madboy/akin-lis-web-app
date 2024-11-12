@@ -1,11 +1,8 @@
 "use client";
 import React, { useState, useRef } from "react";
-import { Button } from "primereact/button";
 import { TabMenu } from "primereact/tabmenu";
 
 import { APP_CONFIG } from "@/config/app";
-import Link from "next/link";
-import { Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { View } from "@/components/view";
 import { AppLayout } from "@/components/layout";
@@ -33,7 +30,6 @@ export default function Schedule({ children }: ISchedule) {
       <View.Scroll className="">
         {children}
       </View.Scroll>
-      {/* <div className="flex-1 overflow-y-auto gap-4 mt-6 bg-red-300">{children}</div>  */}
     </View.Vertical>
   );
 }

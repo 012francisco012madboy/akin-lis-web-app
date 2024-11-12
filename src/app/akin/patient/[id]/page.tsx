@@ -2,9 +2,8 @@ import ExamsHistory from "./exam-history";
 import { AppLayout } from "@/components/layout";
 import { View } from "@/components/view";
 import { PackageOpen } from "lucide-react";
-import ImageAvatat from "@/assets/images/avatar.png";
 import { ___api } from "@/lib/axios";
-import Avatar from "@/components/avatar";
+import { PatientResumeInfo } from "../components/patientResumeInfo";
 
 interface IPatientById {
   params: {
@@ -12,63 +11,48 @@ interface IPatientById {
   };
 }
 
-
-export default async function PatientById({ params }: IPatientById) {
-  let patient: PatientType;
-
+export default async function PatientByIdProfile({ params }: IPatientById) {
   try {
-    patient = await ___api.get(`/pacients/${params.id}`).then((response) => response.data);
-  } catch (error) {
-    throw new Error(`Buscando Paciente com ID ${params.id}:${error}`);
-  }
+    const response = await ___api.get<PatientType>(`/pacients/${params.id}`);
+    const patient = response.data;
 
-  const thereIsNoPatient = patient.id === undefined;
+    if (!patient?.id) {
+      return (
+        <NoPatientFound id={params.id} />
+      );
+    }
 
-  return (
-    <View.Vertical className="h-screen">
-      <AppLayout.ContainerHeader goBack label="Perfil do Paciente" />
+    return (
+      <View.Vertical className="h-screen">
+        <AppLayout.ContainerHeader goBack label="Perfil do Paciente" />
 
-      {thereIsNoPatient ? (
-        <div className="flex flex-col items-center justify-center text-sky-800 p-8 rounded  space-y-4 my-auto">
-          <PackageOpen size={150} />
-          <p className="text-center">
-            Não foi encontrado paciente com iD: <span className="font-bold">{params.id}</span>
-          </p>
+        <div className="flex gap-4 bg-akin-turquoise text-akin-white-smoke p-6 rounded-lg">
+          <PatientResumeInfo patient={patient} />
         </div>
-      ) : (
-        <>
-          <div className="flex gap-4 bg-akin-turquoise text-akin-white-smoke p-6  rounded-lg ">
-            <PatientResumeInfo patient={patient} />
-          </div>
 
-          <div>
-            <h1 className="font-bold text-2xl my-4 ">Histórico de Exames</h1>
-            <hr />
-          </div>
+        <section className="my-4">
+          <h1 className="font-bold text-2xl">Histórico de Exames</h1>
+          <hr />
+        </section>
 
-          <View.Scroll>
-            <ExamsHistory patientId={patient.id} />
-          </View.Scroll>
-        </>
-      )}
-    </View.Vertical>
-  );
+        <View.Scroll>
+          <ExamsHistory patientId={patient.id} />
+        </View.Scroll>
+      </View.Vertical>
+    );
+  } catch (error) {
+    console.error(`Erro ao buscar o paciente com ID ${params.id}:`, error);
+    return <p className="text-center text-red-500">Erro ao carregar o perfil do paciente.</p>;
+  }
 }
 
-function PatientResumeInfo({ patient }: { patient: PatientType }) {
+function NoPatientFound({ id }: { id: string }) {
   return (
-    <div className="flex flex-1 items-center gap-x-6">
-      <Avatar userName={patient.nome} image={String(ImageAvatat)} size="xlarge" className="border size-[144px]" />
-      <div>
-        <p className="font-bold text-akin-turquoise text-xl">{patient.nome}</p>
-        <p>Nº do BI: {patient.numero_identificacao}</p>
-        <p>Sexo: {patient.id_sexo === 1 ? "Masculino" : "Feminino"}</p>
-        <p>idade: {2024 - Number(new Date(patient.data_nascimento).getFullYear())}</p>
-        <p>Data de Nascumento: {new Date(patient.data_nascimento).toLocaleDateString()}</p>
-        <p>Contacto: {patient.contacto_telefonico}</p>
-        <p>Última Visita: {new Date(patient.data_ultima_visita).toLocaleString()}</p>
-        <p>Registrado(a) em: {new Date(patient.data_ultima_visita).toLocaleString()}</p>
-      </div>
+    <div className="flex flex-col items-center justify-center text-sky-800 p-8 rounded space-y-4 my-auto">
+      <PackageOpen size={150} />
+      <p className="text-center">
+        Não foi encontrado paciente com ID: <span className="font-bold">{id}</span>
+      </p>
     </div>
   );
 }
