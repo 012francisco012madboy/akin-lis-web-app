@@ -26,7 +26,7 @@ export default function RootLayout({
       <Toaster
         position="top-right"
         richColors={true}
-        duration={5000}
+        duration={2000}
         // toastOptions={{
           // unstyled: true,
           // className:"p-4 rounded-lg ",

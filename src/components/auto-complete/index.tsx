@@ -4,6 +4,7 @@ import { FakeService } from "./service/fake-data";
 import clsx from "clsx";
 import "./index.css";
 import { twMerge } from "tailwind-merge";
+import Image from "next/image";
 
 interface IInputData {
   value: string;
@@ -56,7 +57,7 @@ export default function AutoComplete({ className, setSelectedItemId, dataFromSer
   const itemTemplate = (item: IInputData) => {
     return (
       <div className="flex align-items-center">
-        <img alt={item.value} src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png" className={`flag flag-${item.id.toLowerCase()} mr-2`} style={{ width: "18px" }} />
+        <Image alt={item.value} src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png" className={`flag flag-${item.id.toLowerCase()} mr-2`} style={{ width: "18px" }} />
         <div>{item.value}</div>
       </div>
     );
