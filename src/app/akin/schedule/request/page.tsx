@@ -6,27 +6,33 @@ import { ___api } from "@/lib/axios";
 import { ___showErrorToastNotification } from "@/lib/sonner";
 
 export default function Request() {
-  // const [schedule, setSchedule] = useState<ScheduleType[]>([]);
-
   const [requestSchedule, setRequestSchedule] = useState<ScheduleType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    ___api
-      .get("/schedulings/pending")
-      .then((res) => {
-        // console.log("----",res.data[0]);
-        setRequestSchedule(res.data);
+    const fetchScheduleData = async () => {
+      try {
+        const response = await ___api.get("/schedulings/pending");
+        setRequestSchedule(response.data);
+      } catch (error) {
+        ___showErrorToastNotification({
+          message: "Erro inesperado ocorreu ao buscar os dados. Atualize a página ou contate o suporte.",
+        });
+      } finally {
         setIsLoading(false);
-      })
-      .catch((e) => {
-        ___showErrorToastNotification({ message: "Erro inesperado ocorreu ao buscar os dados. Atualiza a página ou contecte o suporte" });
-      });
+      }
+    };
+
+    fetchScheduleData();
   }, []);
 
   return (
-    <div className=" h-screen px-6 mx-auto">
-      <CardScheduleContainer isLoading={isLoading} title="Agendamentos em Andamento" schedule={requestSchedule} />
+    <div className="h-screen px-6 mx-auto">
+      <CardScheduleContainer
+        isLoading={isLoading}
+        title="Agendamentos em Andamento"
+        schedule={requestSchedule}
+      />
     </div>
   );
 }

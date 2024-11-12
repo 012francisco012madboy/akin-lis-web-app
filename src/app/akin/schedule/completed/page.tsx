@@ -1,30 +1,39 @@
 "use client";
 
-import CardScheduleContainer from "../CardScheduleContainer";
 import { useEffect, useState } from "react";
+import CardScheduleContainer from "../CardScheduleContainer";
 import { ___api } from "@/lib/axios";
 import { ___showErrorToastNotification } from "@/lib/sonner";
 
 export default function Completed() {
-  const [Complitedschedule, setComplitedschedule] = useState<ScheduleType[]>([]);
+  const [completedSchedules, setCompletedSchedules] = useState<ScheduleType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const handleError = (message: string) => {
+    ___showErrorToastNotification({
+      message: message || "Erro inesperado ao buscar dados. Tente novamente ou contate o suporte."
+    });
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    ___api
-      .get("/schedulings/concluded")
-      .then((res) => {
-        setComplitedschedule(res.data);
+    const fetchCompletedSchedules = async () => {
+      try {
+        const response = await ___api.get("/schedulings/concluded");
+        setCompletedSchedules(response.data);
+      } catch (error) {
+        handleError("Erro ao buscar agendamentos concluídos.");
+      } finally {
         setIsLoading(false);
-      })
-      .catch((e) => {
-        ___showErrorToastNotification({ message: "Erro inesperado ocorreu ao buscar os dados. Atualiza a página ou contecte o suporte" });
-      });
+      }
+    };
+
+    fetchCompletedSchedules();
   }, []);
 
   return (
-    <div className=" h-screen px-6 mx-auto">
-      {/* <CardScheduleContainer title="Agendamentos Concluídos" schedule={Complitedschedule} /> */}
-      <CardScheduleContainer isLoading={isLoading} title="Agendamentos Concluídos" schedule={Complitedschedule} />
+    <div className="h-screen px-6 mx-auto">
+      <CardScheduleContainer isLoading={isLoading} title="Agendamentos Concluídos" schedule={completedSchedules} />
     </div>
   );
 }
