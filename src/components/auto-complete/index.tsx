@@ -57,7 +57,7 @@ export default function AutoComplete({ className, setSelectedItemId, dataFromSer
   const itemTemplate = (item: IInputData) => {
     return (
       <div className="flex align-items-center">
-        <Image alt={item.value} src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png" className={`flag flag-${item.id.toLowerCase()} mr-2`} style={{ width: "18px" }} />
+        <img alt={item.value} src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png" width={18} height={18} className={`flag flag-${item.id.toLowerCase()} mr-2`} style={{ width: "18px" }} />
         <div>{item.value}</div>
       </div>
     );

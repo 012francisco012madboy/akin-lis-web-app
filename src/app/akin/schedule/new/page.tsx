@@ -1,332 +1,242 @@
 "use client";
 
-import { z } from "zod";
 import { useEffect, useState } from "react";
-import { DialogWindow } from "@/components/dialog";
+import { z } from "zod";
+import { LoaderCircle } from "lucide-react";
+import { ProgressSpinner } from "primereact/progressspinner";
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import AutoComplete from "@/components/auto-complete";
-import { LoaderCircle, Save, UserRoundPlus } from "lucide-react";
-
 import { View } from "@/components/view";
 import { CheckBoxExam } from "./components/CheckBoxExam";
-import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
+import { ModalNewPatient } from "./components/ModalNewPatient";
 import { ___api } from "@/lib/axios";
-import { ProgressSpinner } from "primereact/progressspinner";
+import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { schemaSchedule } from "./schemaZodNewPatient";
 
+// Types
 interface INew { }
+export type SchemaScheduleType = z.infer<typeof schemaSchedule>;
+type Patient = { id: string; nome: string; data_nascimento?: string; sexo: { nome: string }; contacto_telefonico?: string; numero_identificacao?: string };
+type Exam = { id: number; nome: string };
+type GenderOption = { id: number; value: string };
+interface IExamProps {
+  id: string | number;
+  nome: string;
+  descricao?: string;
+  preco?: string;
+  status?: "DISPONÍVEL" | "INDISPONÍVEL"
+}
 
-//TODO generos precisam vir do back-end e depois listados no campo de genero
-const genders = [
+// Constants
+const GENDERS: GenderOption[] = [
   { id: 1, value: "Masculino" },
   { id: 2, value: "Feminino" },
 ];
-
-
-export type SchemaScheduleType = z.infer<typeof schemaSchedule>;
+const DEFAULT_USER = { id: "cm27g9oa00001lg20jnnzb0wr", name: "João Silva", id_unidade_de_saude: 1 };
 
 export default function New({ }: INew) {
-  const [windowDialog, setWindowDialog] = useState(false);
-  const [messageDialog, setMessageDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [avaliableExams, setAvaliableExams] = useState<AvaliableExamsType[]>([]);
-  const [availablePatients, setAvailablePatients] = useState<PatientType[]>([]);
-  const [availablePatientsAutoComplete, setAvailablePatientsAutoComplete] = useState<{ value: string; id: string }[]>([]);
-  const [selectedItemId, setSelectedItemId] = useState<string>("");
-  const [selectedPatient, setSelectedPatient] = useState<PatientType>();
-  //TODO Get user on localSorage
-  const [loggedUser, setLoggedUser] = useState({ id: "cm27g9oa00001lg20jnnzb0wr", name: "João Silva", id_unidade_de_saude: 1 });
+  const [availableExams, setAvailableExams] = useState<IExamProps[]>([]);
+  const [availablePatients, setAvailablePatients] = useState<Patient[]>([]);
+  const [patientAutoComplete, setPatientAutoComplete] = useState<{ value: string; id: string }[]>([]);
+  const [selectedPatientId, setSelectedPatientId] = useState<string>("");
+  const [selectedPatient, setSelectedPatient] = useState<Patient | undefined>();
+  const [loggedUser] = useState(DEFAULT_USER);
+
+
 
   useEffect(() => {
-    ___api
-      .get("pacients")
-      .then((res) => {
-        const pacients = res.data.map((pacient: PatientType) => {
-          return {
-            value: pacient.nome,
-            id: pacient.id,
-          };
-        });
-        setAvailablePatientsAutoComplete(pacients);
-        setAvailablePatients(res.data);
-      })
-      .finally(() => {
-        ___api
-          .get("/exam-types")
-          .then((res) => {
-            setAvaliableExams(res.data.data);
-            setIsLoading(false);
-            ___showSuccessToastNotification({ message: "Dados obtidos com sucesso!" });
-          })
-          .catch((e) => {
-            ___showErrorToastNotification({ message: "Erro inesperado ocorreu ao buscar os dados" });
-          });
-      });
+    fetchPatientsAndExams();
   }, []);
 
   useEffect(() => {
-    if (selectedItemId) {
-      const patientFinded = availablePatients.find((patient) => patient.id === selectedItemId);
-
-      // console.log("BOMMM ", patientFinded);
-      setSelectedPatient(patientFinded);
+    if (selectedPatientId) {
+      setSelectedPatient(availablePatients.find((patient) => patient.id === selectedPatientId));
     }
-  }, [selectedItemId, availablePatients]);
+  }, [selectedPatientId, availablePatients]);
 
-  function actionAfterSavePatient(patientResponse: PatientType) {
-    console.log("BOMMM-- ", patientResponse);
+  const fetchPatientsAndExams = async () => {
+    try {
+      const patientsResponse = await ___api.get("pacients");
+      const patientsData = patientsResponse.data.map((patient: Patient) => ({ value: patient.nome, id: patient.id }));
+      setPatientAutoComplete(patientsData);
+      setAvailablePatients(patientsResponse.data);
 
-    setAvailablePatientsAutoComplete((prev) => [
-      ...prev,
-      {
-        value: patientResponse.nome,
-        id: patientResponse.id,
-      },
-    ]);
-
-    setAvailablePatients((prev) => [...prev, patientResponse]);
-
-    setSelectedPatient(patientResponse);
-
-    setWindowDialog(false);
-  }
-
-  async function onSubmitFn(data: FormData) {
-    const patient_id = data.get("identity") as string;
-    const patient_phone = data.get("phone_number") as string;
-    const patient_birth_day = new Date(data.get("birth_day") as string).toLocaleDateString("en-CA");
-    let patient_name = data.get("name") as string;
-    const patient_gender = data.get("gender") as string;
-
-    const patient_schedule_time = data.get("schedule_time") as string;
-    const patient_schedule_date = data.get("schedule_date") as string;
-
-    const patient_checkboxes = document.querySelectorAll('input[name="opc_checkbox"]:checked');
-    const patient_selectedValue = Array.from(patient_checkboxes).map((checkbox) => (checkbox as HTMLInputElement).value);
-
-    const patient_newSelectedValue = patient_selectedValue.map((value) => {
-      const id = value.split("_")[0];
-      const exame = value.split("_")[1];
-      return {
-        id: Number(id),
-        // exame,
-      };
+      const examsResponse = await ___api.get("/exam-types");
+      setAvailableExams(examsResponse.data.data);
+      ___showSuccessToastNotification({ message: "Dados obtidos com sucesso!" });
+    } catch (error) {
+      ___showErrorToastNotification({ message: "Erro ao buscar dados" });
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleSavePatient = (patient: Patient) => {
+    setPatientAutoComplete((prev) => [...prev, { value: patient.nome, id: patient.id }]);
+    setAvailablePatients((prev) => [...prev, patient]);
+    setSelectedPatient(patient);
+  };
+
+  const validateSchedule = (data: FormData) => {
+    const scheduleDate = data.get("schedule_date") as string;
+    const scheduleTime = data.get("schedule_time") as string;
+
+    const selectedExams = Array.from(document.querySelectorAll('input[name="opc_checkbox"]:checked')).map(
+      (checkbox) => Number((checkbox as HTMLInputElement).value.split("_")[0])
     );
 
-    const isToCreateSchedule = patient_schedule_date && patient_schedule_time;
+    const errors = [];
+    if (!selectedExams.length) errors.push("Selecione pelo menos um exame");
 
-    if (isToCreateSchedule) {
-      patient_name = selectedPatient!.nome;
+    const today = new Date();
+    const scheduleDateTime = new Date(`${scheduleDate}T${scheduleTime}`);
+    if (scheduleDateTime < today) errors.push("A data e hora do agendamento devem ser futuras.");
+
+    if (errors.length > 0) {
+      ___showErrorToastNotification({ messages: errors });
+      return { isValid: false };
     }
-
-    const validatedData = schemaSchedule.safeParse({
-      patient_id,
-      patient_phone,
-      patient_birth_day: new Date(patient_birth_day),
-      patient_name,
-      patient_gender,
-    });
-
-    if (!validatedData.success) {
-      const errosMessages = validatedData.error.errors.map((error) => error.message);
-      ___showErrorToastNotification({ messages: errosMessages });
-      return;
-    }
-
-    const patient_gender_id = genders.find((gender) => gender.value === (data.get("gender") as string))!.id;
-
-    if (isToCreateSchedule) {
-      const errorsErrors: string[] = [];
-
-      patient_newSelectedValue.length == 0 && errorsErrors.push("Selecione pelo menos um exame");
-
-      const todayDate = new Date().toLocaleDateString();
-      const todayTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
-
-      const patient_date_to_local_date = new Date(patient_schedule_date).toLocaleDateString();
-      const patient_date_to_local_time = new Date("2000-01-01 " + patient_schedule_time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
-
-      const patientScheduleDateIsBellowOfTodayData = patient_date_to_local_date < todayDate;
-      const patientScheduleTimeIsBellowOfTodayData = patient_date_to_local_date == todayDate && patient_date_to_local_time < todayTime;
-
-      patientScheduleDateIsBellowOfTodayData && errorsErrors.push("A data de agendamento não pode ser inferior a data de hoje");
-      patientScheduleTimeIsBellowOfTodayData && errorsErrors.push("Agendamentos do dia presente não podem ter hora e minuto inferior ao momento presente. No momento são " + todayTime + ", e a data selecionada é " + patient_date_to_local_time);
-
-      if (errorsErrors.length > 0) {
-        ___showErrorToastNotification({ messages: errorsErrors });
-        return;
-      }
-
-      const patient_data = {
+    return {
+      isValid: true,
+      data: {
         id_paciente: selectedPatient!.id,
         id_unidade_de_saude: loggedUser.id_unidade_de_saude,
-        data_agendamento: patient_schedule_date.replace(/\//g, "-"),
-        hora_agendamento: patient_schedule_time,
-        exames_paciente: patient_newSelectedValue,
-      };
-
-      // console.log(patient_data);
-      // return;
-
-      setIsSaving(true);
-      ___api
-        .post("/schedulings/set-schedule", patient_data)
-        .then((res) => {
-          if (res.status == 201) {
-            ___showSuccessToastNotification({ message: "Agendamento marcado com sucesso" });
-            setSelectedPatient(undefined);
-            // setWindowDialog(false);
-            setMessageDialog(true);
-          } else {
-            ___showErrorToastNotification({ message: "Erro ao marcar Agendamento.\nTente novamente, mas se o erro persistir, entre em contato com o suporte." });
-          }
-        })
-        .catch((err) => {
-          ___showErrorToastNotification({ message: "Erro ao marcar Agendamento... Tente novamente, mas se o erro persistir, entre em contato com o suporte." });
-
-          console.log("🚀 ~ file: page.tsx:207 ~ .then ~ err:", err);
-        })
-        .finally(() => setIsSaving(false));
-      return;
-    }
-
-    const patient_data = {
-      numero_identificacao: patient_id,
-      nome: patient_name,
-      data_nascimento: patient_birth_day,
-      contacto_telefonico: patient_phone,
-      id_sexo: patient_gender_id,
-      id_usuario: loggedUser.id,
+        data_agendamento: scheduleDate,
+        hora_agendamento: scheduleTime,
+        exames_paciente: selectedExams.map((id) => ({ id })),
+      },
     };
+  };
 
-    // console.log(patient_data);
+  const handleSubmit = async (data: FormData) => {
+    const validation = validateSchedule(data);
+
+    if (!validation.isValid) return;
 
     setIsSaving(true);
-    ___api
-      .post("/pacients", patient_data)
-      .then((res) => {
-        if (res.status == 201) {
-          // setMessageDialog(true);
-          ___showSuccessToastNotification({ message: "Paciente cadastrado com sucesso" });
-          actionAfterSavePatient(res.data);
-        } else {
-          ___showErrorToastNotification({ message: "Erro ao cadastrar paciente.\nTente novamente, mas se o erro persistir, entre em contato com o suporte." });
-        }
-      })
-      .catch((err) => {
-        ___showErrorToastNotification({ message: "Erro ao cadastrar paciente... Tente novamente, mas se o erro persistir, entre em contato com o suporte." });
-
-        console.log("🚀 ~ file: page.tsx:207 ~ .then ~ err:", err);
-      })
-      .finally(() => setIsSaving(false));
-  }
+    try {
+      const response = await ___api.post("/schedulings/set-schedule", validation.data);
+      if (response.status === 201) {
+        ___showSuccessToastNotification({ message: "Agendamento marcado com sucesso" });
+        console.log(response.data.data)
+        setSelectedPatient(undefined);
+      } else {
+        throw new Error();
+      }
+    } catch (error) {
+      ___showErrorToastNotification({ message: "Erro ao marcar Agendamento. Tente novamente ou contate o suporte." });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="h-screen px-4">
       <h1 className="font-light text-3xl my-6">Novo Agendamento</h1>
-      <div>
-        <form action={onSubmitFn} className="flex flex-wrap w-full gap-3">
-          <div className="flex flex-col flex-1 gap-5">
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-col gap-y-4">
-                {isLoading ? (
-                  <p className="flex items-center">
-                    <LoaderCircle className="animate-spin mr-2" /> Carregando lista de pacientes...
-                  </p>
-                ) : (
-                  <div className="flex border-2 border-akin-yellow-light rounded-lg bg-akin-yellow-light/20 ring-0 relative">
-                    <AutoComplete
-                      placeholder={selectedPatient?.nome || "Nome completo do paciente"}
-                      name="name"
-                      className="border-0 ring-0 flex-1"
-                      lookingFor="paciente"
-                      dataFromServer={availablePatientsAutoComplete}
-                      setSelectedItemId={setSelectedItemId}
-                    />
-                    <div
-                      className="absolute bg-akin-yellow-light/50 p-2 rounded-lg text-sm -top-12 right-0 text-gray-400 hover:bg-akin-yellow-light transition ease-out cursor-pointer hover:text-gray-800 flex items-center"
-                      onClick={() => setWindowDialog(true)}
-                    >
-                      <UserRoundPlus />
-                      <p>Registar Novo Paciente</p>
-                    </div>
-                  </div>
-                )}
-                <div className="flex flex-wrap gap-2">
-                  <Input.CalenderDate
-                    disabled
-                    noUseLabel
-                    placeholder="Data de Nascimento"
-                    maxDate={new Date()}
-                    name="birth_day"
-                    valueDate={selectedPatient?.data_nascimento ? new Date(selectedPatient.data_nascimento) : null}
-                  />
-                  <Input.Dropdown
-                    disabled
-                    data={genders}
-                    name="gender"
-                    placeholder="Selecione o sexo"
-                    valueData={selectedPatient?.sexo.nome}
-                  />
-                </div>
-                <Input.InputText maxLength={0} placeholder="Contacto telefónico" name="phone_number" value={selectedPatient?.contacto_telefonico} />
-                <Input.InputText maxLength={0} placeholder="Bilhete de Identidade" name="identity" value={selectedPatient?.numero_identificacao} />
-              </div>
-            </div>
-            <div>
-              <h2 className="font-bold">Data do Agendamento</h2>
-              <hr />
-              <div className="flex gap-2 mt-4">
-                <Input.CalenderDate valueDate={new Date()} minDate={new Date()} name="schedule_date" />
-                <Input.CalenderTime name="schedule_time" />
-              </div>
-            </div>
-          </div>
-          <div className="h-[29rem] w-[15rem] flex flex-col border-2 border-akin-yellow-light rounded-lg bg-akin-yellow-light/20">
-            <div className="space-y-4 flex-1 p-2">
-              <div className="space-y-2 model p-4 h-[24rem]">
-                <h1 className="font-bold text-xl -mx-4">Exames Disponíveis</h1>
-                <View.Scroll className="max-h-full overflow-y-auto space-y-2 h-full">
-                  {isLoading ? (
-                    <div className="flex items-center justify-center h-full">
-                      <ProgressSpinner style={{ width: "25px", height: "25px" }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" />
-                    </div>
-                  ) : avaliableExams.length === 0 ? (
-                    <div className="flex items-center justify-center h-full">
-                      <p className="text-gray-400">Não há exames disponíveis</p>
-                    </div>
-                  ) : (
-                    avaliableExams.map((exame, index) => (
-                      <CheckBoxExam key={index} description={exame.nome} value={String(exame.id)} />
-                    ))
-                  )}
-                </View.Scroll>
-              </div>
-            </div>
-            <Button.Primary className="m-2" type="submit" label={isSaving ? "Marcando..." : "Agendar"} disabled={isSaving} />
-          </div>
-        </form>
-      </div>
-  
-      <DialogWindow.Window modalTitle="Confirmação" visible={windowDialog} setVisible={setWindowDialog}>
-        <form action={onSubmitFn} className="flex flex-col gap-y-4">
-          <Input.InputText placeholder="Nome do Paciente" name="name" />
-          <div className="flex flex-wrap gap-2">
-            <Input.CalenderDate noUseLabel placeholder="Data de Nascimento" maxDate={new Date()} name="birth_day" valueDate={null} />
-            <Input.Dropdown data={genders} name="gender" placeholder="Selecione o sexo" />
-          </div>
-          <Input.InputText placeholder="Contacto telefónico" name="phone_number" type="number" />
-          <Input.InputText placeholder="Bilhete de Identidade" maxLength={14} name="identity" />
-          <div className="space-x-2 flex justify-end mt-4">
-            <Button.Primary icon={<Save />} type="submit" className="bg-green-700" label={isSaving ? "Salvando..." : "Salvar"} disabled={isSaving} />
-          </div>
-        </form>
-      </DialogWindow.Window>
-  
-      <DialogWindow.Message type="Sucesso" visible={messageDialog} setVisible={setMessageDialog} actionFn={() => window.location.reload()} />
+      <form onSubmit={(e) => { e.preventDefault(); handleSubmit(new FormData(e.currentTarget)); }} className="flex flex-wrap w-full gap-3">
+        <div className="flex flex-col flex-1 gap-5">
+          <PatientDetails
+            isLoading={isLoading}
+            selectedPatient={selectedPatient}
+            autoCompleteData={patientAutoComplete}
+            onPatientSelect={setSelectedPatientId}
+          />
+          <ScheduleDetails />
+        </div>
+        <ExamSelection exams={availableExams} isLoading={isLoading} isSaving={isSaving} />
+      </form>
     </div>
   );
-}  
+}
+
+// Extracted Components
+function PatientDetails({ isLoading, selectedPatient, autoCompleteData, onPatientSelect }: {
+  isLoading: boolean,
+  selectedPatient: Patient | undefined,
+  onPatientSelect: (value: string) => void,
+  autoCompleteData: {
+    value: string;
+    id: string;
+  }[]
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      {isLoading ? (
+        <p className="flex items-center">
+          <LoaderCircle className="animate-spin mr-2" /> Carregando lista de pacientes...
+        </p>
+      ) : (
+        <div className="flex border-2 border-akin-yellow-light rounded-lg bg-akin-yellow-light/20 ring-0 relative">
+          <AutoComplete
+            placeholder={selectedPatient?.nome || "Nome completo do paciente"}
+            name="name"
+            lookingFor="paciente"
+            dataFromServer={autoCompleteData}
+            setSelectedItemId={onPatientSelect}
+          />
+          <ModalNewPatient />
+        </div>
+      )}
+      <PatientInfo patient={selectedPatient} />
+    </div>
+  );
+}
+
+function PatientInfo({ patient }: {
+  patient: Patient | undefined
+}) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Input.CalenderDate disabled noUseLabel placeholder="Data de Nascimento" maxDate={new Date()} valueDate={patient?.data_nascimento ? new Date(patient.data_nascimento) : null} />
+      <Input.Dropdown disabled data={GENDERS} name="gender" placeholder="Sexo" valueData={patient?.sexo.nome} />
+      <Input.InputText placeholder="Contacto telefónico" name="phone_number" value={patient?.contacto_telefonico} disabled />
+      <Input.InputText placeholder="Bilhete de Identidade" name="identity" value={patient?.numero_identificacao} disabled />
+    </div>
+  );
+}
+
+function ScheduleDetails() {
+  return (
+    <div>
+      <h2 className="font-bold">Data do Agendamento</h2>
+      <hr />
+      <div className="flex gap-2 mt-4">
+        <Input.CalenderDate valueDate={new Date()} minDate={new Date()} name="schedule_date" />
+        <Input.CalenderTime name="schedule_time" />
+      </div>
+    </div>
+  );
+}
+
+function ExamSelection({ exams, isLoading, isSaving }: {
+  exams: IExamProps[],
+  isLoading: boolean,
+  isSaving: boolean
+}) {
+  return (
+    <div className="h-[29rem] w-[15rem] flex flex-col border-2 border-akin-yellow-light rounded-lg bg-akin-yellow-light/20">
+      <div className="space-y-4 flex-1 p-2">
+        <div className="space-y-2 model p-4 h-[24rem]">
+          <h1 className="font-bold text-xl -mx-4">Exames Disponíveis</h1>
+          <View.Scroll className="max-h-full overflow-y-auto space-y-2 h-full">
+            {isLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <ProgressSpinner style={{ width: "25px", height: "25px" }} strokeWidth="8" fill="var(--surface-ground)" animationDuration=".4s" />
+              </div>
+            ) : (
+              exams.map((v) => (
+                <CheckBoxExam key={v.id} id={v.id} nome={v.nome} />
+              ))
+            )}
+          </View.Scroll>
+        </div>
+      </div>
+      <div className="mt-4 px-4 mb-5">
+        <Button.Primary className="m-2" type="submit" label={isSaving ? "Marcando..." : "Agendar"} disabled={isSaving} />
+      </div>
+    </div>
+  );
+}

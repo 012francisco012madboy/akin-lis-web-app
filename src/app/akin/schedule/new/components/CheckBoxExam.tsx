@@ -5,11 +5,14 @@ import { useState } from "react";
 
 /////////////////////////////
 interface ICheckboxExam {
-  description: string;
-  value: string;
+  id: string | number;
+  nome: string;
+  descricao?: string;
+  preco?: string;
+  status?: "DISPONÍVEL" | "INDISPONÍVEL"
 }
 
-export function CheckBoxExam({ description, value }: ICheckboxExam) {
+export function CheckBoxExam({ id, nome, descricao }: ICheckboxExam) {
   const [isChecked, setIsChecked] = useState(false);
 
   function onChange() {
@@ -21,10 +24,10 @@ export function CheckBoxExam({ description, value }: ICheckboxExam) {
         <span hidden>{description}</span>
       </Checkbox> */}
 
-      <label htmlFor={value} className="flex gap-x-2">
+      <label htmlFor={nome} className="flex gap-x-2">
         {/* <input type="checkbox" className="w-fit" name="opc_checkbox" value={description} id={value} /> */}
-        <input type="checkbox" className="w-fit" name="opc_checkbox" value={`${value}_${description}`} id={value} />
-        {description}
+        <input type="checkbox" className="w-fit" name="opc_checkbox" value={`${nome}`} id={nome} />
+        {nome}
       </label>
     </div>
   );

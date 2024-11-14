@@ -13,7 +13,7 @@ export default function Dropdown({ data, valueData, ...rest }: IDropdown) {
   const [selectedGender, setSelectedGender] = useState<DropdownDataType | null>(null);
 
   function onChangeGender(e: DropdownChangeEvent) {
-    console.log(e.value);
+    e.preventDefault();
     setSelectedGender(e.value);
   }
 
