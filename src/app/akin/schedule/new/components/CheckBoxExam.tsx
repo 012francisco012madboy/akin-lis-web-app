@@ -1,6 +1,5 @@
 "use client";
 
-import { Checkbox } from "primereact/checkbox";
 import { useState } from "react";
 
 /////////////////////////////
@@ -9,24 +8,30 @@ interface ICheckboxExam {
   nome: string;
   descricao?: string;
   preco?: string;
-  status?: "DISPONÍVEL" | "INDISPONÍVEL"
+  status?: "DISPONÍVEL" | "INDISPONÍVEL";
 }
 
 export function CheckBoxExam({ id, nome, descricao }: ICheckboxExam) {
   const [isChecked, setIsChecked] = useState(false);
 
-  function onChange() {
-    setIsChecked((state) => !state);
+  // Função para alterar o estado da checkbox
+  function handleCheckboxChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setIsChecked(event.target.checked);
+    console.log(`Checkbox ${nome} (${id}) está ${event.target.checked ? "selecionada" : "desmarcada"}`);
   }
-  return (
-    <div className="flex gap-x-2 mb-2 items-center ">
-      {/* <Checkbox className="border border-akin-yellow-light rounded-lg" checked={isChecked} onChange={onChange} value={description} name="opc_checkbox" inputId={value} data-description={description}>
-        <span hidden>{description}</span>
-      </Checkbox> */}
 
-      <label htmlFor={nome} className="flex gap-x-2">
-        {/* <input type="checkbox" className="w-fit" name="opc_checkbox" value={description} id={value} /> */}
-        <input type="checkbox" className="w-fit" name="opc_checkbox" value={`${nome}`} id={nome} />
+  return (
+    <div className="flex gap-x-2 mb-2 items-center">
+      <label htmlFor={nome} className="flex gap-x-2 items-center">
+        <input
+          type="checkbox"
+          className="w-fit"
+          name="checkbox"
+          value={id}
+          id={nome}
+          checked={isChecked}
+          onChange={handleCheckboxChange}
+        />
         {nome}
       </label>
     </div>

@@ -46,7 +46,6 @@ export default function New({ }: INew) {
   const [loggedUser] = useState(DEFAULT_USER);
 
 
-
   useEffect(() => {
     fetchPatientsAndExams();
   }, []);
@@ -66,6 +65,7 @@ export default function New({ }: INew) {
 
       const examsResponse = await ___api.get("/exam-types");
       setAvailableExams(examsResponse.data.data);
+      console.log
       ___showSuccessToastNotification({ message: "Dados obtidos com sucesso!" });
     } catch (error) {
       ___showErrorToastNotification({ message: "Erro ao buscar dados" });
@@ -84,10 +84,9 @@ export default function New({ }: INew) {
     const scheduleDate = data.get("schedule_date") as string;
     const scheduleTime = data.get("schedule_time") as string;
 
-    const selectedExams = Array.from(document.querySelectorAll('input[name="opc_checkbox"]:checked')).map(
+    const selectedExams = Array.from(document.querySelectorAll('input[name="checkbox"]:checked')).map(
       (checkbox) => Number((checkbox as HTMLInputElement).value.split("_")[0])
     );
-
     const errors = [];
     if (!selectedExams.length) errors.push("Selecione pelo menos um exame");
 
@@ -99,12 +98,13 @@ export default function New({ }: INew) {
       ___showErrorToastNotification({ messages: errors });
       return { isValid: false };
     }
+
     return {
       isValid: true,
       data: {
         id_paciente: selectedPatient!.id,
         id_unidade_de_saude: loggedUser.id_unidade_de_saude,
-        data_agendamento: scheduleDate,
+        data_agendamento: scheduleDate.replace(/\//g, "-"),
         hora_agendamento: scheduleTime,
         exames_paciente: selectedExams.map((id) => ({ id })),
       },
@@ -119,15 +119,15 @@ export default function New({ }: INew) {
     setIsSaving(true);
     try {
       const response = await ___api.post("/schedulings/set-schedule", validation.data);
+
       if (response.status === 201) {
         ___showSuccessToastNotification({ message: "Agendamento marcado com sucesso" });
-        console.log(response.data.data)
         setSelectedPatient(undefined);
       } else {
-        throw new Error();
+        ___showErrorToastNotification({ message: "Erro ao marcar agendamento. Tente novamente." });
       }
     } catch (error) {
-      ___showErrorToastNotification({ message: "Erro ao marcar Agendamento. Tente novamente ou contate o suporte." });
+      ___showErrorToastNotification({ message: "Erro ao marcar agendamento. Contate o suporte." });
     } finally {
       setIsSaving(false);
     }

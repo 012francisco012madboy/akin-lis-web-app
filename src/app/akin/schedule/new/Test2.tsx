@@ -1,138 +1,119 @@
-"use client";
-
-import { z } from "zod";
-import { useEffect, useState } from "react";
-import { DialogWindow } from "@/components/dialog";
-import { Button } from "@/components/button";
-import { Input } from "@/components/input";
-import AutoComplete from "@/components/auto-complete";
-import { LoaderCircle, Save, UserRoundPlus } from "lucide-react";
-
-import { View } from "@/components/view";
-import { CheckBoxExam } from "./components/CheckBoxExam";
-import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
-import { ___api } from "@/lib/axios";
-import { ProgressSpinner } from "primereact/progressspinner";
-import { schemaSchedule } from "./schemaZodNewPatient";
-
-const genders = [
-  { id: 1, value: "Masculino" },
-  { id: 2, value: "Feminino" },
-];
-
-export type SchemaScheduleType = z.infer<typeof schemaSchedule>;
-
-const fetchPatients = async () => {
-  try {
-    const res = await ___api.get("pacients");
-    return res.data.map((patient: PatientType) => ({
-      value: patient.nome,
-      id: patient.id,
-    }));
-  } catch (error) {
-    ___showErrorToastNotification({ message: "Erro ao carregar pacientes" });
-    return [];
-  }
-};
-
-const fetchExams = async () => {
-  try {
-    const res = await ___api.get("/exam-types");
-    return res.data.data;
-  } catch (error) {
-    ___showErrorToastNotification({ message: "Erro ao carregar exames" });
-    return [];
-  }
-};
-
-function PatientForm({ availablePatientsAutoComplete, selectedPatient, setSelectedPatient, setWindowDialog }) {
-  return (
-    <div className="flex flex-col gap-5">
-      <AutoComplete
-        placeholder={selectedPatient?.nome || "Nome completo do paciente"}
-        name="name"
-        lookingFor="paciente"
-        className="border-0 ring-0 flex-1"
-        dataFromServer={availablePatientsAutoComplete}
-        setSelectedItemId={(id) => setSelectedPatient(id)}
-      />
-      <Input.CalenderDate disabled noUseLabel placeholder="Data de Nascimento" name="birth_day" maxDate={new Date()} valueDate={selectedPatient?.data_nascimento} />
-      <Input.Dropdown data={genders} name="gender" placeholder="Selecione o sexo" valueData={selectedPatient?.sexo.nome} />
-      <div className="absolute p-2 rounded-lg -top-12 right-0 flex items-center cursor-pointer" onClick={() => setWindowDialog(true)}>
-        <UserRoundPlus />
-        <p>Registar Novo Paciente</p>
-      </div>
-    </div>
-  );
-}
-
-function ExamList({ avaliableExams, isLoading }) {
-  return (
-    <View.Scroll className="max-h-full overflow-y-auto space-y-2 h-full">
-      {isLoading ? (
-        <div className="flex items-center justify-center h-full">
-          <ProgressSpinner style={{ width: "25px", height: "25px" }} strokeWidth="8" />
-        </div>
-      ) : avaliableExams.length === 0 ? (
-        <p className="text-gray-400">Não há exames disponíveis</p>
-      ) : (
-        avaliableExams.map((exam, index) => <CheckBoxExam key={index} description={exam.nome} value={String(exam.id)} />)
-      )}
-    </View.Scroll>
-  );
-}
-
-function ScheduleForm({ onSubmit }) {
-  return (
-    <form action={onSubmit} className="flex flex-wrap w-full gap-3">
-      <div className="flex flex-col flex-1 gap-5">
-        <PatientForm {...props} />
-        <div>
-          <h2 className="font-bold">Data do Agendamento</h2>
-          <hr />
-          <div className="flex gap-2 mt-4">
-            <Input.CalenderDate valueDate={new Date()} minDate={new Date()} name="schedule_date" />
-            <Input.CalenderTime name="schedule_time" />
-          </div>
-        </div>
-      </div>
-      <ExamList {...props} />
-      <Button.Primary type="submit" label="Agendar" />
-    </form>
-  );
-}
-
-export default function New() {
-  const [windowDialog, setWindowDialog] = useState(false);
+export default function New({ }: INew) {
   const [isLoading, setIsLoading] = useState(true);
-  const [avaliableExams, setAvaliableExams] = useState([]);
-  const [availablePatientsAutoComplete, setAvailablePatientsAutoComplete] = useState([]);
-  const [selectedPatient, setSelectedPatient] = useState();
+  const [isSaving, setIsSaving] = useState(false);
+  const [availableExams, setAvailableExams] = useState<IExamProps[]>([]);
+  const [availablePatients, setAvailablePatients] = useState<Patient[]>([]);
+  const [patientAutoComplete, setPatientAutoComplete] = useState<{ value: string; id: string }[]>([]);
+  const [selectedPatientId, setSelectedPatientId] = useState<string>("");
+  const [selectedPatient, setSelectedPatient] = useState<Patient | undefined>();
+  const [loggedUser] = useState(DEFAULT_USER);
 
   useEffect(() => {
-    setIsLoading(true);
-    const loadData = async () => {
-      const patients = await fetchPatients();
-      setAvailablePatientsAutoComplete(patients);
-      const exams = await fetchExams();
-      setAvaliableExams(exams);
-      setIsLoading(false);
-      ___showSuccessToastNotification({ message: "Dados obtidos com sucesso!" });
-    };
-    loadData();
+    fetchPatientsAndExams();
   }, []);
+
+  useEffect(() => {
+    if (selectedPatientId) {
+      const patient = availablePatients.find((patient) => patient.id === selectedPatientId);
+      setSelectedPatient(patient);
+    }
+  }, [selectedPatientId, availablePatients]);
+
+  const fetchPatientsAndExams = async () => {
+    try {
+      const patientsResponse = await ___api.get("pacients");
+      const patientsData = patientsResponse.data.map((patient: Patient) => ({ value: patient.nome, id: patient.id }));
+      setPatientAutoComplete(patientsData);
+      setAvailablePatients(patientsResponse.data);
+
+      const examsResponse = await ___api.get("/exam-types");
+      setAvailableExams(examsResponse.data.data);
+
+      ___showSuccessToastNotification({ message: "Dados obtidos com sucesso!" });
+    } catch (error) {
+      ___showErrorToastNotification({ message: "Erro ao buscar dados" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const validateSchedule = (data: FormData) => {
+    const scheduleDate = data.get("schedule_date") as string;
+    const scheduleTime = data.get("schedule_time") as string;
+
+    const selectedExams = Array.from(document.querySelectorAll('input[name="opc_checkbox"]:checked')).map(
+      (checkbox) => Number((checkbox as HTMLInputElement).value.split("_")[0])
+    );
+
+    const errors = [];
+    if (!selectedExams.length) errors.push("Selecione pelo menos um exame");
+
+    const today = new Date();
+    const scheduleDateTime = new Date(`${scheduleDate}T${scheduleTime}`);
+    if (scheduleDateTime < today) errors.push("A data e hora do agendamento devem ser futuras.");
+
+    if (!selectedPatient) errors.push("Selecione um paciente para o agendamento.");
+
+    if (errors.length > 0) {
+      ___showErrorToastNotification({ messages: errors });
+      return { isValid: false };
+    }
+
+    return {
+      isValid: true,
+      data: {
+        id_paciente: selectedPatient.id,
+        id_unidade_de_saude: loggedUser.id_unidade_de_saude,
+        data_agendamento: scheduleDate.replace(/\//g, "-"),
+        hora_agendamento: scheduleTime,
+        exames_paciente: selectedExams.map((id) => ({ id })),
+      },
+    };
+  };
+
+  const handleSubmit = async (data: FormData) => {
+    const validation = validateSchedule(data);
+
+    if (!validation.isValid) return;
+
+    setIsSaving(true);
+    try {
+      const response = await ___api.post("/schedulings/set-schedule", validation.data);
+
+      if (response.status === 201) {
+        ___showSuccessToastNotification({ message: "Agendamento marcado com sucesso" });
+        setSelectedPatient(undefined);
+      } else {
+        ___showErrorToastNotification({ message: "Erro ao marcar agendamento. Tente novamente." });
+      }
+    } catch (error) {
+      ___showErrorToastNotification({ message: "Erro ao marcar agendamento. Contate o suporte." });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="h-screen px-4">
       <h1 className="font-light text-3xl my-6">Novo Agendamento</h1>
-      <ScheduleForm
-        onSubmit={(data) => {
-          // Passar lógica de envio para dentro da ScheduleForm e demais subcomponentes
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit(new FormData(e.currentTarget));
         }}
-      />
-      <DialogWindow.Window modalTitle="Confirmação" visible={windowDialog} setVisible={setWindowDialog}>
-        <PatientForm {...props} />
-      </DialogWindow.Window>
+        className="flex flex-wrap w-full gap-3"
+      >
+        <div className="flex flex-col flex-1 gap-5">
+          <PatientDetails
+            isLoading={isLoading}
+            selectedPatient={selectedPatient}
+            autoCompleteData={patientAutoComplete}
+            onPatientSelect={setSelectedPatientId}
+          />
+          <ScheduleDetails />
+        </div>
+        <ExamSelection exams={availableExams} isLoading={isLoading} isSaving={isSaving} />
+      </form>
     </div>
   );
 }

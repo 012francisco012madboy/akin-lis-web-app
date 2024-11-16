@@ -247,7 +247,7 @@ export default function New({ }: INew) {
                     </div>
                   ) : (
                     avaliableExams.map((exame, index) => (
-                      <CheckBoxExam key={index} description={exame.nome} value={String(exame.id)} />
+                      <CheckBoxExam key={index} nome={exame.nome} id={String(exame.id)} />
                     ))
                   )}
                 </View.Scroll>
