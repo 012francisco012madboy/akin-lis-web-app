@@ -7,9 +7,6 @@ body::-webkit-scrollbar {
   display: none; /* Chrome, Safari e Opera */
 }
 
-.model .p-scrollpanel-wrapper {
-  /* border-right: 10px solid red; */
-}
 
 .model .p-scrollpanel-bar {
   /* background-color: #0080a7; */

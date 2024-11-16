@@ -1,10 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useState } from "react";
 import { AutoComplete as PrimeAutoComplete, AutoCompleteProps } from "primereact/autocomplete";
-import { FakeService } from "./service/fake-data";
-import clsx from "clsx";
 import "./index.css";
 import { twMerge } from "tailwind-merge";
-import Image from "next/image";
 
 interface IInputData {
   value: string;
@@ -38,8 +37,6 @@ export default function AutoComplete({ className, setSelectedItemId, dataFromSer
   };
 
   const search = (event: any) => {
-    // Timeout to emulate a network connection
-    // setTimeout(() => {
     let _filteredData;
 
     if (!event.query.trim().length) {
@@ -49,9 +46,7 @@ export default function AutoComplete({ className, setSelectedItemId, dataFromSer
         return patient.value.toLowerCase().startsWith(event.query.toLowerCase());
       });
     }
-
     setFilteredDatas(_filteredData);
-    // }, 250);
   };
 
   const itemTemplate = (item: IInputData) => {
@@ -64,8 +59,6 @@ export default function AutoComplete({ className, setSelectedItemId, dataFromSer
   };
 
   useEffect(() => {
-    // console.log(dataFromServer);
-
     setDatas(dataFromServer);
   }, []);
 
