@@ -20,7 +20,7 @@ export type SchemaScheduleType = z.infer<typeof schemaSchedule>;
 type Patient = { id: string; nome: string; data_nascimento?: string; sexo: { nome: string }; contacto_telefonico?: string; numero_identificacao?: string };
 type Exam = { id: number; nome: string };
 type GenderOption = { id: number; value: string };
-interface IExamProps {
+export interface IExamProps {
   id: string | number;
   nome: string;
   descricao?: string;
@@ -65,7 +65,7 @@ export default function New({ }: INew) {
 
       const examsResponse = await ___api.get("/exam-types");
       setAvailableExams(examsResponse.data.data);
-      console.log
+   
       ___showSuccessToastNotification({ message: "Dados obtidos com sucesso!" });
     } catch (error) {
       ___showErrorToastNotification({ message: "Erro ao buscar dados" });

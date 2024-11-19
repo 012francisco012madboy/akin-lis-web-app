@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import ExamsHistory from "./exam-history";
 import { AppLayout } from "@/components/layout";
 import { View } from "@/components/view";
@@ -12,46 +15,76 @@ interface IPatientById {
   };
 }
 
-export default async function PatientByIdProfile({ params }: IPatientById) {
+export default function PatientByIdProfile({ params }: IPatientById) {
+  const [patient, setPatient] = useState<PatientType | null>(null);
+  const [examHistory, setExamHistory] = useState<any>(null); // Ajuste o tipo conforme necessário
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const breadcrumbItems = [
     {
-      label:"Paciente",
-      href:"/akin/patient"
+      label: "Paciente",
+      href: "/akin/patient"
     },
     {
-      label:"Perfil do paciente"
+      label: "Perfil do paciente"
     }
-  ]
+  ];
 
-  try {
-    const response = await ___api.get<PatientType>(`/pacients/${params.id}`);
-    const patient = response.data;
+  useEffect(() => {
+    async function fetchPatientData() {
+      setLoading(true);
+      setError(null);
 
-    if (!patient?.id) {
-      return (
-        <NoPatientFound id={params.id} />
-      );
+      try {
+        const response = await ___api.get<PatientType>(`/pacients/${params.id}`);
+        const patientData = response.data;
+
+        if (!patientData?.id) {
+          setPatient(null);
+          return;
+        }
+
+        const examResponse = await ___api.get(`/exams/history/${params.id}`);
+        setPatient(patientData);
+        setExamHistory(examResponse.data);
+      } catch (err) {
+        console.error(`Erro ao buscar o paciente com ID ${params.id}:`, err);
+        setError("Erro ao carregar o perfil do paciente.");
+      } finally {
+        setLoading(false);
+      }
     }
 
-    return (
-      <View.Vertical className="h-screen">
-        {/* <AppLayout.ContainerHeader goBack label="Perfil do Paciente" /> */}
-        <CustomBreadcrumb items={breadcrumbItems} borderB/>
+    fetchPatientData();
+  }, [params.id]);
 
-        <div className="flex gap-4 e text-akin-white-smoke p-4 rounded-lg">
-          <PatientResumeInfo patient={patient} />
-        </div>
+  if (loading) {
+    return <p className="text-center">Carregando...</p>;
+  }
 
+  if (error) {
+    return <p className="text-center text-red-500">{error}</p>;
+  }
 
-        {/* <View.Scroll>
+  if (!patient) {
+    return <NoPatientFound id={params.id} />;
+  }
+
+  return (
+    <View.Vertical className="h-screen">
+      {/* <AppLayout.ContainerHeader goBack label="Perfil do Paciente" /> */}
+      <CustomBreadcrumb items={breadcrumbItems} borderB />
+
+      <div className="flex gap-4 e text-akin-white-smoke p-4 rounded-lg">
+        <PatientResumeInfo patient={patient} basicExamHistory={examHistory} />
+      </div>
+
+      {/* <View.Scroll>
           <ExamsHistory patientId={patient.id} />
         </View.Scroll> */}
-      </View.Vertical>
-    );
-  } catch (error) {
-    console.error(`Erro ao buscar o paciente com ID ${params.id}:`, error);
-    return <p className="text-center text-red-500">Erro ao carregar o perfil do paciente.</p>;
-  }
+    </View.Vertical>
+  );
 }
 
 function NoPatientFound({ id }: { id: string }) {

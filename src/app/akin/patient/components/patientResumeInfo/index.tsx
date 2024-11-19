@@ -1,8 +1,10 @@
+"use client"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Copy, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Exam } from "../../[id]/exam-history/useExamHookData";
 
 // Componentes reutilizáveis
 function InfoItem({ label, value }: { label: string; value: string }) {
@@ -45,7 +47,7 @@ function AvatarSection({ imageSrc }: { imageSrc: string }) {
 }
 
 // Componente principal
-export function PatientResumeInfo({ patient }: { patient: PatientType }) {
+export function PatientResumeInfo({ patient, basicExamHistory }: { patient: PatientType, basicExamHistory?: Exam }) {
   const personalInfo = [
     { label: "Nome do paciente", value: patient.nome },
     { label: "Bilhete de Identidade", value: patient.numero_identificacao },
@@ -84,30 +86,51 @@ export function PatientResumeInfo({ patient }: { patient: PatientType }) {
       </Card>
 
       {/* Card de histórico */}
-      <Card className="w-[300px] h-max shadow-md">
-        <CardHeader>
-          <CardTitle>Histórico de exames</CardTitle>
+      <Card className="w-[350px] h-max shadow-lg rounded-lg border border-gray-200">
+        <CardHeader className="bg-gray-50 p-4 border-b">
+          <CardTitle className="text-lg font-semibold text-gray-800">Histórico de Exames</CardTitle>
         </CardHeader>
-        <CardContent>
-          {[...Array(2)].map((_, index) => (
-            <div
-              key={index}
-              className="flex justify-between p-2 border-b rounded-lg mb-1"
-            >
-              <div>
-                <p className="font-bold text-lg">Covid</p>
-                <p>Detalhes: Virus contagioso</p>
-                <p>ID do Agendamento: 1325</p>
+        <CardContent className="p-4 space-y-4">
+          {basicExamHistory?.data && basicExamHistory.data.length > 0 ? (
+            basicExamHistory.data.slice(0, 2).map((exam, index) => (
+              <div
+                key={index}
+                className="flex flex-col gap-2 bg-white shadow-sm rounded-md p-4 border border-gray-100 hover:shadow-md transition-shadow"
+              >
+                <p className="font-semibold text-gray-800 text-base">{exam.exame.nome}</p>
+                <p className="text-sm text-gray-600">
+                  <strong>Data de Agendamento:</strong> {exam.Agendamento.data_agendamento}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Status do Exame:</strong> {exam.exame.status}
+                </p>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="text-gray-500 text-center">Sem exames registrados</p>
+          )}
         </CardContent>
-        <CardFooter>
-          <Link href={`${patient.id}/exam-history`}>
-            <Button className="w-full h-[30px] bg-akin-turquoise">Ver mais históricos</Button>
+        {basicExamHistory!.data.length > 2? (
+          <CardFooter className="bg-gray-50 p-4 border-t w-full">
+            <Link href={`${patient.id}/exam-history`} passHref>
+              <Button className="w-full bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
+              Ver mais históricos
+              </Button>
+            </Link>
+          </CardFooter>
+        ):(
+          <CardFooter className="bg-gray-50 p-4 border-t w-full">
+          <Link href={`${patient.id}/exam-history`} passHref>
+            <Button className="w-full bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
+              Ver mais históricos
+            </Button>   
           </Link>
         </CardFooter>
+        )
+      
+      }
       </Card>
+
     </div>
   );
 }

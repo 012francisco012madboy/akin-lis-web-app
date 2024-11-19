@@ -64,7 +64,6 @@ export function useExamHookData(id: string | string[]) {
     async function fetchData() {
       try {
         const response = await ___api.get<Exam>(`/exams/history/${id}`);
-        console.log("Resposta da API:", response.data); // Primeiro console
         setData(response.data);
       } catch (err: any) {
         setError(err.message || "Erro ao carregar os dados.");
@@ -75,15 +74,5 @@ export function useExamHookData(id: string | string[]) {
 
     if (id) fetchData();
   }, [id]);
-
-  // Efeito para monitorar mudanças no estado "data"
-  useEffect(() => {
-    console.log("Dados atualizados:", data); 
-
-    data?.data.map((v) => {
-      console.log("Exame: " + v.exame.nome)
-    })
-  }, [data]);
-
   return { data, loading, error };
 }

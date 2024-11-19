@@ -3,11 +3,55 @@
 import { useParams } from "next/navigation";
 import { View } from "@/components/view";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
-import { Exam, useExamHookData } from "./useExamHookData";
+import { useExamHookData } from "./useExamHookData";
+import { Separator } from "@/components/ui/separator";
+import { Combobox } from "../../components/comboxExams";
+import { useEffect, useState } from "react";
+import { IExamProps } from "@/app/akin/schedule/new/page";
+import { ___api } from "@/lib/axios";
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "PENDENTE":
+      return "yellow-500";
+    case "CONCLUIDO":
+      return "green-500";
+    case "CANCELADO":
+      return "red-500";
+    default:
+      return "gray-500";
+  }
+};
+
 
 export default function ExamsHistory() {
   const { id } = useParams();
   const { data: patient, loading, error } = useExamHookData(id);
+
+  const [namePatient,setNamePatient] = useState("")
+  const [exams, setExams] = useState<IExamProps[]>([])
+  const [selectedExam, setSelectedExam] = useState<IExamProps | null>(null)
+
+  useEffect(() => {
+    const fetchExams = async () => {
+      try {
+        const response = await ___api.get("/exam-types").finally(async ()=>{
+          const response = await ___api.get<PatientType>(`/pacients/${id}`);
+          setNamePatient(response.data.nome);
+        })
+        setExams(response.data.data)
+      } catch (error) {
+        console.error("Error fetching exams:", error)
+      }
+    }
+
+    fetchExams()
+  }, [id])
+
+  const handleSelect = (exam: IExamProps | null) => {
+    console.log("Selected exam:", exam)
+    setSelectedExam(exam)
+  }
 
   const breadcrumbItems = [
     { label: "Paciente", href: "/akin/patient" },
@@ -35,47 +79,101 @@ export default function ExamsHistory() {
 
     <View.Vertical className="p-6 bg-gray-100 min-h-screen">
       <CustomBreadcrumb items={breadcrumbItems} borderB />
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Histórico de Exames</h1>
+
+      <div className="bg-white shadow-md rounded-lg px-5 py-4 flex items-center">
+        <div className="flex h-5 items-center justify-between space-x-4 text-sm w-full">
+          <p className="text-md text-gray-600">
+            Nome do Paciente:{" "}
+            <span className="font-medium text-gray-800">
+              {namePatient}
+            </span>
+          </p>
+          <Separator orientation="vertical" />
+          <p className="text-md text-gray-600">
+            Funcionalidade:{" "}
+            <span className="font-medium text-gray-800">
+              {"Indisponível"}
+            </span>
+          </p>
+          <Separator orientation="vertical" />
+          <Combobox
+            data={exams}
+            displayKey="nome"
+            onSelect={handleSelect}
+            placeholder="Selecionar exame"
+            clearLabel="Limpar"
+          />
+        </div>
+      </div>
 
       <div className="bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">
-          Informações do Paciente
-        </h2>
-        <p className="text-md text-gray-600 mb-4">
-          Nome do Paciente:{" "}
-          <span className="font-medium text-gray-800">
-            {"Nome não disponível"}
-          </span>
-        </p>
-
         <h2 className="text-xl font-semibold text-gray-700 mb-4">Exames Realizados</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {patient?.data.map((value, index) => (
-            <div
-              key={index}
-              className="border rounded-lg p-4 shadow-sm bg-gray-50 hover:bg-gray-100 transition"
-            >
-              <h3 className="text-lg font-medium text-gray-800 mb-2">
-                Exame: {value.exame.nome}
-              </h3>
-              <p className="text-sm text-gray-600">Descrição: {value.exame.descricao}</p>
-              <p className="text-sm text-gray-600">
-                Data do Agendamento: {value.Agendamento.data_agendamento}
-              </p>
-              <p className="text-sm text-gray-600">Status: {value.status}</p>
-              <p className="text-sm text-gray-600">
-                Status do Pagamento: {" " + value.Agendamento.status_pagamento}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {patient?.data.length === 0 && (
+        {patient!.data.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {patient!.data.map((value, index) => (
+              <div
+                key={index}
+                className="border rounded-lg p-4 shadow-sm bg-gray-50 hover:bg-gray-100 transition"
+              >
+                <h3 className="text-lg font-medium text-gray-800 mb-2">
+                  {value.exame.nome}
+                </h3>
+                <p className="text-sm text-gray-600 mb-1">
+                  Descrição: <span className="font-medium">{value.exame.descricao}</span>
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  Data do Agendamento:{" "}
+                  <span className="font-medium">{value.Agendamento.data_agendamento}</span>
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  Hora:{" "}
+                  <span className="font-medium">{value.Agendamento.hora_agendamento}</span>
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  Unidade de Saúde:{" "}
+                  <span className="font-medium">{value.Agendamento.id_unidade_de_saude}</span>
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  Técnico Alocado:{" "}
+                  <span className="font-medium">
+                    {value.Agendamento.id_tecnico_alocado || "Não alocado"}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  Status do Exame:{" "}
+                  <span className={`font-medium text-${getStatusColor(value.status)}`}>
+                    {value.status}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  Status do Pagamento:{" "}
+                  <span
+                    className={`font-medium text-${getStatusColor(
+                      value.Agendamento.status_pagamento
+                    )}`}
+                  >
+                    {value.Agendamento.status_pagamento}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  Valor Pago:{" "}
+                  <span className="font-medium">
+                    {value.Agendamento.quantia_pagamento.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </span>
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
           <p className="text-center text-gray-500 mt-4">
             Nenhum exame encontrado para este paciente.
           </p>
         )}
       </div>
     </View.Vertical>
+
   );
 }
