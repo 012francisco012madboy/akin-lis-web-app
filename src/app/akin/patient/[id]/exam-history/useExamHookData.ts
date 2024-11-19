@@ -18,7 +18,19 @@ export interface Exam {
       Protocolo_Exame: number;
       Utilizacao_Material: number;
     };
-    agendamento: Appointment;
+    Agendamento: {
+      id: number;
+      id_paciente: string;
+      id_tecnico_alocado: string | null;
+      id_unidade_de_saude: number;
+      data_agendamento: string;
+      hora_agendamento: string;
+      status: string;
+      status_pagamento: string;
+      quantia_pagamento: number;
+      data_pagamento: string | null;
+      data_formatada: string;
+    };
   }[]
 }
 
@@ -67,7 +79,7 @@ export function useExamHookData(id: string | string[]) {
   // Efeito para monitorar mudanças no estado "data"
   useEffect(() => {
     console.log("Dados atualizados:", data); 
-    
+
     data?.data.map((v) => {
       console.log("Exame: " + v.exame.nome)
     })
