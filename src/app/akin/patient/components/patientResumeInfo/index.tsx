@@ -104,50 +104,98 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
         </CardContent>
       </Card>
 
-      {/* Card de histórico */}
-      <Card className="w-[350px] h-max shadow-lg rounded-lg border border-gray-200">
-        <CardHeader className="bg-gray-50 p-4 border-b">
-          <CardTitle className="text-lg font-semibold text-gray-800">Histórico de Exames</CardTitle>
-        </CardHeader>
-        <CardContent className="p-4 space-y-4">
-          {basicExamHistory?.data && basicExamHistory.data.length > 0 ? (
-            basicExamHistory.data.slice(0, 2).map((exam, index) => (
-              <div
-                key={index}
-                className="flex flex-col gap-2 bg-white shadow-sm rounded-md p-4 border border-gray-100 hover:shadow-md transition-shadow"
-              >
-                <p className="font-semibold text-gray-800 text-base">{exam.exame.nome}</p>
-                <p className="text-sm text-gray-600">
-                  <strong>Data de Agendamento:</strong> {exam.Agendamento.data_agendamento}
-                </p>
-                <p className="text-sm text-gray-600">
-                  <strong>Status do Exame:</strong> {exam.exame.status}
-                </p>
-              </div>
-            ))
+      <div className="space-y-5">
+        {/* Card de histórico */}
+        <Card className="w-[350px] h-max shadow-lg rounded-lg border border-gray-200">
+          <CardHeader className="bg-gray-50 p-4 border-b">
+            <CardTitle className="text-lg font-semibold text-gray-800">Histórico de Exames</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 space-y-4">
+            {basicExamHistory?.data && basicExamHistory.data.length > 0 ? (
+              basicExamHistory.data.slice(0, 2).map((exam, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col gap-2 bg-white shadow-sm rounded-md p-4 border border-gray-100 hover:shadow-md transition-shadow"
+                >
+                  <p className="font-semibold text-gray-800 text-base">{exam.exame.nome}</p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Data de Agendamento:</strong> {exam.Agendamento.data_agendamento}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Status do Exame:</strong> {exam.Agendamento.status}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-center">Sem exames registrados</p>
+            )}
+          </CardContent>
+          {basicExamHistory!.data.length > 2 ? (
+            <CardFooter className="bg-gray-50 p-4 border-t w-full">
+              <Link href={`${patient.id}/exam-history`} passHref>
+                <Button className="w-[315px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
+                  Ver mais históricos
+                </Button>
+              </Link>
+            </CardFooter>
           ) : (
-            <p className="text-gray-500 text-center">Sem exames registrados</p>
-          )}
-        </CardContent>
-        {basicExamHistory!.data.length > 2 ? (
-          <CardFooter className="bg-gray-50 p-4 border-t w-full">
-            <Link href={`${patient.id}/exam-history`} passHref>
-              <Button className="w-[315px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
-                Ver mais históricos
-              </Button>
-            </Link>
-          </CardFooter>
-        ) : (
-          <CardFooter className="bg-gray-50 p-4 border-t">
-            <Link href={`${patient.id}/exam-history`} passHref>
-              <Button className="w-[315px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
-                Histórico
-              </Button>
-            </Link>
-          </CardFooter>
-        )
-        }
-      </Card>
+            <CardFooter className="bg-gray-50 p-4 border-t">
+              <Link href={`${patient.id}/exam-history`} passHref>
+                <Button className="w-[315px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
+                  Ver todos
+                </Button>
+              </Link>
+            </CardFooter>
+          )
+          }
+        </Card>
+
+        {/* Card de Proximos exames */}
+        <Card className="w-[350px] h-max shadow-lg rounded-lg border border-gray-200">
+          <CardHeader className="bg-gray-50 p-4 border-b">
+            <CardTitle className="text-lg font-semibold text-gray-800">Próximos Exames</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 space-y-4">
+            {basicExamHistory?.data && basicExamHistory.data.length > 0 ? (
+              basicExamHistory.data.slice(0, 1).map((exam, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col gap-2 bg-white shadow-sm rounded-md p-4 border border-gray-100 hover:shadow-md transition-shadow"
+                >
+                  <p className="font-semibold text-gray-800 text-base">{exam.exame.nome}</p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Data de Agendamento:</strong> {exam.Agendamento.data_agendamento}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <strong>Hora do Exame:</strong> {exam.Agendamento.hora_agendamento}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-center">Sem exames registrados</p>
+            )}
+          </CardContent>
+          {basicExamHistory!.data.length > 2 ? (
+            <CardFooter className="bg-gray-50 p-4 border-t w-full">
+              <Link href={`${patient.id}/exam-history`} passHref>
+                <Button className="w-[315px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
+                  Ver mais históricos
+                </Button>
+              </Link>
+            </CardFooter>
+          ) : (
+            <CardFooter className="bg-gray-50 p-4 border-t">
+              <Link href={`${patient.id}/exam-history`} passHref>
+                <Button className="w-[315px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
+                  Ver todos
+                </Button>
+              </Link>
+            </CardFooter>
+          )
+          }
+        </Card>
+      </div>
+
 
     </div>
   );
