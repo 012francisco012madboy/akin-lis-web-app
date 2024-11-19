@@ -4,6 +4,7 @@ import { MOCK_LOGGED_USER } from "@/mocks/logged-user";
 import { CalendarArrowDown, ClockArrowDown, TrendingUp, UserRound } from "lucide-react";
 import VerticalBarChart from "./chart-a";
 import DoughnutChart from "./chart-b";
+import CustomBreadcrumb from "@/components/custom-breadcrumb";
 
 interface IDashboard {}
 
@@ -14,11 +15,18 @@ const MOCK_RESUME = [
   { id: 64, label: "Agendamentos", value: 4, icon: CalendarArrowDown },
 ];
 
+const breadcumbItem = [ 
+  {
+    label:"Painel"
+  }
+]
+
 export default function Dashboard({}: IDashboard) {
   return (
     <View.Vertical className="h-screen space-y-2">
-      {/* <AppLayout.Header avatar={MOCK_LOGGED_USER.avatar} name={MOCK_LOGGED_USER.fullName} email={MOCK_LOGGED_USER.email} /> */}
-      <AppLayout.ContainerHeader label="Dashboard" />
+    
+      {/* <AppLayout.ContainerHeader label="Dashboard" /> */}
+      <CustomBreadcrumb items={breadcumbItem} borderB/>
 
       <div className="grid  grid-cols-4  gap-4 *:bg-akin-turquoise text-akin-white-smoke *:rounded-lg ">
         {MOCK_RESUME.map((data) => (

@@ -36,7 +36,7 @@ export default async function PatientByIdProfile({ params }: IPatientById) {
     return (
       <View.Vertical className="h-screen">
         {/* <AppLayout.ContainerHeader goBack label="Perfil do Paciente" /> */}
-        <CustomBreadcrumb items={breadcrumbItems}/>
+        <CustomBreadcrumb items={breadcrumbItems} borderB/>
 
         <div className="flex gap-4 e text-akin-white-smoke p-4 rounded-lg">
           <PatientResumeInfo patient={patient} />

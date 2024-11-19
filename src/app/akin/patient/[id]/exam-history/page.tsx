@@ -19,7 +19,7 @@ export default function ExamsHistory() {
   ];
   return (
     <View.Vertical>
-      <CustomBreadcrumb items={breadcrumbItems} separator=">" />
+      <CustomBreadcrumb items={breadcrumbItems} borderB />
       Historico Processando...
     </View.Vertical>
   )

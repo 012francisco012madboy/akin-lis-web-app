@@ -11,14 +11,16 @@ interface BreadcrumbProps {
   items: BreadcrumbItem[];
   className?: string;
   separator?: React.ReactNode;
+  borderB?:boolean;
 }
 
 const CustomBreadcrumb: React.FC<BreadcrumbProps> = ({
   items,
   className = "",
+  borderB
 }) => {
   return (
-    <nav className={`border-b pb-4 ${className}`} aria-label="breadcrumb">
+    <nav className={` ${borderB? "border-b":""} pb-4 ${className}`} aria-label="breadcrumb">
       <ol className="flex text-lg">
         {items.map((item, index) => (
           <React.Fragment key={index}>
