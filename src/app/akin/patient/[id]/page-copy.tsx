@@ -4,7 +4,6 @@ import { View } from "@/components/view";
 import { PackageOpen } from "lucide-react";
 import { ___api } from "@/lib/axios";
 import { PatientResumeInfo } from "../components/patientResumeInfo";
-import CustomBreadcrumb from "@/components/custom-breadcrumb";
 
 interface IPatientById {
   params: {
@@ -13,16 +12,6 @@ interface IPatientById {
 }
 
 export default async function PatientByIdProfile({ params }: IPatientById) {
-  const breadcrumbItems = [
-    {
-      label:"Paciente",
-      href:"/akin/patient"
-    },
-    {
-      label:"Perfil do paciente"
-    }
-  ]
-
   try {
     const response = await ___api.get<PatientType>(`/pacients/${params.id}`);
     const patient = response.data;
@@ -35,17 +24,20 @@ export default async function PatientByIdProfile({ params }: IPatientById) {
 
     return (
       <View.Vertical className="h-screen">
-        {/* <AppLayout.ContainerHeader goBack label="Perfil do Paciente" /> */}
-        <CustomBreadcrumb items={breadcrumbItems}/>
+        <AppLayout.ContainerHeader goBack label="Perfil do Paciente" />
 
-        <div className="flex gap-4 e text-akin-white-smoke p-4 rounded-lg">
+        <div className="flex gap-4 bg-akin-turquoise text-akin-white-smoke p-6 rounded-lg">
           <PatientResumeInfo patient={patient} />
         </div>
 
+        <section className="my-4">
+          <h1 className="font-bold text-2xl">Histórico de Exames</h1>
+          <hr />
+        </section>
 
-        {/* <View.Scroll>
+        <View.Scroll>
           <ExamsHistory patientId={patient.id} />
-        </View.Scroll> */}
+        </View.Scroll>
       </View.Vertical>
     );
   } catch (error) {

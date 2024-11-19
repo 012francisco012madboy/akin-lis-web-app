@@ -4,10 +4,17 @@ import { View } from "@/components/view";
 import { ___api } from "@/lib/axios";
 import PatientDisplay from "./patient-display";
 import { useEffect, useState } from "react";
+import CustomBreadcrumb, { BreadcrumbItem } from "@/components/custom-breadcrumb";
 
 export default function Patient() {
   const [patients, setPatients] = useState<PatientType[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const breadcrumbItems = [
+    {
+      label:"Paciente",
+    }
+  ]
 
   const fetchPatients = async () => {
     try {
@@ -31,7 +38,8 @@ export default function Patient() {
 
   return (
     <View.Vertical className="h-screen">
-      <AppLayout.ContainerHeader label="Pacientes" />
+      {/* <AppLayout.ContainerHeader label="Pacientes" /> */}
+      <CustomBreadcrumb items={breadcrumbItems}/>
       <View.Scroll>
         {loading ? (
           <p>Carregando pacientes...</p>
