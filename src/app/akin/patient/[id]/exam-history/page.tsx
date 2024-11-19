@@ -28,23 +28,23 @@ export default function ExamsHistory() {
   const { id } = useParams();
   const { data: patient, loading, error } = useExamHookData(id);
 
-  const [namePatient,setNamePatient] = useState("")
+  const [namePatient, setNamePatient] = useState("")
   const [exams, setExams] = useState<IExamProps[]>([])
   const [selectedExam, setSelectedExam] = useState<IExamProps | null>(null)
 
   useEffect(() => {
     const fetchExams = async () => {
       try {
-        const response = await ___api.get("/exam-types").finally(async ()=>{
-          const response = await ___api.get<PatientType>(`/pacients/${id}`);
-          setNamePatient(response.data.nome);
-        })
+        const response = await ___api.get("/exam-types")
         setExams(response.data.data)
+
+        const patientNome = await ___api.get<PatientType>(`/pacients/${id}`);
+        setNamePatient(patientNome.data.nome);
+
       } catch (error) {
         console.error("Error fetching exams:", error)
       }
     }
-
     fetchExams()
   }, [id])
 

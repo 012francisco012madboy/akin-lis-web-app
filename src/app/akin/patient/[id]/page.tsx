@@ -60,7 +60,13 @@ export default function PatientByIdProfile({ params }: IPatientById) {
   }, [params.id]);
 
   if (loading) {
-    return <p className="text-center">Carregando...</p>;
+    return (
+      <View.Vertical className="h-screen">
+        <CustomBreadcrumb items={breadcrumbItems} borderB />
+        <p className="text-center">Carregando...</p>
+      </View.Vertical>
+
+    )
   }
 
   if (error) {
@@ -73,16 +79,12 @@ export default function PatientByIdProfile({ params }: IPatientById) {
 
   return (
     <View.Vertical className="h-screen">
-      {/* <AppLayout.ContainerHeader goBack label="Perfil do Paciente" /> */}
       <CustomBreadcrumb items={breadcrumbItems} borderB />
 
       <div className="flex gap-4 e text-akin-white-smoke p-4 rounded-lg">
         <PatientResumeInfo patient={patient} basicExamHistory={examHistory} />
       </div>
 
-      {/* <View.Scroll>
-          <ExamsHistory patientId={patient.id} />
-        </View.Scroll> */}
     </View.Vertical>
   );
 }

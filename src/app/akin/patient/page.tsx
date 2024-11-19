@@ -38,7 +38,6 @@ export default function Patient() {
 
   return (
     <View.Vertical className="h-screen">
-      {/* <AppLayout.ContainerHeader label="Pacientes" /> */}
       <CustomBreadcrumb items={breadcrumbItems} borderB/>
       <View.Scroll>
         {loading ? (
