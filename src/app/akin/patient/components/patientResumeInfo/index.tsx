@@ -5,14 +5,33 @@ import { Copy, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Exam } from "../../[id]/exam-history/useExamHookData";
+import { useState } from "react";
 
 // Componentes reutilizáveis
 function InfoItem({ label, value }: { label: string; value: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
     <article className="w-[300px] bg-gray-100 p-1 tracking-tighter rounded-md shadow-sm">
       <h4 className="flex justify-between items-center text-sm text-gray-400 font-medium">
         {label}
-        <Copy size={18} className="cursor-pointer" />
+        {
+          copied ? (
+            <span className="text-xs text-green-500 block ">
+              Copiado!
+              {/* <CopyCheck size={18} className="cursor-pointer text-green-500" /> */}
+            </span>
+          ) : (
+            <Copy size={18} className="cursor-pointer" onClick={handleCopy} />
+          )
+        }
       </h4>
       <p>{value}</p>
     </article>
@@ -110,25 +129,25 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
             <p className="text-gray-500 text-center">Sem exames registrados</p>
           )}
         </CardContent>
-        {basicExamHistory!.data.length > 2? (
+        {basicExamHistory!.data.length > 2 ? (
           <CardFooter className="bg-gray-50 p-4 border-t w-full">
             <Link href={`${patient.id}/exam-history`} passHref>
               <Button className="w-full bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
-              Ver mais históricos
+                Ver mais históricos
               </Button>
             </Link>
           </CardFooter>
-        ):(
+        ) : (
           <CardFooter className="bg-gray-50 p-4 border-t w-full">
-          <Link href={`${patient.id}/exam-history`} passHref>
-            <Button className="w-full bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
-              Ver mais históricos
-            </Button>   
-          </Link>
-        </CardFooter>
+            <Link href={`${patient.id}/exam-history`} passHref>
+              <Button className="w-full bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
+                Ver mais históricos
+              </Button>
+            </Link>
+          </CardFooter>
         )
-      
-      }
+
+        }
       </Card>
 
     </div>
