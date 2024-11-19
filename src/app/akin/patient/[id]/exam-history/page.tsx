@@ -9,6 +9,7 @@ import { Combobox } from "../../components/comboxExams";
 import { useEffect, useState } from "react";
 import { IExamProps } from "@/app/akin/schedule/new/page";
 import { ___api } from "@/lib/axios";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -22,6 +23,15 @@ const getStatusColor = (status: string) => {
       return "gray-500";
   }
 };
+
+const PatientByIdProfileSkeleton = () => {
+  return (
+    <div className="w-full h-full space-y-5">
+      <Skeleton className="w-full h-12 bg-gray-500/20" />
+      <Skeleton className="w-full h-[500px] bg-gray-500/20" />
+    </div>
+  )
+}
 
 
 export default function ExamsHistory() {
@@ -61,9 +71,9 @@ export default function ExamsHistory() {
 
   if (loading)
     return (
-      <View.Vertical className="flex justify-center items-center min-h-screen bg-gray-50">
+      <View.Vertical className="flex min-h-screen bg-gray-50">
         <CustomBreadcrumb items={breadcrumbItems} borderB />
-        <p className="text-lg text-gray-500">Carregando histórico de exames...</p>
+        <PatientByIdProfileSkeleton />
       </View.Vertical>
     );
 

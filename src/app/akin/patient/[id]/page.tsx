@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ExamsHistory from "./exam-history";
-import { AppLayout } from "@/components/layout";
 import { View } from "@/components/view";
 import { PackageOpen } from "lucide-react";
 import { ___api } from "@/lib/axios";
 import { PatientResumeInfo } from "../components/patientResumeInfo";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface IPatientById {
   params: {
@@ -63,7 +62,7 @@ export default function PatientByIdProfile({ params }: IPatientById) {
     return (
       <View.Vertical className="h-screen">
         <CustomBreadcrumb items={breadcrumbItems} borderB />
-        <p className="text-center">Carregando...</p>
+        <PatientByIdProfileSkeleton />
       </View.Vertical>
 
     )
@@ -98,4 +97,16 @@ function NoPatientFound({ id }: { id: string }) {
       </p>
     </div>
   );
+}
+
+
+const PatientByIdProfileSkeleton = () => {
+  return (
+    <div className="w-full h-full flex justify-between gap-2">
+
+      <Skeleton className="w-full h-full bg-gray-500/20" />
+      <Skeleton className="w-[500px] h-[250px] bg-gray-500/20" />
+
+    </div>
+  )
 }
