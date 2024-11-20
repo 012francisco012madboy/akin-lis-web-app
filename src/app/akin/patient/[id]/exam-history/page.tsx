@@ -5,11 +5,11 @@ import { View } from "@/components/view";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { useExamHookData } from "./useExamHookData";
 import { Separator } from "@/components/ui/separator";
-import { Combobox } from "../../../../../components/comboxExams";
 import { useEffect, useState } from "react";
 import { IExamProps } from "@/app/akin/schedule/new/page";
 import { ___api } from "@/lib/axios";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Combobox } from "@/components/combobox";
 
 const getStatusColor = (status: string) => {
   switch (status) {
