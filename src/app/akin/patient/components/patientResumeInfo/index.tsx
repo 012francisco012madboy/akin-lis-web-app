@@ -82,10 +82,10 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
   ];
 
   return (
-    <div className="flex gap-x-6">
+    <div className=" w-full gap-x-5 flex justify-between  overflow-hidden ">
       {/* Card principal */}
-      <Card className="w-[680px] h-max shadow-md">
-        <CardHeader className="flex flex-row justify-between px-5 py-2">
+      <Card className=" min-w-[65%]  h-max shadow-md">
+        <CardHeader className="flex flex-row justify-between px-4 py-2">
           <CardTitle>
             <AvatarSection imageSrc="https://images.pexels.com/photos/12202417/pexels-photo-12202417.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" />
           </CardTitle>
@@ -104,9 +104,9 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
         </CardContent>
       </Card>
 
-      <div className="space-y-5">
+      <div className="space-y-5 w-ful">
         {/* Card de histórico */}
-        <Card className="w-[350px] h-max shadow-lg rounded-lg border border-gray-200">
+        <Card className="w-full  h-max shadow-lg rounded-lg border border-gray-200">
           <CardHeader className="bg-gray-50 p-4 border-b">
             <CardTitle className="text-lg font-semibold text-gray-800">Histórico de Exames</CardTitle>
           </CardHeader>
@@ -133,7 +133,7 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
           {basicExamHistory!.data.length > 2 ? (
             <CardFooter className="bg-gray-50 p-4 border-t w-full">
               <Link href={`${patient.id}/exam-history`} passHref>
-                <Button className="w-[315px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
+                <Button className="w-[295px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
                   Ver mais históricos
                 </Button>
               </Link>
@@ -141,7 +141,7 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
           ) : (
             <CardFooter className="bg-gray-50 p-4 border-t">
               <Link href={`${patient.id}/exam-history`} passHref>
-                <Button className="w-[315px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
+                <Button className="w-[295px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
                   Ver todos
                 </Button>
               </Link>
@@ -151,7 +151,7 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
         </Card>
 
         {/* Card de Proximos exames */}
-        <Card className="w-[350px] h-max shadow-lg rounded-lg border border-gray-200">
+        <Card className="w-full h-max shadow-lg rounded-lg border border-gray-200">
           <CardHeader className="bg-gray-50 p-4 border-b">
             <CardTitle className="text-lg font-semibold text-gray-800">Próximos Exames</CardTitle>
           </CardHeader>
@@ -178,7 +178,7 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
           {basicExamHistory!.data.length > 2 ? (
             <CardFooter className="bg-gray-50 p-4 border-t w-full">
               <Link href={`${patient.id}/exam-history`} passHref>
-                <Button className="w-[315px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
+                <Button className="w-[295px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
                   Ver mais históricos
                 </Button>
               </Link>
@@ -186,7 +186,7 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
           ) : (
             <CardFooter className="bg-gray-50 p-4 border-t">
               <Link href={`${patient.id}/exam-history`} passHref>
-                <Button className="w-[315px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
+                <Button className="w-[300px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
                   Ver todos
                 </Button>
               </Link>

@@ -80,7 +80,7 @@ export default function PatientByIdProfile({ params }: IPatientById) {
     <View.Vertical className="h-screen">
       <CustomBreadcrumb items={breadcrumbItems} borderB />
 
-      <div className="flex gap-4 e text-akin-white-smoke p-4 rounded-lg">
+      <div className="flex gap-4  text-akin-white-smoke p-0 rounded-lg w-full h-full">
         <PatientResumeInfo patient={patient} basicExamHistory={examHistory} />
       </div>
 

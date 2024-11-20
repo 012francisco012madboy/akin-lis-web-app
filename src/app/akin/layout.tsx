@@ -9,12 +9,24 @@ interface IDashboard {
 
 export default function Akin({ children }: IDashboard) {
   return (
-    <div className="flex max-h-screen relative">
-      <AppLayout.Menu />
-      <main className="gap-y-8 flex-1  h-screen *:p-4 ">
-        <Suspense fallback={<Loading />}>{children}</Suspense>
-        <div className="absolute z-50 bottom-4 right-4 rounded-full flex items-center justify-center bg-akin-turquoise transition ease-in-out hover:cursor-pointer hover:bg-akin-yellow-light group border hover:border-akin-turquoise" title="Chat Kin">
-          <MessageCircleMore className="text-akin-yellow-light group-hover:text-akin-turquoise " />
+    <div className="flex h-screen overflow-hidden bg-gray-50">
+      {/* Menu Lateral */}
+      <aside className="w-52 bg-akin-turquoise flex-shrink-0">
+        <AppLayout.Menu />
+      </aside>
+
+      {/* Conteúdo Principal */}
+      <main className="flex-1 flex flex-col overflow-y-hidden px-4 py-3">
+        <Suspense fallback={<Loading />}>
+          {children}
+        </Suspense>
+
+        {/* Botão Flutuante */}
+        <div
+          className="fixed bottom-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-akin-turquoise border hover:bg-akin-yellow-light hover:border-akin-turquoise group transition ease-in-out cursor-pointer"
+          title="Chat Kin"
+        >
+          <MessageCircleMore className="text-akin-yellow-light group-hover:text-akin-turquoise" />
         </div>
       </main>
     </div>
