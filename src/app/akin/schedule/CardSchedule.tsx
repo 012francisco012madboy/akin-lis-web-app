@@ -17,18 +17,20 @@ export default function CardSchedule({ data }: ICardSchedule) {
   const formattedDate = new Date(data.data_agendamento).toLocaleString();
 
   return (
-    <div className="card shadow-lg border rounded-lg flex flex-col items-center bg-[#fcfcfc] min-h-[23rem] max-h-[23rem]">
+    <div className="card shadow-xl border border-gray-300 rounded-lg flex flex-col items-center bg-white min-h-[23rem] max-h-[23rem] overflow-hidden transition-all duration-300 hover:scale-105">
+      {/* Exame Information */}
       {showExams ? (
-        <div className="flex-1 rounded-t-lg w-full space-y-2 p-4 h-[19.2rem]">
+        <div className="flex-1 rounded-t-lg w-full space-y-4 p-4 h-[19.2rem]">
           <View.Scroll className="max-h-full pl-4 overflow-y-auto space-y-2">
             {data.Exame.map((exame) => (
-              <div key={exame.id} className="w-full pb-4">
-                <p className="font-bold text-2xl">- {exame.exame.nome}</p>
-                <p className="lowercase pl-6 italic">
+              <div key={exame.id} className="w-full pb-4 border-b border-gray-200">
+                <p className="font-semibold text-xl">{exame.exame.nome}</p>
+                <p className="pl-6 italic text-gray-600">
                   Estado:{" "}
                   <span
-                    data-isActive={exame.status}
-                    className="text-red-500 data-[isActive='ATIVO']:text-green-500"
+                    className={`${
+                      exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
+                    }`}
                   >
                     {exame.status}
                   </span>
@@ -39,37 +41,41 @@ export default function CardSchedule({ data }: ICardSchedule) {
         </div>
       ) : (
         <>
-          <div className="w-full relative h-44">
+          {/* Image and Actions */}
+          <div className="w-full relative h-48">
             <Image
-              className="bg-center overflow-hidden rounded-t-lg"
+              className="bg-center object-cover rounded-t-lg"
               src="/images/exam/Plasmodium.png"
-              fill
               alt="Imagem do exame"
+              fill
             />
             {data.status === "PENDENTE" && (
-              <div className="absolute top-1 right-1 bg-black/50 space-x-2 rounded-lg px-2 flex">
-                <p className="text-red-300 cursor-pointer hover:text-red-100">
-                  <Trash size={15} /> Rejeitar
-                </p>
-                <p className="text-green-300 cursor-pointer hover:text-green-100">
-                  <CheckCircle size={15} /> Aceitar
-                </p>
+              <div className="absolute top-2 right-2 bg-black/60 p-2 rounded-lg flex space-x-2">
+                <button className="text-red-300 hover:text-red-100 flex items-center space-x-1">
+                  <Trash size={15} /> <span>Rejeitar</span>
+                </button>
+                <button className="text-green-300 hover:text-green-100 flex items-center space-x-1">
+                  <CheckCircle size={15} /> <span>Aceitar</span>
+                </button>
               </div>
             )}
           </div>
-          <div className="w-full px-4 py-1 space-y-1.5 flex flex-col mt-1 text-cyan-800">
-            <h1 className="text-xl font-bold">{data.Paciente?.nome}</h1>
-            <span>BI: {data.Paciente?.numero_identificacao}</span>
-            <span>Sexo: {data.Paciente?.id_sexo === 1 ? "Masculino" : "Feminino"}</span>
-            <span>Idade: {age}</span>
-            <p>Marcado em: {formattedDate}</p>
+
+          {/* Patient Information */}
+          <div className="w-full px-4 py-2 space-y-1.5 flex flex-col mt-2 text-gray-800">
+            <h1 className="text-xl font-semibold">{data.Paciente?.nome}</h1>
+            <span className="text-sm text-gray-500">BI: {data.Paciente?.numero_identificacao}</span>
+            <span className="text-sm text-gray-500">Sexo: {data.Paciente?.id_sexo === 1 ? "Masculino" : "Feminino"}</span>
+            <span className="text-sm text-gray-500">Idade: {age}</span>
+            <p className="text-sm text-gray-600">Marcado em: {formattedDate}</p>
           </div>
         </>
       )}
 
-      <div className="w-full mt-1">
+      {/* Toggle Button */}
+      <div className="w-full mt-4">
         <Primary
-          className="w-full flex justify-center bg-akin-turquoise text-white font-semibold rounded-t-none"
+          className="w-full flex justify-center bg-cyan-600 text-white font-semibold py-2 rounded-b-lg transition-all duration-300 hover:bg-cyan-500 outline-none"
           onClick={() => setShowExams((prev) => !prev)}
           label={showExams ? "Ver Agendamento" : "Ver Exame"}
         />

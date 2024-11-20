@@ -21,19 +21,23 @@ export function CheckBoxExam({ id, nome, descricao }: ICheckboxExam) {
   }
 
   return (
-    <div className="flex gap-x-2 mb-2 items-center">
-      <label htmlFor={nome} className="flex gap-x-2 items-center">
+    <div className="flex items-center gap-4 mb-4">
+      <label htmlFor={nome} className="flex items-center gap-3 text-lg font-medium text-akin-dark">
+        {/* Checkbox com borda arredondada e efeito de foco */}
         <input
           type="checkbox"
-          className="w-fit"
+          className="w-5 h-5 text-akin-primary border-2 rounded-md   transition-all"
           name="checkbox"
           value={id}
           id={nome}
           checked={isChecked}
           onChange={handleCheckboxChange}
         />
-        {nome}
+        {/* Nome do exame */}
+        <span className="text-sm text-akin-dark/80">{nome}</span>
       </label>
+      {/* Se houver descrição, exibe com o texto mais suave */}
+      {descricao && <p className="text-xs text-akin-dark/60 mt-1">{descricao}</p>}
     </div>
   );
 }

@@ -217,7 +217,7 @@ function ExamSelection({ exams, isLoading, isSaving }: {
   isSaving: boolean
 }) {
   return (
-    <div className="h-[29rem] w-[15rem] flex flex-col border-2 border-akin-yellow-light rounded-lg bg-akin-yellow-light/20">
+    <div className="h-[29rem] w-[18rem] flex flex-col border border-akin-yellow-light rounded-lg bg-akin-yellow-light/20 shadow-lg transition-all hover:shadow-xl">
       <div className="space-y-4 flex-1 p-2">
         <div className="space-y-2 model p-4 h-[24rem]">
           <h1 className="font-bold text-xl -mx-4">Exames Disponíveis</h1>
@@ -234,8 +234,13 @@ function ExamSelection({ exams, isLoading, isSaving }: {
           </View.Scroll>
         </div>
       </div>
-      <div className="mt-4 px-4 mb-5">
-        <Button.Primary className="m-2" type="submit" label={isSaving ? "Marcando..." : "Agendar"} disabled={isSaving} />
+      <div className="mt-0 px-5 mb-2">
+        <Button.Primary
+          className="w-full py-1 text-lg"
+          type="submit"
+          label={isSaving ? "Marcando..." : "Agendar"}
+          disabled={isSaving}
+        />
       </div>
     </div>
   );

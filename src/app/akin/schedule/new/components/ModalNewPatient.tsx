@@ -2,7 +2,7 @@
 import { Button } from "@/components/button";
 import { DialogWindow } from "@/components/dialog";
 import { Input } from "@/components/input";
-import { Save, UserRoundPlus } from "lucide-react";
+import { LoaderCircle, Save, UserRoundPlus } from "lucide-react";
 import { useState } from "react";
 import { schemaSchedule } from "../schemaZodNewPatient";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
@@ -83,36 +83,78 @@ export const ModalNewPatient = () => {
     </>
   );
 };
-
-const RegisterPatientButton = ({ onClick }:{onClick:()=>void}) => (
+const RegisterPatientButton = ({ onClick }: { onClick: () => void }) => (
   <button
     type="button"
-    className="absolute bg-akin-yellow-light/50 p-2 rounded-lg text-sm -top-12 right-0 text-gray-800 hover:bg-akin-yellow-light transition ease-out cursor-pointer hover:text-gray-500 flex items-center"
+    className="absolute bg-akin-yellow-light/80 p-3 rounded-lg text-sm right-0 top-0 transform transition-all hover:bg-akin-yellow-light hover:scale-105 focus:outline-none focus:ring-2 focus:ring-akin-primary focus:ring-opacity-50 text-gray-800 flex items-center space-x-2 shadow-lg"
     onClick={onClick}
   >
-    <UserRoundPlus />
-    <p>Registar Novo Paciente</p>
+    <UserRoundPlus className="text-xl" />
+    <p className="text-sm font-medium">Registar Novo Paciente</p>
   </button>
 );
 
-const PatientRegistrationModal = ({ isOpen, onClose, isSaving, onSubmit }: {
-  isOpen:boolean,
-  onClose:(state: boolean) => void,
-  isSaving:boolean,
-  onSubmit:(data: FormData) => Promise<void>
- 
+const PatientRegistrationModal = ({
+  isOpen,
+  onClose,
+  isSaving,
+  onSubmit,
+}: {
+  isOpen: boolean;
+  onClose: (state: boolean) => void;
+  isSaving: boolean;
+  onSubmit: (data: FormData) => Promise<void>;
 }) => (
-  <DialogWindow.Window modalTitle="Confirmação" visible={isOpen} setVisible={onClose}>
-    <form onSubmit={(e) => { e.preventDefault(); onSubmit(new FormData(e.target as HTMLFormElement)); }} className="flex flex-col gap-y-4">
-      <Input.InputText placeholder="Nome do Paciente" name="name" />
-      <div className="flex flex-wrap gap-2">
-        <Input.CalenderDate noUseLabel placeholder="Data de Nascimento" maxDate={new Date()} name="birth_day" valueDate={null} />
-        <Input.Dropdown data={genders} name="gender" placeholder="Selecione o sexo" />
+  <DialogWindow.Window modalTitle="Cadastro de Paciente" visible={isOpen} setVisible={onClose}>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(new FormData(e.target as HTMLFormElement));
+      }}
+      className="flex flex-col gap-6 p-6  bg-white rounded-lg shadow-xl"
+    >
+      <Input.InputText
+        placeholder="Nome do Paciente"
+        name="name"
+        className="border-2 border-akin-gray-200 rounded-md focus:ring-2 focus:ring-akin-primary transition-colors"
+      />
+      <div className="flex flex-wrap gap-4">
+        <Input.CalenderDate
+          noUseLabel
+          placeholder="Data de Nascimento"
+          maxDate={new Date()}
+          name="birth_day"
+          valueDate={null}
+          className="border-2 border-akin-gray-200 rounded-md focus:ring-2 focus:ring-akin-primary"
+        />
+        <Input.Dropdown
+          data={genders}
+          name="gender"
+          placeholder="Selecione o sexo"
+          className="border-2 border-akin-gray-200 rounded-md focus:ring-2 focus:ring-akin-primary"
+        />
       </div>
-      <Input.InputText placeholder="Contacto telefónico" name="phone_number" type="number" />
-      <Input.InputText placeholder="Bilhete de Identidade" maxLength={14} name="identity" />
-      <div className="space-x-2 flex justify-end mt-4">
-        <Button.Primary icon={<Save />} type="submit" className="bg-green-700" label={isSaving ? "Salvando..." : "Salvar"} disabled={isSaving} />
+      <Input.InputText
+        placeholder="Contacto telefónico"
+        name="phone_number"
+        type="number"
+        className="border-2 border-akin-gray-200 rounded-md focus:ring-2 focus:ring-akin-primary"
+      />
+      <Input.InputText
+        placeholder="Bilhete de Identidade"
+        maxLength={14}
+        name="identity"
+        className="border-2 border-akin-gray-200 rounded-md focus:ring-2 focus:ring-akin-primary"
+      />
+      <div className="flex justify-end gap-4 mt-6">
+        <Button.Primary
+          icon={<Save />}
+          type="submit"
+          className="bg-green-700 hover:bg-green-800 focus:ring-2 focus:ring-akin-primary transition-all"
+          label={isSaving ? "Salvando..." : "Salvar"}
+          disabled={isSaving}
+        />
+      
       </div>
     </form>
   </DialogWindow.Window>
