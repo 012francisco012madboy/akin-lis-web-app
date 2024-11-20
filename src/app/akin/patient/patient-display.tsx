@@ -15,42 +15,57 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
   const [isSearching, setIsSearching] = useState(false);
   const [displayMode, setDisplayMode] = useState<DisplayMode>("list");
 
-  function handleSearch(serachText: string) {
-    serachText.length > 0 ? setIsSearching(true) : setIsSearching(false);
+  function handleSearch(searchText: string) {
+    setIsSearching(searchText.length > 0);
 
-    const findedSchedule = patients.filter((patient) => patient.nome.toLowerCase().includes(serachText.toLowerCase()));
-    setFilteredPatients(findedSchedule);
+    const foundPatients = patients.filter((patient) =>
+      patient.nome.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredPatients(foundPatients);
   }
 
   return (
-    <div>
-      <div className="overflow-x-auto p-4">
-        <div className="mb-4 flex items-center justify-between">
-          <GridOrBlockDisplayButton displayMode={displayMode} setDisplayMode={setDisplayMode} />
-
-          <div>
-            <InputText
-              className="w-96"
-              placeholder="Procurar"
-              onChange={(e) => handleSearch(e.target.value)}
-            />
-            {isSearching && (
-              <p className="text-sm text-gray-500 italic">
-                Total de pacientes encontrados: {filteredPatients.length}
-              </p>
-            )}
-          </div>
+    <div className="p-4 bg-white shadow-sm rounded-lg">
+      {/* Barra de controle */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+        {/* Botão de alternância */}
+        <div className="mb-4 sm:mb-0">
+          <GridOrBlockDisplayButton
+            displayMode={displayMode}
+            setDisplayMode={setDisplayMode}
+          />
         </div>
 
-        {filteredPatients.length > 0 ? (
-          <>
-            {displayMode === "list" && <ListMode patientList={filteredPatients} />}
-            {displayMode === "block" && <BlockMode patientList={filteredPatients} />}
-          </>
-        ) : (
-          <p className="text-center text-gray-500">Nenhum Paciente encontrado</p>
-        )}
+        {/* Campo de busca */}
+        <div className="w-full sm:w-auto">
+          <InputText
+            className="w-full sm:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+            placeholder="Procurar por nome"
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+          {isSearching && (
+            <p className="mt-2 text-sm text-gray-600 italic">
+              {filteredPatients.length > 0
+                ? `Total de pacientes encontrados: ${filteredPatients.length}`
+                : "Nenhum paciente encontrado"}
+            </p>
+          )}
+        </div>
       </div>
+
+      {/* Visualização dos pacientes */}
+      {filteredPatients.length > 0 ? (
+        <>
+          {displayMode === "list" && <ListMode patientList={filteredPatients} />}
+          {displayMode === "block" && <BlockMode patientList={filteredPatients} />}
+        </>
+      ) : (
+        <div className="py-12 text-center">
+          <p className="text-lg text-gray-500">
+            Nenhum paciente encontrado.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

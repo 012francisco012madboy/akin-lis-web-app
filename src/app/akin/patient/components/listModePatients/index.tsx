@@ -1,42 +1,104 @@
+import { useState } from "react";
 import { APP_CONFIG } from "@/config/app";
 import Link from "next/link";
 
-
+const ITEMS_PER_PAGE = 10; // Número de pacientes por página
 
 export function ListMode({ patientList }: { patientList: PatientType[] }) {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalItems = patientList.length;
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentPatients = patientList.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   return (
-    <>
-      <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
-        {/* <thead className=" bg-sky-300 *:text-left text-sky-800 "> */}
-        <thead className=" bg-akin-turquoise text-akin-white-smoke *:text-left  ">
-          <tr className="*:whitespace-nowrap *:py-2 *:p-2 *:font-bold">
-            <th>Nome do Paciente</th>
-            <th>Nº do BI</th>
-            <th>Idade</th>
-            <th>Data de Nascimento</th>
-            <th>Contacto</th>
-            <th></th>
+    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
+      <table className="min-w-full divide-y divide-gray-200 text-sm">
+        {/* Cabeçalho */}
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wide">Nome do Paciente</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wide">Nº do BI</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wide">Idade</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wide">Data de Nascimento</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wide">Contacto</th>
+            <th className="px-4 py-3 text-right"></th>
           </tr>
         </thead>
-
-        <tbody className="divide-y divide-gray-200">
-          {patientList.map((patient, index) => (
-            <tr key={index} className="*:p-2 even:bg-akin-turquoise/40 odd:bg-akin-turquoise/20">
-              <td>{patient.nome}</td>
-              <td>{patient.numero_identificacao}</td>
-              <td>{2024 - Number(new Date(patient.data_nascimento).getFullYear())}</td>
-              <td>{new Date(patient.data_nascimento).toLocaleDateString()}</td>
-              <td>{patient.contacto_telefonico}</td>
-
-              <td>
-                <Link key={patient.id} href={APP_CONFIG.ROUTES.PATIENT.INDIVIDUAL_PATIENT_LINK(patient.id)} className="inline-block rounded bg-akin-turquoise text-akin-white-smoke px-4 py-2 text-xs font-medium  hover:bg-sky-700">
-                  <p>Ver Paciente</p>
+        {/* Corpo */}
+        <tbody className="divide-y divide-gray-100">
+          {currentPatients.map((patient, index) => (
+            <tr
+              key={index}
+              className="even:bg-gray-50 hover:bg-gray-100 transition-colors duration-150"
+            >
+              <td className="px-4 py-3 text-gray-700">{patient.nome}</td>
+              <td className="px-4 py-3 text-gray-700">{patient.numero_identificacao}</td>
+              <td className="px-4 py-3 text-gray-700">
+                {2024 - Number(new Date(patient.data_nascimento).getFullYear())}
+              </td>
+              <td className="px-4 py-3 text-gray-700">
+                {new Date(patient.data_nascimento).toLocaleDateString()}
+              </td>
+              <td className="px-4 py-3 text-gray-700">{patient.contacto_telefonico}</td>
+              <td className="px-4 py-3 text-right">
+                <Link
+                  href={APP_CONFIG.ROUTES.PATIENT.INDIVIDUAL_PATIENT_LINK(patient.id)}
+                  className="inline-block rounded bg-blue-600 px-4 py-2 text-xs font-medium text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                  aria-label={`Ver detalhes de ${patient.nome}`}
+                >
+                  Ver Paciente
                 </Link>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-    </>
+
+      {/* Paginação */}
+      <div className="flex justify-between items-center px-4 py-2 bg-gray-50 border-t">
+        <span className="text-sm text-gray-600">
+          Exibindo {startIndex + 1} -{" "}
+          {Math.min(startIndex + ITEMS_PER_PAGE, totalItems)} de {totalItems} pacientes
+        </span>
+        <div className="flex gap-2">
+          <button
+            className="px-3 py-1 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Anterior
+          </button>
+          {Array.from({ length: totalPages }).map((_, idx) => (
+            <button
+              key={idx}
+              className={`px-3 py-1 text-sm font-medium border rounded ${
+                currentPage === idx + 1
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-gray-500 hover:bg-gray-100"
+              }`}
+              onClick={() => handlePageChange(idx + 1)}
+            >
+              {idx + 1}
+            </button>
+          ))}
+          <button
+            className="px-3 py-1 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Próximo
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
