@@ -5,6 +5,7 @@ import { Search, SquarePen, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/button";
 import { MOCK_MESSAGES } from "@/mocks/message";
 import Avatar from "@/components/avatar";
+import { cn } from "@/lib/utils"; // Helper para classes condicionais.
 
 interface IMessage {}
 
@@ -16,57 +17,94 @@ async function getMessages() {
 export default async function Message({}: IMessage) {
   const messages = await getMessages();
   return (
-    <View.Vertical className=" h-screen ">
-      <AppLayout.ContainerHeader label="Mensagens" />
+    <View.Vertical className="h-screen bg-gray-50">
+      {/* Header */}
+      {/* <AppLayout.ContainerHeader label="Mensagens" /> */}
 
-      <div className="flex justify-between px-4 items-center">
-        <Button.Primary icon={<SquarePen className="mr-1" />} className="h-fit">
-          Escrever
-        </Button.Primary>
-        <Input.InputFieldIcon icon={Search} placeholder="Pesquisar Mensagem" />
+      {/* Toolbar */}
+      <div className="flex justify-between px-6 py-4 bg-white border-b">
+        <Button.Primary icon={<SquarePen className="mr-2" />}>Escrever</Button.Primary>
+        <Input.InputFieldIcon
+          icon={Search}
+          placeholder="Pesquisar Mensagem"
+          className="w-full max-w-sm"
+        />
       </div>
 
+      {/* Main Content */}
       <div className="flex h-full">
-        <div className="flex flex-col h-fit bg-yellow-300">
-          <View.Scroll className="mx-0.5 mt-4">
+        {/* Sidebar - Message List */}
+        <aside className="w-1/3 border-r bg-white">
+          <View.Scroll className="h-full">
             {messages.map((message) => (
-              <MessageCard key={message.id} avatar={message.avatar} name={message.name} wasSent="5s atrás" message={message.message} />
+              <MessageCard
+                key={message.id}
+                avatar={message.avatar}
+                name={message.name}
+                wasSent="5s atrás"
+                message={message.message}
+              />
             ))}
           </View.Scroll>
-        </div>
+        </aside>
 
-        <div className="bg-blue-300">Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate, in? Quae omnis exercitationem eaque nulla iste saepe quibusdam dolorum vitae, odit nemo accusamus corrupti earum aperiam, accusantium animi, dicta molestias!</div>
+        {/* Main Content - Message Details */}
+        <main className="flex-1 p-6 bg-gray-100 flex items-center justify-center">
+          <div className="text-center text-gray-500">
+            <h2 className="text-lg font-semibold">Selecione uma mensagem</h2>
+            <p className="text-sm">Clique em uma mensagem para ver os detalhes aqui.</p>
+          </div>
+        </main>
       </div>
     </View.Vertical>
   );
 }
 
 /**
- * 
- * @param param0 
- * 
- * @returns 
- * 
- * 
- *    
-
+ * Componente para exibir uma mensagem na lista.
  */
-function MessageCard({ message, name, wasSent, avatar }: { avatar: string; message: string; wasSent: string; name: string }) {
+function MessageCard({
+  message,
+  name,
+  wasSent,
+  avatar,
+}: {
+  avatar: string;
+  message: string;
+  wasSent: string;
+  name: string;
+}) {
   return (
-    <div className=" flex px-2 justify-between gap-x-2 has-[:hover]:bg-akin-turquoise/10 rounded-lg trasition ease-out">
-      <div className="flex flex-1 gap-x-2 items-center cursor-pointer ">
+    <div
+      className={cn(
+        "flex px-4 py-3 justify-between items-center rounded-lg transition hover:bg-gray-100 cursor-pointer",
+        "focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-gray-300"
+      )}
+    >
+      {/* Avatar + Message Info */}
+      <div className="flex items-center gap-4">
         <Avatar userName={name} image={avatar} size="large" />
-        <div className="">
-          <p className="font-bold text-akin-turquoise/80 text-md">{name}</p>
-          <span>{message.substring(0, 15).concat("...")}</span>
+        <div>
+          <p className="text-sm font-medium text-gray-800">{name}</p>
+          <p className="text-sm text-gray-600 truncate">{message.substring(0, 30).concat("...")}</p>
         </div>
       </div>
-      <div className="flex flex-col justify-center items-center w-[10%] ">
-        <div className="flex gap-x-1 *:transition *:ease-in-out">
-          <Trash2 size={20} className="cursor-pointer hover:fill-red-300 hover:text-red-500" />
-          <Star size={20} className="cursor-pointer hover:fill-yellow-300 hover:text-yellow-500" />
+
+      {/* Actions */}
+      <div className="flex flex-col items-center gap-2">
+        <div className="flex gap-3">
+          <Trash2
+            size={18}
+            className="text-gray-400 hover:text-red-500 transition"
+            aria-label="Deletar"
+          />
+          <Star
+            size={18}
+            className="text-gray-400 hover:text-yellow-500 transition"
+            aria-label="Favoritar"
+          />
         </div>
-        <p className="text-center text-gray-400 italic text-sm">{wasSent}</p>
+        <p className="text-xs text-gray-400">{wasSent}</p>
       </div>
     </div>
   );
