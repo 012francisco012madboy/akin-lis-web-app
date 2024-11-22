@@ -18,7 +18,7 @@ const NOTIFICATION_MESSAGES = {
   error: "Erro ao cadastrar paciente. Tente novamente ou contate o suporte se o erro persistir.",
 };
 
-export const ModalNewPatient = () => {
+export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: Patient) => void }) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -57,19 +57,24 @@ export const ModalNewPatient = () => {
     setIsSaving(true);
     try {
       const res = await ___api.post("/pacients", patientData);
+  
       if (res.status === 201) {
-        ___showSuccessToastNotification({ message: NOTIFICATION_MESSAGES.success });
+        ___showSuccessToastNotification({ message: "Paciente cadastrado com sucesso" });
+  
+        // Comunicar o paciente cadastrado ao componente pai
+        onPatientSaved(res.data); // Assumindo que a API retorna o paciente cadastrado
         handleCloseModal();
       } else {
-        ___showErrorToastNotification({ message: NOTIFICATION_MESSAGES.error });
+        ___showErrorToastNotification({ message: "Erro ao cadastrar paciente." });
       }
     } catch (error) {
-      ___showErrorToastNotification({ message: NOTIFICATION_MESSAGES.error });
-      console.error("Error saving patient data:", error);
+      ___showErrorToastNotification({ message: "Erro ao salvar paciente." });
     } finally {
       setIsSaving(false);
     }
   };
+
+ 
 
   return (
     <>
@@ -83,6 +88,7 @@ export const ModalNewPatient = () => {
     </>
   );
 };
+
 const RegisterPatientButton = ({ onClick }: { onClick: () => void }) => (
     <button
       type="button"

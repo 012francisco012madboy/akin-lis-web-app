@@ -123,6 +123,7 @@ export default function New() {
       if (response.status === 201) {
         ___showSuccessToastNotification({ message: "Agendamento marcado com sucesso" });
         setSelectedPatient(undefined);
+        resetForm();
       } else {
         ___showErrorToastNotification({ message: "Erro ao marcar agendamento. Tente novamente." });
       }
@@ -133,10 +134,34 @@ export default function New() {
     }
   };
 
+  const resetForm = () => {
+    // Limpar checkboxes
+    const checkboxes = document.querySelectorAll('input[name="checkbox"]') as NodeListOf<HTMLInputElement>;
+    checkboxes.forEach((checkbox) => (checkbox.checked = !checkbox.checked));
+  
+    // Resetar os campos de data e hora
+    const identityInput = document.querySelector('input[name="identity"]') as HTMLInputElement;
+    const nameInput = document.querySelector('input[name="name"]') as HTMLInputElement;
+    
+    const resetAllInputsAfterSchedule = document.querySelector('input[id="text"]') as HTMLInputElement;
+
+    if (identityInput) identityInput.value = "";
+    if(resetAllInputsAfterSchedule) resetAllInputsAfterSchedule.value="";
+    if (nameInput){
+      nameInput.value=""
+      nameInput.placeholder= "Nome completo do paciente"
+    }
+  };
+
   return (
 <div className="min-h-screen px-6 py-2 bg-gray-50">
   {/* Cabeçalho */}
+
+  <div className={"flex flex-col md:flex-row w-[70%] justify-between"}>
   <h1 className="text-2xl font-semibold text-gray-800 mb-3">Novo Agendamento</h1>
+  <ModalNewPatient  onPatientSaved={handleSavePatient}/>
+
+  </div>
 
   {/* Formulário */}
   <form
@@ -148,14 +173,17 @@ export default function New() {
   >
     {/* Detalhes do Paciente e Data */}
     <div className="flex flex-col gap-6 w-full ">
+
       <div className="p-4 bg-gray-100 rounded-lg border w-full">
         <PatientDetails
           isLoading={isLoading}
           selectedPatient={selectedPatient}
           autoCompleteData={patientAutoComplete}
-          onPatientSelect={setSelectedPatientId}
+          onPatientSelect={(patientId) => setSelectedPatient(patientId)}
         />
       </div>
+
+     
 
       <div className="p-4 bg-gray-100 rounded-lg border">
         <ScheduleDetails isLoading={isLoading} />
@@ -173,14 +201,14 @@ export default function New() {
 }
 
 // Extracted Components
-function PatientDetails({ isLoading, selectedPatient, autoCompleteData, onPatientSelect }: {
+function PatientDetails({ isLoading, selectedPatient, onPatientSelect }: {
   isLoading: boolean,
   selectedPatient: Patient | undefined,
   onPatientSelect: (value: string) => void,
-  autoCompleteData: {
-    value: string;
-    id: string;
-  }[]
+  // autoCompleteData: {
+  //   value: string;
+  //   id: string;
+  // }[]
 }) {
   return (
     <div className="flex flex-col gap-3">
@@ -195,11 +223,11 @@ function PatientDetails({ isLoading, selectedPatient, autoCompleteData, onPatien
             placeholder={selectedPatient?.nome || "Nome completo do paciente"}
             name="name"
             lookingFor="paciente"
-            dataFromServer={autoCompleteData}
+            // dataFromServer={autoCompleteData}
             setSelectedItemId={onPatientSelect}
             className="w-full "
           />
-          <ModalNewPatient />
+          {/* <ModalNewPatient  onPatientSaved={handleSavePatient}/> */}
         </div>
       )}
       <PatientInfo patient={selectedPatient} isLoading={isLoading} />
@@ -241,6 +269,7 @@ function PatientInfo({ patient, isLoading }: {
         
           <Input.InputText
             placeholder="Contacto Telefónico"
+            id="text"
             name="phone_number"
             value={patient?.contacto_telefonico}
             disabled
