@@ -36,8 +36,8 @@ export default function DoughnutChart() {
     }, []);
 
     return (
-        <div className="card flex justify-content-center">
-            <Chart type="doughnut" data={chartData} options={chartOptions} className="w-full md:w-30rem" />
+        <div className="card flex justify-content-center min-h-max ">
+            <Chart type="doughnut" data={chartData} options={chartOptions} className="w-[300px]" />
         </div>
     )
 }

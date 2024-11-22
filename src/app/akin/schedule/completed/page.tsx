@@ -32,7 +32,7 @@ export default function Completed() {
   }, []);
 
   return (
-    <div className="h-screen px-6 mx-auto">
+    <div className="h-max px-6 pb-6">
       <CardScheduleContainer isLoading={isLoading} title="Agendamentos Concluídos" schedule={completedSchedules} />
     </div>
   );

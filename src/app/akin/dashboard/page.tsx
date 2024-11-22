@@ -22,7 +22,7 @@ const breadcrumbItems = [
 
 export default function Dashboard({}: IDashboard) {
   return (
-    <View.Vertical className="h-screen space-y-4 px-1 py-0">
+    <View.Vertical className="min-h-max  space-y-4 px-1 py-0">
       {/* Cabeçalho com Breadcrumb */}
       <CustomBreadcrumb items={breadcrumbItems} borderB />
 
@@ -48,7 +48,7 @@ export default function Dashboard({}: IDashboard) {
       </section>
 
       {/* Gráficos */}
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <section className="grid grid-cols-1 gap-6 lg:grid-cols-2 min-h-max">
         <article className="p-6 rounded-lg border border-gray-200 shadow hover:shadow-lg transition">
           <header className="mb-4 text-xl font-semibold">Receita por Mês</header>
           <VerticalBarChart />

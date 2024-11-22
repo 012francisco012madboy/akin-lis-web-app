@@ -33,6 +33,17 @@ const PatientByIdProfileSkeleton = () => {
   )
 }
 
+const examsFilter = [
+  {
+    label:'Exames Realizados',
+  },
+  {
+    label:'Exames Pendentes',
+  },
+  {
+    label:'Exames Descartados'
+  },
+]
 
 export default function ExamsHistory() {
   const { id } = useParams();
@@ -68,7 +79,7 @@ export default function ExamsHistory() {
     { label: "Histórico de Exame" },
   ];
 
-  if (loading)
+  if (loading || namePatient=="")
     return (
       <View.Vertical className="flex min-h-screen bg-gray-50">
         <CustomBreadcrumb items={breadcrumbItems} borderB />
@@ -98,12 +109,13 @@ export default function ExamsHistory() {
             </span>
           </p>
           <Separator orientation="vertical" />
-          <p className="text-md text-gray-600">
-            Funcionalidade:{" "}
-            <span className="font-medium text-gray-800">
-              {"Indisponível"}
-            </span>
-          </p>
+          <Combobox
+            data={examsFilter}
+            displayKey="label"
+            onSelect={handleSelect}
+            placeholder="Exames Realizados"
+            clearLabel="Limpar"
+          />
           <Separator orientation="vertical" />
           <Combobox
             data={exams}

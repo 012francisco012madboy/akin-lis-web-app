@@ -5,6 +5,7 @@ import Image from "next/image";
 import Primary from "@/components/button/primary";
 import { View } from "@/components/view";
 import { Trash, CheckCircle } from "lucide-react";
+import {Button} from "@/components/ui/button"
 
 interface ICardSchedule {
   data: ScheduleType;
@@ -23,16 +24,39 @@ export default function CardSchedule({ data }: ICardSchedule) {
         <div className="flex-1 rounded-t-lg w-full space-y-4 p-4 h-[19.2rem]">
           <View.Scroll className="max-h-full pl-4 overflow-y-auto space-y-2">
             {data.Exame.map((exame) => (
-              <div key={exame.id} className="w-full pb-4 border-b border-gray-200">
+              <div key={exame.id} className="w-full pb-4 border-b border-gray-200 ">
                 <p className="font-semibold text-xl">{exame.exame.nome}</p>
-                <p className="pl-6 italic text-gray-600">
+                <p className="pl-6  text-gray-500 text-sm font-semibold">
                   Estado:{" "}
                   <span
-                    className={`${
+                
+                    className={` text-xs font-medium  ${
                       exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
                     }`}
                   >
                     {exame.status}
+                  </span>
+                </p>
+                <p className="pl-6  text-gray-500 text-sm font-semibold">
+                  Data de Agendamento:{" "}
+                  <span
+                
+                    className={` text-xs font-medium  ${
+                      exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
+                    }`}
+                  >
+                    {data.data_agendamento}
+                  </span>
+                </p>
+                <p className="pl-6  text-gray-500 text-sm font-semibold">
+                  Hora de Agendamento:{" "}
+                  <span
+                
+                    className={` text-xs font-medium  ${
+                      exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
+                    }`}
+                  >
+                    {data.hora_agendamento}
                   </span>
                 </p>
               </div>
@@ -67,18 +91,18 @@ export default function CardSchedule({ data }: ICardSchedule) {
             <span className="text-sm text-gray-500">BI: {data.Paciente?.numero_identificacao}</span>
             <span className="text-sm text-gray-500">Sexo: {data.Paciente?.id_sexo === 1 ? "Masculino" : "Feminino"}</span>
             <span className="text-sm text-gray-500">Idade: {age}</span>
-            <p className="text-sm text-gray-600">Marcado em: {formattedDate}</p>
           </div>
         </>
       )}
 
       {/* Toggle Button */}
-      <div className="w-full mt-4">
+      <div className="w-full mt-4 flex gap-3 px-4 pb-2 text-sm">
         <Primary
-          className="w-full flex justify-center bg-cyan-600 text-white font-semibold py-2 rounded-b-lg transition-all duration-300 hover:bg-cyan-500 outline-none"
+          className="w-full flex justify-center bg-cyan-600 text-white font-semibold py-2 rounded-b-lg  transition-all duration-300 hover:bg-cyan-500 outline-none"
           onClick={() => setShowExams((prev) => !prev)}
           label={showExams ? "Ver Agendamento" : "Ver Exame"}
         />
+        <Button className="w-full h-full">Alocar Técnicos</Button>
       </div>
     </div>
   );
