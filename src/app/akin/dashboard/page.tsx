@@ -22,7 +22,7 @@ const breadcrumbItems = [
 
 export default function Dashboard({}: IDashboard) {
   return (
-    <View.Vertical className="h-screen space-y-4 px-4 py-0">
+    <View.Vertical className="h-screen space-y-4 px-1 py-0">
       {/* Cabeçalho com Breadcrumb */}
       <CustomBreadcrumb items={breadcrumbItems} borderB />
 

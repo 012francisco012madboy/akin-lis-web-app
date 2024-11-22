@@ -25,7 +25,7 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
   }
 
   return (
-    <div className="p-4 bg-white shadow-sm rounded-lg">
+    <div className=" px-6 pt-4 pb-6 shadow-sm rounded-lg">
       {/* Barra de controle */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
         {/* Botão de alternância */}

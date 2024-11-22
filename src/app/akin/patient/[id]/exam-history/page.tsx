@@ -45,12 +45,11 @@ export default function ExamsHistory() {
   useEffect(() => {
     const fetchExams = async () => {
       try {
-        const response = await ___api.get("/exam-types")
-        setExams(response.data.data)
-
         const patientNome = await ___api.get<PatientType>(`/pacients/${id}`);
         setNamePatient(patientNome.data.nome);
-
+        
+        const response = await ___api.get("/exam-types")
+        setExams(response.data.data)
       } catch (error) {
         console.error("Error fetching exams:", error)
       }
@@ -87,7 +86,7 @@ export default function ExamsHistory() {
 
   return (
 
-    <View.Vertical className="p-6 bg-gray-100 min-h-screen">
+    <View.Vertical className=" min-h-screen">
       <CustomBreadcrumb items={breadcrumbItems} borderB />
 
       <div className="bg-white shadow-md rounded-lg px-5 py-4 flex items-center">
