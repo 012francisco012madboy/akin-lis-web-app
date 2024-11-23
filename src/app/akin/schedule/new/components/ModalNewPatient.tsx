@@ -18,7 +18,7 @@ const NOTIFICATION_MESSAGES = {
   error: "Erro ao cadastrar paciente. Tente novamente ou contate o suporte se o erro persistir.",
 };
 
-export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: Patient) => void }) => {
+export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: PatientType) => void }) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
