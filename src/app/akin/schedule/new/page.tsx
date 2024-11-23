@@ -179,10 +179,9 @@ export default function New() {
           isLoading={isLoading}
           selectedPatient={selectedPatient}
           autoCompleteData={patientAutoComplete}
-          onPatientSelect={(patientId) => setSelectedPatient(patientId)}
+          onPatientSelect={(patientId) => setSelectedPatientId(patientId)}
         />
       </div>
-
      
 
       <div className="p-4 bg-gray-100 rounded-lg border">
@@ -201,14 +200,14 @@ export default function New() {
 }
 
 // Extracted Components
-function PatientDetails({ isLoading, selectedPatient, onPatientSelect }: {
+function PatientDetails({ isLoading, selectedPatient, onPatientSelect,autoCompleteData}: {
   isLoading: boolean,
   selectedPatient: Patient | undefined,
   onPatientSelect: (value: string) => void,
-  // autoCompleteData: {
-  //   value: string;
-  //   id: string;
-  // }[]
+  autoCompleteData: {
+    value: string;
+    id: string;
+  }[]
 }) {
   return (
     <div className="flex flex-col gap-3">
@@ -223,7 +222,7 @@ function PatientDetails({ isLoading, selectedPatient, onPatientSelect }: {
             placeholder={selectedPatient?.nome || "Nome completo do paciente"}
             name="name"
             lookingFor="paciente"
-            // dataFromServer={autoCompleteData}
+            dataFromServer={autoCompleteData}
             setSelectedItemId={onPatientSelect}
             className="w-full "
           />
