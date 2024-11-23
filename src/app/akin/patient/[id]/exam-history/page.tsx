@@ -33,15 +33,19 @@ const PatientByIdProfileSkeleton = () => {
   )
 }
 
-const examsFilter = [
+const examsFilter: IExamProps[] = [
   {
-    label:'Exames Realizados',
+    id: "1",
+    nome: 'Exames Realizados',
   },
   {
-    label:'Exames Pendentes',
+    id: "2",
+    nome: 'Exames Pendentes',
   },
   {
-    label:'Exames Descartados'
+    id: "3",
+    
+    nome: 'Exames Cancelados',
   },
 ]
 
@@ -58,7 +62,7 @@ export default function ExamsHistory() {
       try {
         const patientNome = await ___api.get<PatientType>(`/pacients/${id}`);
         setNamePatient(patientNome.data.nome);
-        
+
         const response = await ___api.get("/exam-types")
         setExams(response.data.data)
       } catch (error) {
@@ -79,7 +83,7 @@ export default function ExamsHistory() {
     { label: "Histórico de Exame" },
   ];
 
-  if (loading || namePatient=="")
+  if (loading || namePatient == "")
     return (
       <View.Vertical className="flex min-h-screen bg-gray-50">
         <CustomBreadcrumb items={breadcrumbItems} borderB />
@@ -111,7 +115,7 @@ export default function ExamsHistory() {
           <Separator orientation="vertical" />
           <Combobox
             data={examsFilter}
-            displayKey="label"
+            displayKey="nome"
             onSelect={handleSelect}
             placeholder="Exames Realizados"
             clearLabel="Limpar"
