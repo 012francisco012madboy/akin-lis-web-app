@@ -162,7 +162,7 @@ export default function New() {
           </div>
         </div>
 
-        <Button type="submit">
+        <Button type="submit" className="bg-akin-turquoise">
           Agendar
         </Button>
       </form>

@@ -95,7 +95,8 @@ export function ScheduleDetails({
           </div>
         </div>
       ))}
-      <Button type="button" onClick={handleAddSchedule}>
+      <Button type="button" onClick={handleAddSchedule} className="bg-akin-yellow-light/80 text-black shadow-md  hover:bg-akin-yellow-light hover:scale-90">
+        <Plus/>
         Adicionar
       </Button>
       {/* Botão para exibir os dados */}
