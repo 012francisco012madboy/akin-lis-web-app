@@ -58,7 +58,7 @@ export default function AgendamentoForm() {
       </Select>
 
       {/* Seleção de Unidade de Saúde */}
-      <Select  onValueChange={(value) => setUnidadeDeSaude(Number(value))}>
+      <Select onValueChange={(value) => setUnidadeDeSaude(Number(value))}>
         <SelectTrigger >
           <SelectValue placeholder="Selecione uma unidade de saúde" />
         </SelectTrigger>
@@ -95,7 +95,7 @@ export default function AgendamentoForm() {
 
             {/* Data do Exame */}
             <Dialog>
-            <DialogTitle>Data de Agendamento</DialogTitle>
+              <DialogTitle>Data de Agendamento</DialogTitle>
               <DialogTrigger asChild>
                 <Input placeholder="Selecione a data" value={exame.data || ""} readOnly />
               </DialogTrigger>
@@ -131,3 +131,47 @@ export default function AgendamentoForm() {
     </div>
   );
 }
+{/* Seleção de Exames */ }
+{/* <div className="w-full lg:w-[20rem]">
+          <ExamSelection exams={availableExams} isLoading={isLoading} isSaving={isSaving} />
+        </div> 
+        
+
+          const resetForm = () => {
+    // Limpar checkboxes
+    const checkboxes = document.querySelectorAll('input[name="checkbox"]') as NodeListOf<HTMLInputElement>;
+    checkboxes.forEach((checkbox) => (checkbox.checked = !checkbox.checked));
+
+    // Resetar os campos de data e hora
+    const identityInput = document.querySelector('input[name="identity"]') as HTMLInputElement;
+    const nameInput = document.querySelector('input[name="name"]') as HTMLInputElement;
+
+    const resetAllInputsAfterSchedule = document.querySelector('input[id="text"]') as HTMLInputElement;
+
+    if (identityInput) identityInput.value = "";
+    if (resetAllInputsAfterSchedule) resetAllInputsAfterSchedule.value = "";
+    if (nameInput) {
+      nameInput.value = ""
+      nameInput.placeholder = "Nome completo do paciente"
+    }
+  };
+
+ */}
+
+
+   // const handleSubmit = async () => {
+  //   // try {
+  //   //   const response = await ___api.post("/schedule", { schedules });
+  //   console.log("Agendamento realizado com sucesso: ");
+  //   // schedules.map((e) => console.log(
+  //   //  `Exame: ${e.exam[0]}\n 
+  //   //   Date: ${e.date}\n 
+  //   //   Hora: ${e.time}`
+  //   // ))
+
+  //   // alert("Agendamento realizado!");
+  //   // } catch (error) {
+  //   //   console.error("Erro ao agendar:", error);
+  //   //   alert("Erro ao realizar o agendamento.");
+  //   // }
+  // };

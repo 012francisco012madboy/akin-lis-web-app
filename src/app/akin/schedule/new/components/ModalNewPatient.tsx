@@ -85,11 +85,11 @@ export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: 
 const RegisterPatientButton = ({ onClick }: { onClick: () => void }) => (
   <button
     type="button"
-    className="w-[310px] bg-akin-yellow-light/80 justify-center rounded-lg text-sm right-0 top-0 transform transition-all hover:bg-akin-yellow-light hover:scale-105 focus:outline-none focus:ring-2 focus:ring-akin-primary focus:ring-opacity-50 text-gray-800 flex items-center space-x-2 shadow-lg"
+    className="w-max py-2  px-2 bg-akin-yellow-light/80 justify-center rounded-lg text-sm right-0 top-0 transform transition-all hover:bg-akin-yellow-light hover:scale-105 focus:outline-none focus:ring-2 focus:ring-akin-primary focus:ring-opacity-50 text-gray-800 flex items-center space-x-2 shadow-lg"
     onClick={onClick}
   >
     <UserRoundPlus className="text-xl" />
-    <p className="text-sm font-medium">Registar Novo Paciente</p>
+    Registar Novo Paciente
   </button>
 );
 

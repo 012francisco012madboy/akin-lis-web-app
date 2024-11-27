@@ -27,10 +27,10 @@ export default function Schedule({ children }: ISchedule) {
 
   return (
     <View.Vertical className="gap-4 h-screen">
-      <div className="flex w-full justify-between items-center">
+      <div className="flex flex-col  md:flex-row justify-start w-full md:justify-between md:items-center">
         <CustomBreadcrumb items={breadcumbItem} />
 
-        <Tabs defaultValue={activeTab} className="w-[400px] flex justify-end">
+        <Tabs defaultValue={activeTab} className="w-[400px] flex md:justify-end">
           <TabsList>
             {items.map((item) => (
               <Link href={item.path} key={item.path}>
