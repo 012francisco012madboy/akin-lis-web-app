@@ -1,8 +1,6 @@
 "use client";
-
 import { useState } from "react";
 
-/////////////////////////////
 interface ICheckboxExam {
   id: string | number;
   nome: string;
