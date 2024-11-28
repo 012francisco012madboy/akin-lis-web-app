@@ -21,11 +21,25 @@ export function ScheduleDetails({
   onChange: (schedules: { exam: string; date: Date; time: string }[]) => void;
 }) {
 
-  const handleScheduleChange = (index: number, key: string, value: any) => {
+  const handleScheduleChange = (index: number, key: string, eventOrValue: any) => {
+    const value = eventOrValue?.value || eventOrValue; // Extrai o campo 'value' se disponível
+    
+    // Formatar o valor dependendo do tipo (data ou hora)
+    let formattedValue = value;
+    if (key === "date" && value instanceof Date) {
+      // Pega somente a data no formato 'YYYY-MM-DD'
+      formattedValue = value.toISOString().split("T")[0];
+    } else if (key === "time" && value instanceof Date) {
+      // Pega somente a hora no formato 'HH:mm'
+      formattedValue = value.toTimeString().split(" ")[0].slice(0, 5);
+    }
+  
+    // Atualiza os agendamentos com o valor formatado
     const updatedSchedules = [...schedules];
-    updatedSchedules[index] = { ...updatedSchedules[index], [key]: value };
+    updatedSchedules[index] = { ...updatedSchedules[index], [key]: formattedValue };
     onChange(updatedSchedules);
   };
+  
 
   const handleAddSchedule = () => {
     onChange([...schedules, { exam: "", date: new Date(), time: "" }]);
@@ -35,9 +49,9 @@ export function ScheduleDetails({
     onChange(schedules.filter((_, i) => i !== index));
   };
 
-  // const handleSubmit = () => {
-  //   console.log("Dados dos agendamentos:", schedules);
-  // };
+  const handleSubmit = () => {
+    console.log("Dados dos agendamentos:", schedules);
+  };
 
   if (isLoading) {
     return <Skeleton className="w-full h-12 rounded-md" />;
@@ -52,7 +66,7 @@ export function ScheduleDetails({
             <Combobox
               data={exams}
               displayKey="nome"
-              onSelect={(exam) => handleScheduleChange(index, "exam", exam)}
+              onSelect={(exam) => handleScheduleChange(index, "exam", exam?.id)}
               placeholder="Selecionar exame"
               clearLabel="Limpar"
             />
@@ -88,7 +102,7 @@ export function ScheduleDetails({
             <Button
               type="button"
               variant="ghost"
-              onClick={()=>handleRemoveSchedule(index)}
+              onClick={() => handleRemoveSchedule(index)}
             >
               <Trash2 size={45} className="text-red-500" />
             </Button>
@@ -96,13 +110,13 @@ export function ScheduleDetails({
         </div>
       ))}
       <Button type="button" onClick={handleAddSchedule} className="bg-akin-yellow-light/80 text-black shadow-md  hover:bg-akin-yellow-light hover:scale-90">
-        <Plus/>
+        <Plus />
         Adicionar
       </Button>
       {/* Botão para exibir os dados */}
-      {/* <Button type="button" onClick={handleSubmit}>
+      <Button type="button" onClick={handleSubmit}>
         Mostrar Dados no Console
-      </Button> */}
+      </Button>
     </div>
   );
 }

@@ -62,67 +62,75 @@ export default function New() {
   const validateSchedule = () => {
     const errors: string[] = [];
     const today = new Date();
-
-    // Validação de horários
+  
     schedules.forEach((schedule, index) => {
       if (!schedule.exam) {
         errors.push(`Exame não selecionado para o agendamento ${index + 1}`);
       }
 
+      // if (!(schedule.date instanceof Date) || isNaN(new Date(schedule.date).getTime())) {
+      //   errors.push(`A data do agendamento ${index + 1} é inválida.`);
+      // }
+  
       const scheduleDateTime = new Date(`${schedule.date}T${schedule.time}`);
       if (scheduleDateTime < today) {
         errors.push(`A data e hora do agendamento ${index + 1} devem ser futuras.`);
       }
     });
-
+  
     if (!selectedPatient) {
       errors.push("Nenhum paciente selecionado.");
     }
-
+  
     if (errors.length > 0) {
       ___showErrorToastNotification({ messages: errors });
       return { isValid: false };
     }
 
+  
     return {
       isValid: true,
       data: {
         id_paciente: selectedPatient!.id,
-        id_unidade_de_saude: 1, // Exemplo de unidade
-        agendamentos: schedules.map((schedule) => ({
-          exame: schedule.exam,
-          data: schedule.date,
-          hora: schedule.time,
-        })),
+        id_unidade_de_saude: 1,
+        exames_paciente: schedules.map((schedule) => {
+          const date = schedule.date instanceof Date ? schedule.date : new Date(schedule.date);
+          return {
+            id_tipo_exame: schedule.exam,
+            data_agendamento: date.toISOString().split("T")[0], // 'YYYY-MM-DD'
+            hora_agendamento: schedule.time, // 'HH:mm'
+          };
+        }),
       },
     };
   };
+  
 
   const handleSubmit = async () => {
     const validation = validateSchedule();
 
     if (!validation.isValid) return;
     console.log(validation.data)
-    
+
     // validation.data?.agendamentos.map((e)=>{
     //   console.log(e.data)
     // })
 
-    // setIsSaving(true);
-    // try {
-    //   const response = await ___api.post("/schedulings/set-schedule", validation.data);
-    //   if (response.status === 201) {
-    //     ___showSuccessToastNotification({ message: "Agendamento marcado com sucesso" });
-    //     setSchedules([{ exam: "", date: new Date(), time: "" }]);
-    //     setSelectedPatient(undefined);
-    //   } else {
-    //     ___showErrorToastNotification({ message: "Erro ao marcar agendamento. Tente novamente." });
-    //   }
-    // } catch (error) {
-    //   ___showErrorToastNotification({ message: "Erro ao marcar agendamento. Contate o suporte." });
-    // } finally {
-    //   setIsSaving(false);
-    // }
+    setIsSaving(true);
+    try {
+      const response = await ___api.post("/schedulings/set-schedule", validation.data);
+      if (response.status === 201) {
+        ___showSuccessToastNotification({ message: "Agendamento marcado com sucesso" });
+        // setSchedules([{ exam: "", date: new Date(), time: "" }]);
+        setSelectedPatient(undefined);
+      } else {
+        ___showErrorToastNotification({ message: "Erro ao marcar agendamento. Tente novamente." });
+      }
+    } catch (error) {
+      ___showErrorToastNotification({ message: "Erro ao marcar agendamento. Contate o suporte." });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
