@@ -1,13 +1,12 @@
 "use client";
 import { Combobox } from "@/components/combobox";
-import { Input } from "@/components/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
 import { IExamProps } from "../../types";
 import { ___api } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { Calendar } from "primereact/calendar";
+import TimePicker from "@/components/ui/timepicker";
 
 export function ScheduleDetails({
   isLoading,
@@ -23,7 +22,7 @@ export function ScheduleDetails({
 
   const handleScheduleChange = (index: number, key: string, eventOrValue: any) => {
     const value = eventOrValue?.value || eventOrValue; // Extrai o campo 'value' se disponível
-    
+
     // Formatar o valor dependendo do tipo (data ou hora)
     let formattedValue = value;
     if (key === "date" && value instanceof Date) {
@@ -33,13 +32,13 @@ export function ScheduleDetails({
       // Pega somente a hora no formato 'HH:mm'
       formattedValue = value.toTimeString().split(" ")[0].slice(0, 5);
     }
-  
+
     // Atualiza os agendamentos com o valor formatado
     const updatedSchedules = [...schedules];
     updatedSchedules[index] = { ...updatedSchedules[index], [key]: formattedValue };
     onChange(updatedSchedules);
   };
-  
+
 
   const handleAddSchedule = () => {
     onChange([...schedules, { exam: "", date: new Date(), time: "" }]);
@@ -49,9 +48,9 @@ export function ScheduleDetails({
     onChange(schedules.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = () => {
-    console.log("Dados dos agendamentos:", schedules);
-  };
+  // const handleSubmit = () => {
+  //   console.log("Dados dos agendamentos:", schedules);
+  // };
 
   if (isLoading) {
     return <Skeleton className="w-full h-12 rounded-md" />;
@@ -90,13 +89,16 @@ export function ScheduleDetails({
               <label htmlFor="buttondisplay" className="font-bold block mb-2">
                 Hora
               </label>
-              <Calendar
+              {/* <Calendar
                 id="buttondisplay"
                 className="flex-1 text-black bg-gray-50 rounded-md shadow-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                 onChange={(time) => handleScheduleChange(index, "time", time)}
                 showIcon
                 timeOnly
                 hourFormat="24"
+              /> */}
+              <TimePicker
+                onChange={(time) => handleScheduleChange(index, "time", time)}
               />
             </div>
             <Button
@@ -104,7 +106,7 @@ export function ScheduleDetails({
               variant="ghost"
               onClick={() => handleRemoveSchedule(index)}
             >
-              <Trash2 size={45} className="text-red-500" />
+              <Trash2 size={45} className="text-red-600" />
             </Button>
           </div>
         </div>
@@ -114,9 +116,9 @@ export function ScheduleDetails({
         Adicionar
       </Button>
       {/* Botão para exibir os dados */}
-      <Button type="button" onClick={handleSubmit}>
+      {/* <Button type="button" onClick={handleSubmit}>
         Mostrar Dados no Console
-      </Button>
+      </Button> */}
     </div>
   );
 }

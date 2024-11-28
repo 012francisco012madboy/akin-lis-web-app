@@ -67,11 +67,7 @@ export default function New() {
       if (!schedule.exam) {
         errors.push(`Exame não selecionado para o agendamento ${index + 1}`);
       }
-
-      // if (!(schedule.date instanceof Date) || isNaN(new Date(schedule.date).getTime())) {
-      //   errors.push(`A data do agendamento ${index + 1} é inválida.`);
-      // }
-  
+      
       const scheduleDateTime = new Date(`${schedule.date}T${schedule.time}`);
       if (scheduleDateTime < today) {
         errors.push(`A data e hora do agendamento ${index + 1} devem ser futuras.`);
@@ -111,10 +107,6 @@ export default function New() {
 
     if (!validation.isValid) return;
     console.log(validation.data)
-
-    // validation.data?.agendamentos.map((e)=>{
-    //   console.log(e.data)
-    // })
 
     setIsSaving(true);
     try {

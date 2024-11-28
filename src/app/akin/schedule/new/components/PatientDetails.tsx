@@ -28,7 +28,7 @@ export function PatientDetails({ isLoading, selectedPatient, onPatientSelect, au
             lookingFor="paciente"
             dataFromServer={autoCompleteData}
             setSelectedItemId={onPatientSelect}
-            className="w-full "
+            className="w-full bg-white "
           />
           {/* <ModalNewPatient  onPatientSaved={handleSavePatient}/> */}
         </div>

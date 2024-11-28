@@ -82,7 +82,7 @@ export default function AutoComplete({ className, setSelectedItemId, dataFromSer
       onChange={(e) => onChangeValueFn(e)}
       itemTemplate={itemTemplate}
       panelFooterTemplate={panelFooterTemplate}
-      className={twMerge("border-2 border-akin-yellow-light rounded-lg bg-akin-yellow-light/20 ring-0 ", className)}
+      className={twMerge("border-[1.5px] border-gray-300 rounded-lg bg-white ring-0 shadow-md ", className)}
       {...rest}
     />
   );
