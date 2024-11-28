@@ -5,7 +5,8 @@ import Image from "next/image";
 import Primary from "@/components/button/primary";
 import { View } from "@/components/view";
 import { Trash, CheckCircle } from "lucide-react";
-import {Button} from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
+import { AllocateTechniciansModal } from "./tecnico";
 
 interface ICardSchedule {
   data: ScheduleType;
@@ -16,6 +17,38 @@ export default function CardSchedule({ data }: ICardSchedule) {
 
   const age = new Date().getFullYear() - new Date(data.Paciente.data_nascimento).getFullYear();
   const formattedDate = new Date(data.data_agendamento).toLocaleString();
+
+  const exame = [
+    { id: 1, name: "Exame A", scheduledAt: "2024-11-29 - 10:00" },
+    { id: 2, name: "Exame B", scheduledAt: "2024-11-30 - 14:00" },
+    { id: 3, name: "Exame C", scheduledAt: "2024-12-01 -  08:30" },
+    { id: 4, name: "Exame D", scheduledAt: "2024-12-02 - 11:15" },
+    { id: 5, name: "Exame E", scheduledAt: "2024-12-03 -  16:00" },
+    { id: 6, name: "Exame F", scheduledAt: "2024-12-04 - 09:45" },
+    { id: 7, name: "Exame G", scheduledAt: "2024-12-05 -  13:30" },
+    { id: 8, name: "Exame H", scheduledAt: "2024-12-06 - 15:00" },
+    { id: 9, name: "Exame I", scheduledAt: "2024-12-07 - 10:30" },
+    { id: 10, name: "Exame J", scheduledAt: "2024-12-08 - 12:00" },
+
+  ];
+
+  const tecnico = [
+    { id: 1, name: "João Silva", role: "Enfermeiro" },
+    { id: 2, name: "Maria Souza", role: "Técnico de Radiologia" },
+    { id: 3, name: "Carlos Lima", role: "Fisioterapeuta" },
+    { id: 4, name: "Ana Costa", role: "Médica" },
+    { id: 5, name: "Paulo Oliveira", role: "Técnico de Enfermagem" },
+    { id: 6, name: "Fernanda Almeida", role: "Nutricionista" },
+    { id: 7, name: "Roberta Silva", role: "Psicóloga" },
+    { id: 8, name: "Ricardo Ferreira", role: "Técnico de Laboratório" },
+    { id: 9, name: "Luana Pereira", role: "Terapeuta Ocupacional" },
+    { id: 10, name: "Eduardo Martins", role: "Médico Cirurgião" },
+    { id: 11, name: "Bruna Rocha", role: "Farmacêutica" },
+    { id: 12, name: "Sérgio Santos", role: "Radioterapeuta" },
+    { id: 13, name: "Isabela Macedo", role: "Técnico de Análises Clínicas" },
+    { id: 14, name: "Lucas Gomes", role: "Fonoaudiólogo" },
+    { id: 15, name: "Vânia Souza", role: "Técnico de Enfermagem" }
+  ];
 
   return (
     <div className="card shadow-xl border border-gray-300 rounded-lg flex flex-col items-center bg-white min-h-[23rem] max-h-[23rem] overflow-hidden transition-all duration-300 hover:scale-105">
@@ -29,10 +62,9 @@ export default function CardSchedule({ data }: ICardSchedule) {
                 <p className="pl-6  text-gray-500 text-sm font-semibold">
                   Estado:{" "}
                   <span
-                
-                    className={` text-xs font-medium  ${
-                      exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
-                    }`}
+
+                    className={` text-xs font-medium  ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
+                      }`}
                   >
                     {exame.status}
                   </span>
@@ -40,10 +72,9 @@ export default function CardSchedule({ data }: ICardSchedule) {
                 <p className="pl-6  text-gray-500 text-sm font-semibold">
                   Data de Agendamento:{" "}
                   <span
-                
-                    className={` text-xs font-medium  ${
-                      exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
-                    }`}
+
+                    className={` text-xs font-medium  ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
+                      }`}
                   >
                     {exame.data_agendamento}
                   </span>
@@ -51,10 +82,9 @@ export default function CardSchedule({ data }: ICardSchedule) {
                 <p className="pl-6  text-gray-500 text-sm font-semibold">
                   Hora de Agendamento:{" "}
                   <span
-                
-                    className={` text-xs font-medium  ${
-                      exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
-                    }`}
+
+                    className={` text-xs font-medium  ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
+                      }`}
                   >
                     {exame.hora_agendamento}
                   </span>
@@ -102,7 +132,10 @@ export default function CardSchedule({ data }: ICardSchedule) {
           onClick={() => setShowExams((prev) => !prev)}
           label={showExams ? "Ver Agendamento" : "Ver Exame"}
         />
-        <Button className="w-full h-full">Alocar Técnicos</Button>
+        <AllocateTechniciansModal exams={exame} technicians={tecnico} >
+
+          <Button className="w-full h-full">Alocar Técnicos</Button>
+        </AllocateTechniciansModal>
       </div>
     </div>
   );
