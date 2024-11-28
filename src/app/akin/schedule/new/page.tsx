@@ -62,28 +62,28 @@ export default function New() {
   const validateSchedule = () => {
     const errors: string[] = [];
     const today = new Date();
-  
+
     schedules.forEach((schedule, index) => {
       if (!schedule.exam) {
         errors.push(`Exame não selecionado para o agendamento ${index + 1}`);
       }
-      
+
       const scheduleDateTime = new Date(`${schedule.date}T${schedule.time}`);
       if (scheduleDateTime < today) {
         errors.push(`A data e hora do agendamento ${index + 1} devem ser futuras.`);
       }
     });
-  
+
     if (!selectedPatient) {
       errors.push("Nenhum paciente selecionado.");
     }
-  
+
     if (errors.length > 0) {
       ___showErrorToastNotification({ messages: errors });
       return { isValid: false };
     }
 
-  
+
     return {
       isValid: true,
       data: {
@@ -100,21 +100,38 @@ export default function New() {
       },
     };
   };
-  
+
+  const resetInputs = () => {
+    // Selecionar os elementos pelo atributo `name`
+    const getCalendaryInput = document.getElementsByName("calendario")[0] as HTMLInputElement;
+    const getGenderInput = document.getElementsByName("gender")[0] as HTMLSelectElement;
+    const getPhoneNumberInput = document.getElementsByName("phone_number")[0] as HTMLInputElement;
+    const getIdentityInput = document.getElementsByName("identity")[0] as HTMLInputElement;
+    const getAutocompleteInput = document.getElementsByName("name")[0] as HTMLInputElement
+
+    
+    // Resetar os valores dos campos
+    if(getAutocompleteInput)getAutocompleteInput.value="";
+    if (getCalendaryInput) getCalendaryInput.value = "";
+    if (getGenderInput) getGenderInput.value = "";
+    if (getPhoneNumberInput) getPhoneNumberInput.value = "";
+    if (getIdentityInput) getIdentityInput.value = "";
+  };
 
   const handleSubmit = async () => {
     const validation = validateSchedule();
 
     if (!validation.isValid) return;
-    console.log(validation.data)
 
     setIsSaving(true);
     try {
       const response = await ___api.post("/schedulings/set-schedule", validation.data);
       if (response.status === 201) {
         ___showSuccessToastNotification({ message: "Agendamento marcado com sucesso" });
-        // setSchedules([{ exam: "", date: new Date(), time: "" }]);
+        setSchedules([]);
         setSelectedPatient(undefined);
+        setSelectedPatientId("");
+        resetInputs()
       } else {
         ___showErrorToastNotification({ message: "Erro ao marcar agendamento. Tente novamente." });
       }
@@ -162,8 +179,8 @@ export default function New() {
           </div>
         </div>
 
-        <Button type="submit" className="bg-akin-turquoise">
-          Agendar
+        <Button type="submit" className="bg-akin-turquoise hover:bg-akin-turquoise/80">
+          {isSaving ? "Agendando..." : "Agendar"}
         </Button>
       </form>
     </div>

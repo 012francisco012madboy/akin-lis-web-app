@@ -3,7 +3,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Patient } from "../../types";
 import { PatientInfo } from "./PatientInfo";
 
-// Extracted Components
 export function PatientDetails({ isLoading, selectedPatient, onPatientSelect, autoCompleteData }: {
   isLoading: boolean,
   selectedPatient: Patient | undefined,
@@ -30,7 +29,6 @@ export function PatientDetails({ isLoading, selectedPatient, onPatientSelect, au
             setSelectedItemId={onPatientSelect}
             className="w-full bg-white "
           />
-          {/* <ModalNewPatient  onPatientSaved={handleSavePatient}/> */}
         </div>
       )}
       <PatientInfo patient={selectedPatient} isLoading={isLoading} />
