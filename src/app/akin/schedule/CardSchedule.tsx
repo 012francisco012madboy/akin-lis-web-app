@@ -25,7 +25,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
           <View.Scroll className="max-h-full pl-4 overflow-y-auto space-y-2">
             {data.Exame.map((exame) => (
               <div key={exame.id} className="w-full pb-4 border-b border-gray-200 ">
-                <p className="font-semibold text-xl">{exame.exame.nome}</p>
+                <p className="font-semibold text-xl"> {exame.Tipo_Exame.nome || "Nome não disponível"}</p>
                 <p className="pl-6  text-gray-500 text-sm font-semibold">
                   Estado:{" "}
                   <span
@@ -45,7 +45,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
                       exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
                     }`}
                   >
-                    {data.data_agendamento}
+                    {exame.data_agendamento}
                   </span>
                 </p>
                 <p className="pl-6  text-gray-500 text-sm font-semibold">
@@ -56,7 +56,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
                       exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
                     }`}
                   >
-                    {data.hora_agendamento}
+                    {exame.hora_agendamento}
                   </span>
                 </p>
               </div>
