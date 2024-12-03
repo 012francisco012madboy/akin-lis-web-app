@@ -20,7 +20,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className=" py-2 w-[250px] bg-white rounded-md shadow-sm text-gray-900 hover:bg-gray-200 focus:ring-2 flex justify-between items-center px-4">
+        <button className=" py-2 w-full  bg-white rounded-md shadow-sm text-gray-900 hover:bg-gray-200 focus:ring-2 flex justify-between items-center px-4">
           {`${selectedHour}:${selectedMinute}`}
 
           <ClockArrowDown size={18} className="text-gray-800"/>

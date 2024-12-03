@@ -82,10 +82,10 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
   ];
 
   return (
-    <div className=" w-full gap-x-5 flex justify-between  overflow-hidden ">
+    <div className=" w-full gap-x-5 gap-y-5 pb-5 flex flex-col md:justify-between lg:flex-row  overflow-auto  [&::-webkit-scrollbar]:hidden ">
       {/* Card principal */}
-      <Card className=" min-w-[65%]  h-max shadow-md">
-        <CardHeader className="flex flex-row justify-between px-4 py-2">
+      <Card className=" md:min-w-[65%]  h-max shadow-md flex flex-col gap-10">
+        <CardHeader className="flex flex-col md:flex-row md:justify-between gap-5 px-4 py-2">
           <CardTitle>
             <AvatarSection imageSrc="https://images.pexels.com/photos/12202417/pexels-photo-12202417.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" />
           </CardTitle>

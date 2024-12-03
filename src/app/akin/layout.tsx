@@ -11,12 +11,12 @@ export default function Akin({ children }: IDashboard) {
   return (
     <div className="flex flex-col md:flex-row h-screen overflow-y-auto md:overflow-hidden bg-gray-50">
       {/* Menu Lateral */}
-      <aside className="w-full h-52 md:w-52 bg-akin-turquoise  flex-shrink-0">
+      <aside className="w-full h-20 md:w-52 bg-akin-turquoise  flex-shrink-0">
         <AppLayout.Menu />
       </aside>
 
       {/* Conteúdo Principal */}
-      <main className="flex-1 flex flex-col md:overflow-y-hidden px-4 py-3 pt-36 md:pt-3">
+      <main className="flex-1 flex flex-col md:overflow-y-hidden px-4 py-3 pt-8 md:pt-3">
         <Suspense fallback={<Loading />}>
           {children}
         </Suspense>

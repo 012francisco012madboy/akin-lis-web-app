@@ -27,9 +27,9 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
   }, [schedule]);
 
   return (
-    <section className="p-6 space-y-6">
+    <section className="p-6 space-y-6 ">
       {/* Header */}
-      <header className="flex items-center justify-between">
+      <header className="flex flex-col lg:flex-row items-start lg:items-center justify-between ">
         <h1 className="text-3xl font-semibold text-gray-900">
           {title} <span className="text-sm text-gray-600">({schedule.length})</span>
         </h1>

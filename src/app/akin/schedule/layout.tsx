@@ -27,7 +27,7 @@ export default function Schedule({ children }: ISchedule) {
 
   return (
     <View.Vertical className="gap-4 h-screen">
-      <div className="flex flex-col  md:flex-row justify-start w-full md:justify-between md:items-center">
+      <div className="flex flex-col md:flex-row justify-start w-full md:justify-between md:items-center">
         <CustomBreadcrumb items={breadcumbItem} />
 
         <Tabs defaultValue={activeTab} className="w-[400px] flex md:justify-end">

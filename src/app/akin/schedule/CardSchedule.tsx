@@ -126,14 +126,13 @@ export default function CardSchedule({ data }: ICardSchedule) {
       )}
 
       {/* Toggle Button */}
-      <div className="w-full mt-4 flex gap-3 px-4 pb-2 text-sm">
+      <div className="w-full flex flex-col lg:flex-row mt-4 gap-3 px-4 pb-2 text-sm">
         <Primary
-          className="w-full flex justify-center bg-cyan-600 text-white font-semibold py-2 rounded-b-lg  transition-all duration-300 hover:bg-cyan-500 outline-none"
+          className="w-full h-full flex justify-center bg-cyan-600 text-white font-semibold py-2 rounded-b-lg  transition-all duration-300 hover:bg-cyan-500 outline-none"
           onClick={() => setShowExams((prev) => !prev)}
           label={showExams ? "Ver Agendamento" : "Ver Exame"}
         />
         <AllocateTechniciansModal exams={exame} technicians={tecnico} >
-
           <Button className="w-full h-full">Alocar Técnicos</Button>
         </AllocateTechniciansModal>
       </div>

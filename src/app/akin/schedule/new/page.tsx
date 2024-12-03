@@ -169,7 +169,7 @@ export default function New() {
             />
           </div>
 
-          <div className="p-4 bg-gray-100 rounded-lg border flex flex-col">
+          <div className="p-4 bg-gray-100 rounded-lg border flex flex-col ">
             <ScheduleDetails
               isLoading={isLoading}
               exams={availableExams}

@@ -48,10 +48,6 @@ export function ScheduleDetails({
     onChange(schedules.filter((_, i) => i !== index));
   };
 
-  // const handleSubmit = () => {
-  //   console.log("Dados dos agendamentos:", schedules);
-  // };
-
   if (isLoading) {
     return <Skeleton className="w-full h-12 rounded-md" />;
   }
@@ -59,8 +55,8 @@ export function ScheduleDetails({
   return (
     <div className="space-y-4">
       {schedules.map((schedule, index) => (
-        <div key={index} className="flex flex-col flex-wrap md:flex-row gap-4 justify-between">
-          <div className="flex flex-col justify-between">
+        <div key={index} className="flex flex-col flex-wrap lg:flex-nowrap md:flex-row gap-4 justify-between">
+          <div className="flex flex-col justify-between w-full ">
             <label className="font-bold block mb-2">Exames Disponíveis</label>
             <Combobox
               data={exams}
@@ -70,22 +66,21 @@ export function ScheduleDetails({
               clearLabel="Limpar"
             />
           </div>
-          {/* Input de data e hora */}
-          <div className="card gap-3">
+          <div className="card gap-3 w-full">
             <label htmlFor="buttondisplay" className="font-bold block mb-2">
               Data
             </label>
             <Calendar
               id="buttondisplay"
-              className="flex-1 bg-gray-50 rounded-md shadow-sm border-gray-300 focus:ring-0 focus:border-none focus-visible:ring-0"
+              className="w-full bg-gray-50 rounded-md shadow-sm border-gray-300 focus:ring-0 focus:border-none focus-visible:ring-0"
               onChange={(date) => handleScheduleChange(index, "date", date)}
               showIcon
               dateFormat="yy/m/d"
             />
           </div>
 
-          <div className="flex items-end gap-2">
-            <div className="card gap-3">
+          <div className="flex items-end gap-0 w-full md:gap-2 flex-wrap md:flex-nowrap ">
+            <div className="card gap-3 w-full">
               <label htmlFor="buttondisplay" className="font-bold block mb-2">
                 Hora
               </label>
@@ -115,10 +110,6 @@ export function ScheduleDetails({
         <Plus />
         Adicionar
       </Button>
-      {/* Botão para exibir os dados */}
-      {/* <Button type="button" onClick={handleSubmit}>
-        Mostrar Dados no Console
-      </Button> */}
     </div>
   );
 }

@@ -21,7 +21,7 @@ export default function Item({ item, activeSegment }: IItem) {
         data-isActive={isActive}
         data-isLogout={isLogout}
         className={cn(
-          "flex items-center gap-x-2 font-bold rounded-lg p-2 transition ease-out group",
+          "flex items-center w-[175px] gap-x-2 font-bold rounded-lg p-2 transition ease-out group",
           {
             "bg-akin-yellow-light/20 text-sky-400": isActive,
             "hover:bg-akin-yellow-light/20": !isLogout && !isActive,

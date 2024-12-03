@@ -21,7 +21,7 @@ const CustomBreadcrumb: React.FC<BreadcrumbProps> = ({
 }) => {
   return (
     <nav className={` ${borderB? "border-b":""} pb-3 ${className}`} aria-label="breadcrumb">
-      <ol className="flex text-lg">
+      <ol className="flex text-lg flex-wrap">
         {items.map((item, index) => (
           <React.Fragment key={index}>
             <li>

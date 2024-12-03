@@ -74,7 +74,7 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="min-w-[700px] h-[600px] overflow-auto">
+      <DialogContent className="w-full h-full sm:h-[95%] lg:min-w-[700px] lg:h-[600px] overflow-auto">
         <DialogHeader>
           <DialogTitle>Alocar Técnicos</DialogTitle>
         </DialogHeader>
@@ -121,7 +121,7 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
                         {filteredTechnicians.map((technician) => (
                           <div
                             key={technician.id}
-                            className={`flex items-center justify-between p-2 rounded-md cursor-pointer ${selectedTechnicians[exam.id]?.some((tech) => tech.id === technician.id)
+                            className={`flex flex-col items-start md:flex-row justify-between p-2  rounded-md cursor-pointer ${selectedTechnicians[exam.id]?.some((tech) => tech.id === technician.id)
                               ? "bg-blue-100"
                               : "hover:bg-gray-100"
                               }`}
@@ -164,7 +164,7 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
             </div>
           ))}
         </div>
-        <DialogFooter className="mt-6">
+        <DialogFooter className="mt-6 flex flex-col-reverse gap-3 lg:flex-row">
           <DialogClose asChild>
             <Button variant="outline" onClick={() => setSelectedTechnicians({})}>
               Cancelar

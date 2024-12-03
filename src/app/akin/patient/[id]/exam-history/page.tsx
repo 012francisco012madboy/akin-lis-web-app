@@ -104,8 +104,8 @@ export default function ExamsHistory() {
     <View.Vertical className=" min-h-screen">
       <CustomBreadcrumb items={breadcrumbItems} borderB />
 
-      <div className="bg-white shadow-md rounded-lg px-5 py-4 flex items-center">
-        <div className="flex h-5 items-center justify-between space-x-4 text-sm w-full">
+      <div className="bg-white shadow-md rounded-lg px-3 md:px-5 py-4 flex items-center">
+        <div className="flex flex-col gap-3 h-max lg:h-5 lg:flex-row lg:items-center lg:justify-between items-start  space-x-4 text-sm w-full">
           <p className="text-md text-gray-600">
             Nome do Paciente:{" "}
             <span className="font-medium text-gray-800">
@@ -119,6 +119,7 @@ export default function ExamsHistory() {
             onSelect={handleSelect}
             placeholder="Exames Realizados"
             clearLabel="Limpar"
+            width="full"
           />
           <Separator orientation="vertical" />
           <Combobox
@@ -127,6 +128,7 @@ export default function ExamsHistory() {
             onSelect={handleSelect}
             placeholder="Selecionar exame"
             clearLabel="Limpar"
+             width="full"
           />
         </div>
       </div>
