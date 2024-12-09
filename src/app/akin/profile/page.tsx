@@ -7,8 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
+import { useQuery } from "@tanstack/react-query";
+import { ___api } from "@/lib/axios";
 
-interface IProfile { }
+interface UserData {
+  nome: string,
+  email: string,
+  senha: string,
+  tipo: string,
+  status: string
+}
+
 const userr = {
   avatar: MOCK_LOGGED_USER.avatar,
   name: MOCK_LOGGED_USER.fullName,
@@ -17,9 +26,20 @@ const userr = {
   email: MOCK_LOGGED_USER.email,
 };
 
-export default function Profile({ }: IProfile) {
-
-  const {user} = useAuthStore()
+export default function Profile() {
+  const { user } = useAuthStore()
+  const { data , isPending} = useQuery({
+    queryKey: ['user-data'],
+    queryFn: async () => {
+      return await ___api.get<UserData>(`/users/${user?.id}`);
+    }
+  })
+   
+  if(isPending){
+    return(
+      <div> Carregando Informações...</div>
+    )
+  }
 
 
   return (
@@ -43,8 +63,8 @@ export default function Profile({ }: IProfile) {
                 />
               </Avatar>
               <div>
-                <CardTitle>{user?.id}</CardTitle>
-                <p className="text-gray-500">{userr.role}</p>
+                <CardTitle>{data ? data.data.nome : "Nome do usuario"}</CardTitle>
+                <p className="text-gray-500">{data ? data.data.tipo : "Acesso do usuario"}</p>
               </div>
               <Button variant="ghost" size="icon" className="ml-auto">
                 <Settings size={18} />
@@ -71,7 +91,7 @@ export default function Profile({ }: IProfile) {
                 />
                 <ProfileDetail
                   label="Email"
-                  value={userr.email}
+                  value={data ? data.data.email : "Email do usuario"}
                   icon={<Mail size={18} />}
                 />
               </CardContent>

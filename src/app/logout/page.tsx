@@ -1,9 +1,11 @@
+"use client";
+import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { redirect } from "next/navigation";
 
-interface ILogout {}
+interface ILogout { }
 
-export default async function Logout({}: ILogout) {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-  redirect("/");
-  return <>Saindo...</>;
+export default function Logout() {
+  useAuthStore().logout();
+
+  redirect('/');
 }
