@@ -1,13 +1,28 @@
+"use client";
 import { AppLayout } from "@/components/layout";
 import { MessageCircleMore } from "lucide-react";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import Loading from "../loading";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "@/utils/zustand-store/authStore";
+
 
 interface IDashboard {
   children: React.ReactNode;
 }
 
 export default function Akin({ children }: IDashboard) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (pathname?.startsWith("/akin/") && user === null) {
+      router.push("/");
+    }
+  }, [pathname, user, router]);
+
+
   return (
     <div className="flex flex-col md:flex-row h-screen overflow-y-auto md:overflow-hidden bg-gray-50">
       {/* Menu Lateral */}
