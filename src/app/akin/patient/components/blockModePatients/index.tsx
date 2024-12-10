@@ -35,10 +35,10 @@ export function BlockMode({ patientList }: { patientList: PatientType[] }) {
                 className="object-cover"
                 src="/images/patient.webp"
                 fill
-                alt={`Foto de ${patient.nome}`}
+                alt={`Foto de ${patient.nome_completo}`}
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                <h3 className="text-lg font-semibold text-white">{patient.nome}</h3>
+                <h3 className="text-lg font-semibold text-white">{patient.nome_completo}</h3>
               </div>
             </div>
 

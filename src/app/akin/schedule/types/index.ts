@@ -10,7 +10,7 @@ export interface IExamProps {
 
 export type Patient = {
   id: string;
-  nome: string;
+  nome_completo: string;
   data_nascimento?: string;
   sexo: {
     nome: string

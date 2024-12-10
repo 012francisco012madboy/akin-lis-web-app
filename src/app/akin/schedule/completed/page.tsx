@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import CardScheduleContainer from "../CardScheduleContainer";
-import { ___api } from "@/lib/axios";
+import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification } from "@/lib/sonner";
 
 export default function Completed() {
@@ -19,7 +19,7 @@ export default function Completed() {
   useEffect(() => {
     const fetchCompletedSchedules = async () => {
       try {
-        const response = await ___api.get("/schedulings/concluded");
+        const response = await _axios.get("/schedulings/concluded");
         setCompletedSchedules(response.data);
       } catch (error) {
         handleError("Erro ao buscar agendamentos concluídos.");

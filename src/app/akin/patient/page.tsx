@@ -1,7 +1,7 @@
 "use client"
 import { AppLayout } from "@/components/layout";
 import { View } from "@/components/view";
-import { ___api } from "@/lib/axios";
+import { _axios } from "@/lib/axios";
 import PatientDisplay from "./patient-display";
 import { useEffect, useState } from "react";
 import CustomBreadcrumb, { BreadcrumbItem } from "@/components/custom-breadcrumb";
@@ -19,7 +19,7 @@ export default function Patient() {
 
   const fetchPatients = async () => {
     try {
-      const response = await ___api.get("/pacients");
+      const response = await _axios.get("/pacients");
       setPatients(response.data);
       setLoading(false);
     } catch (error) {
@@ -42,7 +42,7 @@ export default function Patient() {
       <CustomBreadcrumb items={breadcrumbItems} borderB />
       <View.Scroll>
         {loading ? (
-         <PatientDisplaySkeleton/>
+          <PatientDisplaySkeleton />
         ) : (
           <PatientDisplay patients={patients} />
         )}
@@ -59,9 +59,9 @@ const PatientDisplaySkeleton = () => {
       <div className="flex justify-between items-center w-full mt-2">
         <div className="space-x-1 flex">
           <Skeleton className="size-[50px] bg-gray-500/20" />
-          <Skeleton  className="size-[50px] bg-gray-500/20" />
+          <Skeleton className="size-[50px] bg-gray-500/20" />
         </div>
-        <Skeleton className="w-[400px] h-12 bg-gray-500/20"/>
+        <Skeleton className="w-[400px] h-12 bg-gray-500/20" />
       </div>
 
       <Skeleton className="w-full h-screen bg-gray-500/20" />

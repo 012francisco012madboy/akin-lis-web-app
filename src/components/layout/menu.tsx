@@ -2,15 +2,43 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { useSelectedLayoutSegment } from "next/navigation";
-import { Sheet, SheetTrigger, SheetContent, SheetHeader } from "@/components/ui/sheet"; // Importar os componentes do ShadCN
+import { redirect, useSelectedLayoutSegment } from "next/navigation";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import Item from "./item";
 import { APP_CONFIG } from "@/config/app";
-import { MenuIcon } from "lucide-react"; // Exemplo de ícone para o botão de menu
+import { MenuIcon } from "lucide-react";
+import { useAuthStore } from "@/utils/zustand-store/authStore";
+import { useQuery } from "@tanstack/react-query";
+import { _axios } from "@/lib/axios";
+import { filterRoutesByAccess } from "@/config/filteredAcessRoutes";
+
+interface UserData {
+  nome: string,
+  email: string,
+  senha: string,
+  tipo: string,
+  status: string
+}
 
 export default function Menu() {
   const activeSegment = useSelectedLayoutSegment() as string;
-  const [isSheetOpen, setSheetOpen] = useState(false); // Estado para controlar a abertura do Sheet
+  const [isSheetOpen, setSheetOpen] = useState(false);
+  const { user } = useAuthStore();
+  
+  const { data, isPending } = useQuery({
+    queryKey: ['user-data'],
+    queryFn: async () => {
+      return await _axios.get<UserData>(`/users/${user?.id}`);
+    }
+  })
+
+  if(isPending){
+    return(
+      <p>Carregando...</p>
+    )
+  }
+
+  const routes = filterRoutesByAccess(data!.data.tipo);
 
   return (
     <>
@@ -45,7 +73,7 @@ export default function Menu() {
                   className="space-y-2 mt-4"
                   role="menu"
                 >
-                  {APP_CONFIG.ROUTES.MENU.map((item, index) => (
+                  {routes.map((item, index) => (
                     <Item item={item} key={index} activeSegment={activeSegment} />
                   ))}
                 </ul>
@@ -78,7 +106,7 @@ export default function Menu() {
             className="space-y-1.5 mt-10 gap-2 flex flex-col items-start"
             role="menu"
           >
-            {APP_CONFIG.ROUTES.MENU.map((item, index) => (
+            {routes.map((item, index) => (
               <Item item={item} key={index} activeSegment={activeSegment} />
             ))}
           </ul>

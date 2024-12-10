@@ -2,6 +2,7 @@ import AutoComplete from "@/components/auto-complete";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Patient } from "../../types";
 import { PatientInfo } from "./PatientInfo";
+import Autocomplete from "@/components/ui/autocomplete";
 
 export function PatientDetails({ isLoading, selectedPatient, onPatientSelect, autoCompleteData }: {
   isLoading: boolean,
@@ -22,13 +23,19 @@ export function PatientDetails({ isLoading, selectedPatient, onPatientSelect, au
       ) : (
         <div className="flex rounded-lg gap-5 ">
           <AutoComplete
-            placeholder={selectedPatient?.nome || "Nome completo do paciente"}
+            placeholder={selectedPatient?.nome_completo || "Nome completo do paciente"}
             name="name"
             lookingFor="paciente"
             dataFromServer={autoCompleteData}
             setSelectedItemId={onPatientSelect}
             className="w-full bg-white "
           />
+
+          {/* <Autocomplete
+            suggestions={autoCompleteData}
+            onSelect={onPatientSelect}
+            placeholder="Nome completo do paciente"
+          /> */}
         </div>
       )}
       <PatientInfo patient={selectedPatient} isLoading={isLoading} />

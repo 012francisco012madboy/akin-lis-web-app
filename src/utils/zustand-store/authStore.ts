@@ -35,7 +35,14 @@ export const useAuthStore = create(
         }),
     }),
     {
-      name: 'auth-storage', // Salva o estado no localStorage
+      name: 'auth-token', // Nome da chave no localStorage
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated,
+        login: state.login,
+        logout: state.logout,
+      }), // Mantém a estrutura compatível
     }
   )
 );

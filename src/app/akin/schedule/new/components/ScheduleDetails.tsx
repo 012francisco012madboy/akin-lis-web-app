@@ -2,7 +2,7 @@
 import { Combobox } from "@/components/combobox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { IExamProps } from "../../types";
-import { ___api } from "@/lib/axios";
+import { _axios } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { Calendar } from "primereact/calendar";

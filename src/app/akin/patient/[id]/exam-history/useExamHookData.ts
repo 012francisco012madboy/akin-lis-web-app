@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ___api } from "@/lib/axios";
+import { _axios } from "@/lib/axios";
 
 export interface Exam {
   data: {
@@ -63,7 +63,7 @@ export function useExamHookData(id: string | string[]) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await ___api.get<Exam>(`/exams/history/${id}`);
+        const response = await _axios.get<Exam>(`/exams/history/${id}`);
         setData(response.data);
       } catch (err: any) {
         setError(err.message || "Erro ao carregar os dados.");

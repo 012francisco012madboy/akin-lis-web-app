@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import CardScheduleContainer from "../CardScheduleContainer";
-import { ___api } from "@/lib/axios";
+import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification } from "@/lib/sonner";
 
 export default function Request() {
@@ -12,7 +12,7 @@ export default function Request() {
   useEffect(() => {
     const fetchScheduleData = async () => {
       try {
-        const response = await ___api.get("/schedulings/pending");
+        const response = await _axios.get("/schedulings/pending");
         setRequestSchedule(response.data);
       } catch (error) {
         ___showErrorToastNotification({

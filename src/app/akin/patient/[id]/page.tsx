@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { View } from "@/components/view";
 import { PackageOpen } from "lucide-react";
-import { ___api } from "@/lib/axios";
+import { _axios } from "@/lib/axios";
 import { PatientResumeInfo } from "../components/patientResumeInfo";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -36,7 +36,7 @@ export default function PatientByIdProfile({ params }: IPatientById) {
       setError(null);
 
       try {
-        const response = await ___api.get<PatientType>(`/pacients/${params.id}`);
+        const response = await _axios.get<PatientType>(`/pacients/${params.id}`);
         const patientData = response.data;
 
         if (!patientData?.id) {
@@ -44,7 +44,7 @@ export default function PatientByIdProfile({ params }: IPatientById) {
           return;
         }
 
-        const examResponse = await ___api.get(`/exams/history/${params.id}`);
+        const examResponse = await _axios.get(`/exams/history/${params.id}`);
         setPatient(patientData);
         setExamHistory(examResponse.data);
       } catch (err) {

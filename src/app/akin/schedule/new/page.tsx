@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { ModalNewPatient } from "./components/ModalNewPatient";
-import { ___api } from "@/lib/axios";
+import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { schemaSchedule } from "./schemaZodNewPatient";
 import { IExamProps, Patient } from "../types";
@@ -37,12 +37,12 @@ export default function New() {
 
   const fetchPatientsAndExams = async () => {
     try {
-      const patientsResponse = await ___api.get("pacients");
-      const patientsData = patientsResponse.data.map((patient: Patient) => ({ value: patient.nome, id: patient.id }));
+      const patientsResponse = await _axios.get("pacients");
+      const patientsData = patientsResponse.data.map((patient: Patient) => ({ value: patient.nome_completo, id: patient.id }));
       setPatientAutoComplete(patientsData);
       setAvailablePatients(patientsResponse.data);
 
-      const examsResponse = await ___api.get("/exam-types");
+      const examsResponse = await _axios.get("/exam-types");
       setAvailableExams(examsResponse.data.data);
 
       ___showSuccessToastNotification({ message: "Dados obtidos com sucesso!" });
@@ -54,7 +54,7 @@ export default function New() {
   };
 
   const handleSavePatient = (patient: Patient) => {
-    setPatientAutoComplete((prev) => [...prev, { value: patient.nome, id: patient.id }]);
+    setPatientAutoComplete((prev) => [...prev, { value: patient.nome_completo, id: patient.id }]);
     setAvailablePatients((prev) => [...prev, patient]);
     setSelectedPatient(patient);
   };
@@ -109,9 +109,9 @@ export default function New() {
     const getIdentityInput = document.getElementsByName("identity")[0] as HTMLInputElement;
     const getAutocompleteInput = document.getElementsByName("name")[0] as HTMLInputElement
 
-    
+
     // Resetar os valores dos campos
-    if(getAutocompleteInput)getAutocompleteInput.value="";
+    if (getAutocompleteInput) getAutocompleteInput.value = "";
     if (getCalendaryInput) getCalendaryInput.value = "";
     if (getGenderInput) getGenderInput.value = "";
     if (getPhoneNumberInput) getPhoneNumberInput.value = "";
@@ -125,7 +125,7 @@ export default function New() {
 
     setIsSaving(true);
     try {
-      const response = await ___api.post("/schedulings/set-schedule", validation.data);
+      const response = await _axios.post("/schedulings/set-schedule", validation.data);
       if (response.status === 201) {
         ___showSuccessToastNotification({ message: "Agendamento marcado com sucesso" });
         setSchedules([]);

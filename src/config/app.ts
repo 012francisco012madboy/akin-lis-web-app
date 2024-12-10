@@ -1,6 +1,24 @@
 import osapiLogo from "@/assets/images/osapi-logo.png";
 import osapiLogoWhite from "@/assets/images/osapi-logo-white.png";
-import { Home, CalendarCheck, LayoutDashboard, UserRound, CreditCard, MessageSquareMore, Send, Mail, LogOut, Settings2, Settings, Cog, Wrench, UsersRound, CalendarPlus2, CalendarSearch, CalendarCheck2 } from "lucide-react";
+import { 
+  Home, 
+  CalendarCheck, 
+  LayoutDashboard, 
+  UserRound, 
+  CreditCard, 
+  MessageSquareMore, 
+  Send, 
+  Mail, 
+  LogOut, 
+  Settings2, 
+  Settings, 
+  Cog, 
+  Wrench, 
+  UsersRound, 
+  CalendarPlus2, 
+  CalendarSearch, 
+  CalendarCheck2 
+} from "lucide-react";
 
 export const APP_CONFIG = {
   COMPANY_NAME: "OsapiCare AKIN",
@@ -10,19 +28,74 @@ export const APP_CONFIG = {
   LOGO_WHITE: osapiLogoWhite,
   ROUTES: {
     MENU: [
-      { label: "Dashboard", icon: LayoutDashboard, path: "/akin/dashboard" },
-      { label: "Agendamentos", icon: CalendarCheck, path: "/akin/schedule/new" },
-      { label: "Pacientes", icon: UsersRound, path: "/akin/patient" },
-      { label: "Pagamentos", icon: CreditCard, path: "/akin/payment" },
-      { label: "Mensagens", icon: MessageSquareMore, path: "/akin/message" },
-      { label: "Definições", icon: Settings, path: "/akin/setting" },
-      { label: "Perfil", icon: UserRound, path: "/akin/profile" },
-      { label: "Sair", icon: LogOut, path: "/logout" },
+      { 
+        label: "Dashboard", 
+        icon: LayoutDashboard, 
+        path: "/akin/dashboard", 
+        access: [ "CHEFE", "TECNICO"] 
+      },
+      { 
+        label: "Agendamentos", 
+        icon: CalendarCheck, 
+        path: "/akin/schedule/new", 
+        access: ["RECEPCIONISTA", "CHEFE"] 
+      },
+      { 
+        label: "Pacientes", 
+        icon: UsersRound, 
+        path: "/akin/patient", 
+        access: ["RECEPCIONISTA","CHEFE", "TECNICO"] 
+      },
+      { 
+        label: "Pagamentos", 
+        icon: CreditCard, 
+        path: "/akin/payment", 
+        access: ["CHEFE"] 
+      },
+      { 
+        label: "Mensagens", 
+        icon: MessageSquareMore, 
+        path: "/akin/message", 
+        access: ["RECEPCIONISTA","TECNICO", "CHEFE"] 
+      },
+      { 
+        label: "Definições", 
+        icon: Settings, 
+        path: "/akin/setting", 
+        access: ["CHEFE"] 
+      },
+      { 
+        label: "Perfil", 
+        icon: UserRound, 
+        path: "/akin/profile", 
+        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] 
+      },
+      { 
+        label: "Sair", 
+        icon: LogOut, 
+        path: "/logout", 
+        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] 
+      },
     ],
     SCHEDULE: [
-      { label: "Novo", icon: CalendarPlus2, path: "/akin/schedule/new" },
-      { label: "Solicitações", icon: CalendarSearch, path: "/akin/schedule/request" },
-      { label: "Concluídos", icon: CalendarCheck2, path: "/akin/schedule/completed" },
+      { 
+        label: "Novo", 
+        icon: CalendarPlus2, 
+        path: "/akin/schedule/new", 
+        access: ["RECEPCIONISTA", "CHEFE"] 
+      },
+      { 
+        label: "Solicitações", 
+        icon: CalendarSearch, 
+        path: "/akin/schedule/request", 
+        access: ["RECEPCIONISTA","TECNICO", "CHEFE"] 
+      },
+      { 
+        label: "Concluídos", 
+        icon: CalendarCheck2, 
+        path: "/akin/schedule/completed", 
+        access: ["RECEPCIONISTA","CHEFE", "TECNICO"] 
+      },
     ],
     PATIENT: {
       INDIVIDUAL_PATIENT_LINK(id: string) {
@@ -30,7 +103,12 @@ export const APP_CONFIG = {
       },
     },
     ALTERNATIVE: {
-      PROFILE: { label: "Perfil", icon: null, path: "/akin/..." },
+      PROFILE: { 
+        label: "Perfil", 
+        icon: null, 
+        path: "/akin/...", 
+        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] 
+      },
     },
   },
 };

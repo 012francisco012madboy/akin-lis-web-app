@@ -10,7 +10,7 @@ import { Input } from "../ui/input"
 import { APP_CONFIG } from "@/config/app"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { ___api } from "@/lib/axios"
+import { _axios } from "@/lib/axios"
 import { useAuthStore } from "@/utils/zustand-store/authStore"
 
 type User = {
@@ -33,19 +33,16 @@ export const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const response = await ___api.post<User>('/auth/local/signin', { email, senha });
-      console.log(response.data)
-      const { access_token } = response.data;
 
+    try {
+      const response = await _axios.post<User>('/auth/local/signin', { email, senha });
+      const { access_token } = response.data;
       login(access_token, response.data);
       router.push('/akin/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Erro ao autenticar');
     }
   };
-
-
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-5">

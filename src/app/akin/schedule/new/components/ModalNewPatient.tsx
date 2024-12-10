@@ -6,7 +6,7 @@ import { LoaderCircle, Save, UserRoundPlus } from "lucide-react";
 import { useState } from "react";
 import { schemaSchedule } from "../schemaZodNewPatient";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
-import { ___api } from "@/lib/axios";
+import { _axios } from "@/lib/axios";
 
 const genders = [
   { id: 1, value: "Masculino" },
@@ -51,7 +51,7 @@ export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: 
   const savePatientData = async (patientData: object) => {
     setIsSaving(true);
     try {
-      const res = await ___api.post("/pacients", patientData);
+      const res = await _axios.post("/pacients", patientData);
 
       if (res.status === 201) {
         ___showSuccessToastNotification({ message: "Paciente cadastrado com sucesso" });

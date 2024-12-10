@@ -6,7 +6,7 @@ import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { useExamHookData } from "./useExamHookData";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
-import { ___api } from "@/lib/axios";
+import { _axios } from "@/lib/axios";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Combobox } from "@/components/combobox";
 import { IExamProps } from "@/app/akin/schedule/types";
@@ -44,7 +44,7 @@ const examsFilter: IExamProps[] = [
   },
   {
     id: "3",
-    
+
     nome: 'Exames Cancelados',
   },
 ]
@@ -60,10 +60,10 @@ export default function ExamsHistory() {
   useEffect(() => {
     const fetchExams = async () => {
       try {
-        const patientNome = await ___api.get<PatientType>(`/pacients/${id}`);
-        setNamePatient(patientNome.data.nome);
+        const patientNome = await _axios.get<PatientType>(`/pacients/${id}`);
+        setNamePatient(patientNome.data.nome_completo);
 
-        const response = await ___api.get("/exam-types")
+        const response = await _axios.get("/exam-types")
         setExams(response.data.data)
       } catch (error) {
         console.error("Error fetching exams:", error)
@@ -128,7 +128,7 @@ export default function ExamsHistory() {
             onSelect={handleSelect}
             placeholder="Selecionar exame"
             clearLabel="Limpar"
-             width="full"
+            width="full"
           />
         </div>
       </div>

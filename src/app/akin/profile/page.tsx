@@ -8,9 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { useQuery } from "@tanstack/react-query";
-import { ___api } from "@/lib/axios";
+import { _axios } from "@/lib/axios";
 
-interface UserData {
+export interface UserData {
   nome: string,
   email: string,
   senha: string,
@@ -28,15 +28,15 @@ const userr = {
 
 export default function Profile() {
   const { user } = useAuthStore()
-  const { data , isPending} = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ['user-data'],
     queryFn: async () => {
-      return await ___api.get<UserData>(`/users/${user?.id}`);
+      return await _axios.get<UserData>(`/users/${user?.id}`);
     }
   })
-   
-  if(isPending){
-    return(
+
+  if (isPending) {
+    return (
       <div> Carregando Informações...</div>
     )
   }

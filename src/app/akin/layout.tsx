@@ -27,7 +27,6 @@ export default function Akin({ children }: IDashboard) {
     }
   }, [pathname, user, router]);
 
-
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex flex-col md:flex-row h-screen overflow-y-auto md:overflow-hidden bg-gray-50">

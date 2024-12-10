@@ -19,7 +19,7 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
     setIsSearching(searchText.length > 0);
 
     const foundPatients = patients.filter((patient) =>
-      patient.nome.toLowerCase().includes(searchText.toLowerCase())
+      patient.nome_completo.toLowerCase().includes(searchText.toLowerCase())
     );
     setFilteredPatients(foundPatients);
   }

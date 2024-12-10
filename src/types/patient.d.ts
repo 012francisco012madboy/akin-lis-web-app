@@ -1,7 +1,7 @@
 interface PatientType {
   id: string;
   numero_identificacao: string;
-  nome: string;
+  nome_completo: string;
   data_nascimento: string;
   contacto_telefonico: string;
   data_registro: string;

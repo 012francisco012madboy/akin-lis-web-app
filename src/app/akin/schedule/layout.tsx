@@ -7,6 +7,11 @@ import { View } from "@/components/view";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
+import { useAuthStore } from "@/utils/zustand-store/authStore";
+import { useQuery } from "@tanstack/react-query";
+import { _axios } from "@/lib/axios";
+import { UserData } from "../profile/page";
+import { filterRoutesByAccess, filterSheduleByAccess } from "@/config/filteredAcessRoutes";
 
 interface ISchedule {
   children: React.ReactNode;
@@ -20,10 +25,25 @@ const breadcumbItem = [
 
 export default function Schedule({ children }: ISchedule) {
   const pathname = usePathname();
-  const items = APP_CONFIG.ROUTES.SCHEDULE;
+  const { user } = useAuthStore();
+  
+  const { data, isPending } = useQuery({
+    queryKey: ['user-data'],
+    queryFn: async () => {
+      return await _axios.get<UserData>(`/users/${user?.id}`);
+    }
+  })
+
+  if(isPending){
+    return(
+      <p>Carregando...</p>
+    )
+  }
+
+  const routes = filterSheduleByAccess(data!.data.tipo);
 
   // Encontra o item que corresponde ao pathname atual
-  const activeTab = items.find((item) => pathname === item.path)?.path || items[0].path;
+  const activeTab = routes.find((item) => pathname === item.path)?.path || routes[0].path;
 
   return (
     <View.Vertical className="gap-4 h-screen">
@@ -32,7 +52,7 @@ export default function Schedule({ children }: ISchedule) {
 
         <Tabs defaultValue={activeTab} className="w-[400px] flex md:justify-end">
           <TabsList>
-            {items.map((item) => (
+            {routes.map((item) => (
               <Link href={item.path} key={item.path}>
                 <TabsTrigger value={item.path} className="data-[state=active]:bg-akin-turquoise data-[state=active]:text-white font-semibold" >{item.label}</TabsTrigger>
               </Link>

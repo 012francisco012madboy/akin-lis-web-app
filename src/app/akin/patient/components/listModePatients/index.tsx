@@ -40,7 +40,7 @@ export function ListMode({ patientList }: { patientList: PatientType[] }) {
               key={index}
               className="even:bg-gray-50 hover:bg-gray-100 transition-colors duration-150"
             >
-              <td className="px-4 py-3 text-gray-700">{patient.nome}</td>
+              <td className="px-4 py-3 text-gray-700">{patient.nome_completo}</td>
               <td className="px-4 py-3 text-gray-700">{patient.numero_identificacao}</td>
               <td className="px-4 py-3 text-gray-700">
                 {2024 - Number(new Date(patient.data_nascimento).getFullYear())}
@@ -53,7 +53,7 @@ export function ListMode({ patientList }: { patientList: PatientType[] }) {
                 <Link
                   href={APP_CONFIG.ROUTES.PATIENT.INDIVIDUAL_PATIENT_LINK(patient.id)}
                   className="inline-block rounded bg-blue-600 px-4 py-2 text-xs font-medium text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
-                  aria-label={`Ver detalhes de ${patient.nome}`}
+                  aria-label={`Ver detalhes de ${patient.nome_completo}`}
                 >
                   Ver Paciente
                 </Link>
