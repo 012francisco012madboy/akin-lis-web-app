@@ -1,39 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import CardScheduleContainer from "../CardScheduleContainer";
 import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification } from "@/lib/sonner";
+import { useQuery } from "@tanstack/react-query";
+
+function groupSchedulesByPatient(schedules: ScheduleType[]): Record<string, ScheduleType> {
+  return schedules.reduce((acc, schedule) => {
+    const patientId = schedule.Paciente.id;
+
+    if (!acc[patientId]) {
+      acc[patientId] = { ...schedule, Exame: [...schedule.Exame] };
+    } else {
+      acc[patientId].Exame.push(...schedule.Exame);
+    }
+
+    return acc;
+  }, {} as Record<string, ScheduleType>);
+}
 
 export default function Completed() {
-  const [completedSchedules, setCompletedSchedules] = useState<ScheduleType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data, isPending } = useQuery({
+    queryKey: ['schedules'],
+    queryFn: async () => {
+      return await _axios.get<ScheduleType[]>("/schedulings/concluded")
+    }
+  })
+  
 
-  const handleError = (message: string) => {
-    ___showErrorToastNotification({
-      message: message || "Erro inesperado ao buscar dados. Tente novamente ou contate o suporte."
-    });
-    setIsLoading(false);
-  };
+  if (isPending) {
+    return <p>Processando...</p>
+  }
 
-  useEffect(() => {
-    const fetchCompletedSchedules = async () => {
-      try {
-        const response = await _axios.get("/schedulings/concluded");
-        setCompletedSchedules(response.data);
-      } catch (error) {
-        handleError("Erro ao buscar agendamentos concluídos.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCompletedSchedules();
-  }, []);
+  const groupedSchedules = groupSchedulesByPatient(data?.data || []);
+  const groupedSchedulesArray = Object.values(groupedSchedules);
 
   return (
     <div className="h-max px-6 pb-6">
-      <CardScheduleContainer isLoading={isLoading} title="Agendamentos Concluídos" schedule={completedSchedules} />
+      <CardScheduleContainer
+        isLoading={isPending}
+        title="Agendamentos Concluídos"
+        schedule={groupedSchedulesArray}
+      />
     </div>
   );
 }
