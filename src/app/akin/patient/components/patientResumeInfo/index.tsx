@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Exam } from "../../[id]/exam-history/useExamHookData";
 import { useState } from "react";
+import { ResponseData } from "../../[id]/next-exam/types";
 
 // Componentes reutilizáveis
 function InfoItem({ label, value }: { label: string; value: string }) {
@@ -66,9 +67,17 @@ function AvatarSection({ imageSrc }: { imageSrc: string }) {
 }
 
 // Componente principal
-export function PatientResumeInfo({ patient, basicExamHistory }: { patient: PatientType, basicExamHistory?: Exam }) {
+export function PatientResumeInfo({
+  patient,
+  basicExamHistory,
+  basicNextExam
+}: {
+  patient: PatientType,
+  basicExamHistory?: Exam,
+  basicNextExam?: ResponseData
+}) {
   const personalInfo = [
-    { label: "Nome do paciente", value: patient.nome },
+    { label: "Nome do paciente", value: patient.nome_completo },
     { label: "Bilhete de Identidade", value: patient.numero_identificacao },
     { label: "Gênero", value: patient.id_sexo === 1 ? "Masculino" : "Feminino" },
     { label: "Data de nascimento", value: new Date(patient.data_nascimento).toLocaleDateString() },
@@ -92,7 +101,7 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
           <CardDescription>
             <InfoGroup
               items={[
-                { label: "Paciente registado", value: new Date(patient.data_registro).toLocaleString() },
+                { label: "Paciente registado", value: new Date(patient.data_registro).toString() },
               ]}
             />
             <InfoGroup title="Técnicos já alocados" items={assignedStaff} />
@@ -156,18 +165,19 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
             <CardTitle className="text-lg font-semibold text-gray-800">Próximos Exames</CardTitle>
           </CardHeader>
           <CardContent className="p-4 space-y-4">
-            {basicExamHistory?.data && basicExamHistory.data.length > 0 ? (
-              basicExamHistory.data.slice(0, 1).map((exam, index) => (
+            {basicNextExam?.data && basicNextExam.data.length > 0 ? (
+              basicNextExam.data.slice(0, 1).map((exam, index) => (
                 <div
                   key={index}
                   className="flex flex-col gap-2 bg-white shadow-sm rounded-md p-4 border border-gray-100 hover:shadow-md transition-shadow"
                 >
-                  <p className="font-semibold text-gray-800 text-base">{exam.exame.nome}</p>
+                  <p className="font-semibold text-gray-800 text-base">{exam.Tipo_Exame.nome}</p>
                   <p className="text-sm text-gray-600">
-                    <strong>Data de Agendamento:</strong> {exam.Agendamento.data_agendamento}
+                    <strong>Data de Agendamento:</strong> {exam.data_agendamento
+                    }
                   </p>
                   <p className="text-sm text-gray-600">
-                    <strong>Hora do Exame:</strong> {exam.Agendamento.hora_agendamento}
+                    <strong>Hora do Exame:</strong> {exam.hora_agendamento}
                   </p>
                 </div>
               ))
@@ -177,7 +187,7 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
           </CardContent>
           {basicExamHistory!.data.length > 2 ? (
             <CardFooter className="bg-gray-50 p-4 border-t w-full">
-              <Link href={`${patient.id}/exam-history`} passHref>
+              <Link href={`${patient.id}/next-exam`} passHref>
                 <Button className="w-[295px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
                   Ver mais históricos
                 </Button>
@@ -185,7 +195,7 @@ export function PatientResumeInfo({ patient, basicExamHistory }: { patient: Pati
             </CardFooter>
           ) : (
             <CardFooter className="bg-gray-50 p-4 border-t">
-              <Link href={`${patient.id}/exam-history`} passHref>
+              <Link href={`${patient.id}/next-exam`} passHref>
                 <Button className="w-[300px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
                   Ver todos
                 </Button>

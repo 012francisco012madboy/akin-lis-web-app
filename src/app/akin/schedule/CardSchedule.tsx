@@ -117,7 +117,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
 
           {/* Patient Information */}
           <div className="w-full px-4 py-2 space-y-1.5 flex flex-col mt-2 text-gray-800">
-            <h1 className="text-xl font-semibold">{data.Paciente?.nome}</h1>
+            <h1 className="text-xl font-semibold">{data.Paciente?.nome_completo}</h1>
             <span className="text-sm text-gray-500">BI: {data.Paciente?.numero_identificacao}</span>
             <span className="text-sm text-gray-500">Sexo: {data.Paciente?.id_sexo === 1 ? "Masculino" : "Feminino"}</span>
             <span className="text-sm text-gray-500">Idade: {age}</span>

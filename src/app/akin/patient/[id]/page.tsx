@@ -1,64 +1,52 @@
 "use client";
-
-import { useEffect, useState } from "react";
 import { View } from "@/components/view";
 import { PackageOpen } from "lucide-react";
 import { _axios } from "@/lib/axios";
 import { PatientResumeInfo } from "../components/patientResumeInfo";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from "@tanstack/react-query";
+import { ResponseData } from "./next-exam/types";
+import { Exam } from "./exam-history/useExamHookData";
 
 interface IPatientById {
   params: {
     id: string;
   };
 }
+const breadcrumbItems = [
+  {
+    label: "Paciente",
+    href: "/akin/patient"
+  },
+  {
+    label: "Perfil do paciente"
+  }
+];
 
 export default function PatientByIdProfile({ params }: IPatientById) {
-  const [patient, setPatient] = useState<PatientType | null>(null);
-  const [examHistory, setExamHistory] = useState<any>(null); // Ajuste o tipo conforme necessário
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const breadcrumbItems = [
-    {
-      label: "Paciente",
-      href: "/akin/patient"
-    },
-    {
-      label: "Perfil do paciente"
+  const { data, isPending } = useQuery({
+    queryKey: ["next-exam",params.id],
+    queryFn: async () => {
+      return await _axios.get<ResponseData>(`/exams/next/${params.id}`);
     }
-  ];
+  });
 
-  useEffect(() => {
-    async function fetchPatientData() {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const response = await _axios.get<PatientType>(`/pacients/${params.id}`);
-        const patientData = response.data;
-
-        if (!patientData?.id) {
-          setPatient(null);
-          return;
-        }
-
-        const examResponse = await _axios.get(`/exams/history/${params.id}`);
-        setPatient(patientData);
-        setExamHistory(examResponse.data);
-      } catch (err) {
-        console.error(`Erro ao buscar o paciente com ID ${params.id}:`, err);
-        setError("Erro ao carregar o perfil do paciente.");
-      } finally {
-        setLoading(false);
-      }
+  const getBasicExamHistory = useQuery({
+    queryKey:['history-exam',params.id],
+    queryFn: async () => {
+      return await _axios.get<Exam>(`/exams/history/${params.id}`);
     }
+  })
 
-    fetchPatientData();
-  }, [params.id]);
+  const getPatientInfo = useQuery({
+    queryKey:['patient-info',params.id],
+    queryFn: async () => {
+      return await _axios.get<PatientType>(`/pacients/${params.id}`);
+    }
+  })
 
-  if (loading) {
+  if (isPending || getBasicExamHistory.isPending || getPatientInfo.isPending) {
     return (
       <View.Vertical className="h-screen">
         <CustomBreadcrumb items={breadcrumbItems} borderB />
@@ -68,11 +56,11 @@ export default function PatientByIdProfile({ params }: IPatientById) {
     )
   }
 
-  if (error) {
-    return <p className="text-center text-red-500">{error}</p>;
+  if (getPatientInfo.error) {
+    return <p className="text-center text-red-500">{getPatientInfo.error.message}</p>;
   }
 
-  if (!patient) {
+  if (!getPatientInfo.data?.data) {
     return <NoPatientFound id={params.id} />;
   }
 
@@ -81,13 +69,12 @@ export default function PatientByIdProfile({ params }: IPatientById) {
       <CustomBreadcrumb items={breadcrumbItems} borderB />
 
       <div className="flex gap-4  text-akin-white-smoke p-0 rounded-lg w-full h-full">
-        <PatientResumeInfo patient={patient} basicExamHistory={examHistory} />
+        <PatientResumeInfo patient={getPatientInfo.data!.data} basicExamHistory={getBasicExamHistory.data?.data} basicNextExam={data?.data} />
       </div>
 
     </View.Vertical>
   );
 }
-
 function NoPatientFound({ id }: { id: string }) {
   return (
     <div className="flex flex-col items-center justify-center text-sky-800 p-8 rounded space-y-4 my-auto">
@@ -98,7 +85,6 @@ function NoPatientFound({ id }: { id: string }) {
     </div>
   );
 }
-
 
 const PatientByIdProfileSkeleton = () => {
   return (
