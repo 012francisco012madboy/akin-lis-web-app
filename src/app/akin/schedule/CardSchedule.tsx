@@ -19,26 +19,33 @@ export default function CardSchedule({ data }: ICardSchedule) {
   const [showExams, setShowExams] = useState(false);
   const [groupedExams, setGroupedExams] = useState<Exam[]>([]);
 
+
   const tecnico = useQuery({
     queryKey: ["lab-tech"],
     queryFn: async () => {
       return await _axios.get<LabTechnician[]>("lab-technicians");
-    }
-  })
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutos
+  });
 
   const handleGroupExams = () => {
-    const exams = data.Exame.map((exame) => ({
-      id: exame.id,
-      name: exame.Tipo_Exame.nome || "Nome não disponível",
-      scheduledAt: exame.data_agendamento,
-      
-    }));
-    setGroupedExams(exams);
+    if (data?.Exame?.length > 0) {
+      const exams = data.Exame.map((exame) => ({
+        id: exame.id,
+        name: exame.Tipo_Exame?.nome || "Nome não disponível",
+        scheduledAt: exame.data_agendamento,
+
+      }));
+      // @ts-ignore
+      setGroupedExams(exams);
+    }
   };
 
-  const age = new Date().getFullYear() - new Date(data.Paciente.data_nascimento).getFullYear();
-  const formattedDate = new Date(data.data_agendamento).toLocaleString();
-//[&::-webkit-scrollbar]:hidden 
+  const age =
+    data?.Paciente?.data_nascimento &&
+    new Date().getFullYear() - new Date(data.Paciente.data_nascimento).getFullYear();
+
+  //[&::-webkit-scrollbar]:hidden 
   return (
     <div className="card shadow-xl border border-gray-300 rounded-lg flex flex-col items-center bg-white min-h-[400px] max-h-[250px] overflow-hidden transition-all duration-300 hover:scale-105">
       {/* Exame Information */}
@@ -85,7 +92,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
                     className={` text-xs font-medium  ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
                       }`}
                   >
-                    { ( exame.id_tecnico_alocado && exame.id_tecnico_alocado!.length>0)  ? `${"1"} alocado(s)` : "Sem técnico alocado"}
+                    {(exame.id_tecnico_alocado && exame.id_tecnico_alocado!.length > 0) ? `${"1"} alocado(s)` : "Sem técnico alocado"}
                   </span>
                 </p>
               </div>

@@ -16,16 +16,17 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
   const handleSearch = (searchText: string) => {
     setIsSearching(!!searchText);
 
-    const filtered = schedule.filter((s) =>
-      s.Paciente?.nome_completo.toLowerCase().includes(searchText.toLowerCase())
-    );
-    setFilteredSchedule(filtered);
+    if (schedule) {
+      const filtered = schedule.filter((s) =>
+        s.Paciente?.nome_completo?.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilteredSchedule(filtered);
+    }
   };
 
   useEffect(() => {
     setFilteredSchedule(schedule);
   }, [schedule]);
-
   return (
     <section className="p-6 space-y-6">
       {/* Header */}
@@ -60,15 +61,17 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
             animationDuration=".5s"
           />
         </div>
-      ) : filteredSchedule.length === 0 ? (
-        <div className="flex items-center justify-center h-40">
-          <p className="text-gray-500">Não há agendamentos disponíveis</p>
-        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredSchedule.map((data, index) => (
-            <CardSchedule key={index} data={data} />
-          ))}
+        <div>
+          {filteredSchedule.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredSchedule.map((data, index) => (
+                <CardSchedule key={index} data={data} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">Nenhum agendamento encontrado.</p>
+          )}
         </div>
       )}
     </section>
