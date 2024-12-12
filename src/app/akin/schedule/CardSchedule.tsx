@@ -31,19 +31,20 @@ export default function CardSchedule({ data }: ICardSchedule) {
       id: exame.id,
       name: exame.Tipo_Exame.nome || "Nome não disponível",
       scheduledAt: exame.data_agendamento,
+      
     }));
     setGroupedExams(exams);
   };
 
   const age = new Date().getFullYear() - new Date(data.Paciente.data_nascimento).getFullYear();
   const formattedDate = new Date(data.data_agendamento).toLocaleString();
-
+//[&::-webkit-scrollbar]:hidden 
   return (
-    <div className="card shadow-xl border border-gray-300 rounded-lg flex flex-col items-center bg-white min-h-[23rem] max-h-[23rem] overflow-hidden transition-all duration-300 hover:scale-105">
+    <div className="card shadow-xl border border-gray-300 rounded-lg flex flex-col items-center bg-white min-h-[400px] max-h-[250px] overflow-hidden transition-all duration-300 hover:scale-105">
       {/* Exame Information */}
       {showExams ? (
         <div className="flex-1 rounded-t-lg w-full [&::-webkit-scrollbar]:hidden space-y-4 p-4 h-[19.2rem]">
-          <View.Scroll className="max-h-full pl-4 [&::-webkit-scrollbar]:hidden overflow-y-auto space-y-2">
+          <View.Scroll className="max-h-full pl-4 overflow-y-auto space-y-2">
             {data.Exame.map((exame) => (
               <div key={exame.id} className="w-full pb-4 border-b border-gray-200 ">
                 <p className="font-semibold text-xl"> {exame.Tipo_Exame.nome || "Nome não disponível"}</p>
@@ -75,6 +76,16 @@ export default function CardSchedule({ data }: ICardSchedule) {
                       }`}
                   >
                     {exame.hora_agendamento}
+                  </span>
+                </p>
+                <p className="pl-6  text-gray-500 text-sm font-semibold">
+                  Técnicos Alocados:{" "}
+                  <span
+
+                    className={` text-xs font-medium  ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
+                      }`}
+                  >
+                    { ( exame.id_tecnico_alocado && exame.id_tecnico_alocado!.length>0)  ? `${"1"} alocado(s)` : "Sem técnico alocado"}
                   </span>
                 </p>
               </div>
@@ -114,7 +125,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
       )}
 
       {/* Toggle Button */}
-      <div className="w-full flex flex-col lg:flex-row mt-4 gap-3 px-4 pb-2 text-sm">
+      <div className="w-full flex flex-col lg:flex-row  gap-3 px-4  pb-2 text-sm">
         <Primary
           className="w-full h-full flex justify-center bg-cyan-600 text-white font-semibold py-2 rounded-b-lg  transition-all duration-300 hover:bg-cyan-500 outline-none"
           onClick={() => setShowExams((prev) => !prev)}
