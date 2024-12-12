@@ -15,6 +15,15 @@ import { _axios } from "@/lib/axios";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 
+const validateEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const validatePassword = (password: string): boolean => {
+  return password.length >= 6;
+};
+
 type User = {
   id: string;
   access_token: string;
@@ -24,6 +33,8 @@ type User = {
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [senha, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const login = useAuthStore((state) => state.login);
   const { isAuthenticated, user } = useAuthStore();
   const router = useRouter();
@@ -34,16 +45,17 @@ export const Login = () => {
       return response.data;
     },
     onSuccess: (data) => {
-      ___showSuccessToastNotification({message:"Autenticação realizada!"})
+      ___showSuccessToastNotification({ message: "Autenticação realizada!" });
       login(data.access_token, data);
       router.push("/akin/dashboard");
     },
     onError: (error: any) => {
       console.error(error);
-      ___showErrorToastNotification(error.response?.data?.message || "Erro ao autenticar");
+      ___showErrorToastNotification({
+        message: error.response?.data?.message || "Erro ao autenticar",
+      });
     },
-  }
-  );
+  });
 
   useEffect(() => {
     if (user) router.push("/akin/dashboard");
@@ -51,7 +63,26 @@ export const Login = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    loginMutation.mutate();
+
+    let hasError = false;
+
+    if (!validateEmail(email)) {
+      setEmailError("Email inválido");
+      hasError = true;
+    } else {
+      setEmailError("");
+    }
+
+    if (!validatePassword(senha)) {
+      setPasswordError("A senha deve ter pelo menos 6 caracteres");
+      hasError = true;
+    } else {
+      setPasswordError("");
+    }
+
+    if (!hasError) {
+      loginMutation.mutate();
+    }
   };
 
   return (
@@ -85,6 +116,7 @@ export const Login = () => {
                 aria-label="Digite seu e-mail"
                 className="mt-2"
               />
+              {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
             </div>
 
             {/* Password Input */}
@@ -101,6 +133,7 @@ export const Login = () => {
                 aria-label="Digite sua senha"
                 className="mt-2"
               />
+              {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
             </div>
 
             {/* Remember Me and Forgot Password */}
