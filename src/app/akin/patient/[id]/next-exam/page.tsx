@@ -79,7 +79,7 @@ const UpcomingExams = () => {
     : data?.data.data;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-y-scroll [&::-webkit-scrollbar]:hidden">
       <CustomBreadcrumb items={breadcrumbItems} borderB />
 
       <div className="bg-white shadow-md rounded-lg px-3 md:px-5 py-4 flex items-center my-5">
