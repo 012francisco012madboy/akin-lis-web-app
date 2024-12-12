@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ListMode } from "./components/listModePatients";
 import { BlockMode } from "./components/blockModePatients";
 import { GridOrBlockDisplayButton } from "./components/gridOrBlockButtonMode";
+import { Input } from "@/components/ui/input";
 
 interface PatientDisplay {
   patients: PatientType[];
@@ -38,8 +39,8 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
 
         {/* Campo de busca */}
         <div className="w-full sm:w-auto">
-          <InputText
-            className="w-full sm:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+          <Input
+            className="w-full sm:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus-visible:ring-0"
             placeholder="Procurar por nome"
             onChange={(e) => handleSearch(e.target.value)}
           />
@@ -52,20 +53,20 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
           )}
         </div>
       </div>
-
-      {/* Visualização dos pacientes */}
-      {filteredPatients.length > 0 ? (
-        <>
-          {displayMode === "list" && <ListMode patientList={filteredPatients} />}
-          {displayMode === "block" && <BlockMode patientList={filteredPatients} />}
-        </>
-      ) : (
-        <div className="py-12 text-center">
-          <p className="text-lg text-gray-500">
-            Nenhum paciente encontrado.
-          </p>
-        </div>
-      )}
+      {
+        filteredPatients.length > 0 ? (
+          <>
+            {displayMode === "list" && <ListMode patientList={filteredPatients} />}
+            {displayMode === "block" && <BlockMode patientList={filteredPatients} />}
+          </>
+        ) : (
+          <div className="py-12 text-center">
+            <p className="text-lg text-gray-500">
+              Nenhum paciente encontrado.
+            </p>
+          </div>
+        )
+      }
     </div>
   );
 }

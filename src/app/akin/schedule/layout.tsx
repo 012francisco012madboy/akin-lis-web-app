@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
-import { UserData } from "../profile/page";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ISchedule {
   children: React.ReactNode;
@@ -17,10 +17,11 @@ interface ISchedule {
 
 const breadcumbItem = [
   {
-    label: "Agendamento"
-  }
+    label: "Agendamento",
+  },
 ];
- const filterSheduleByAccess = (schedule: string) => {
+
+const filterScheduleByAccess = (schedule: string) => {
   return APP_CONFIG.ROUTES.SCHEDULE.filter((route) =>
     route.access?.includes(schedule)
   );
@@ -29,21 +30,30 @@ const breadcumbItem = [
 export default function Schedule({ children }: ISchedule) {
   const pathname = usePathname();
   const { user } = useAuthStore();
-  
-  const { data, isPending } = useQuery({
-    queryKey: ['user-data'],
-    queryFn: async () => {
-      return await _axios.get<UserData>(`/users/${user?.id}`);
-    }
-  })
 
-  if(isPending){
-    return(
-      <p>Carregando...</p>
-    )
+  const { data, isLoading } = useQuery({
+    queryKey: ["user-data"],
+    queryFn: async () => {
+      return await _axios.get(`/users/${user?.id}`);
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="h-full flex-col space-y-5 ">
+        <div className=" flex w-full justify-between">
+          <CustomBreadcrumb items={breadcumbItem} />
+          <Skeleton className="h-[50px] w-[400px]" />
+        </div>
+
+        <hr />
+        <View.Scroll>{children}</View.Scroll>
+        {/* <Skeleton className="h-[500px] " />  */}
+      </div>
+    );
   }
 
-  const routes = filterSheduleByAccess(data!.data.tipo);
+  const routes = filterScheduleByAccess(data!.data.tipo);
 
   // Encontra o item que corresponde ao pathname atual
   const activeTab = routes.find((item) => pathname === item.path)?.path || routes[0].path;
@@ -57,23 +67,19 @@ export default function Schedule({ children }: ISchedule) {
           <TabsList>
             {routes.map((item) => (
               <Link href={item.path} key={item.path}>
-                <TabsTrigger value={item.path} className="data-[state=active]:bg-akin-turquoise data-[state=active]:text-white font-semibold" >{item.label}</TabsTrigger>
+                <TabsTrigger
+                  value={item.path}
+                  className="data-[state=active]:bg-akin-turquoise data-[state=active]:text-white font-semibold"
+                >
+                  {item.label}
+                </TabsTrigger>
               </Link>
             ))}
           </TabsList>
         </Tabs>
-        {/* 
-        <TabMenu
-          className="text-gray-700 *:gap-0 bg-gray-50 rounded-md"
-          model={items}
-          activeIndex={activeIndex}
-          onTabChange={(e) => setActiveIndex(e.index)} // Atualiza o índice ativo
-        /> */}
       </div>
       <hr />
-      <View.Scroll>
-        {children}
-      </View.Scroll>
+      <View.Scroll>{children}</View.Scroll>
     </View.Vertical>
   );
 }

@@ -15,14 +15,9 @@ export default function Completed() {
     queryKey: ['schedules'],
     queryFn: async () => {
       return await _axios.get<ScheduleType[]>("/schedulings/concluded")
-    }
+    },
+    staleTime: 1000 * 6 * 10
   })
-
-
-  if (isPending) {
-    return <p>Processando...</p>
-  }
-
   const groupedSchedules = groupSchedulesByPatient(data?.data || []);
   const groupedSchedulesArray = Object.values(groupedSchedules).map(schedule => ({
     ...schedule,
