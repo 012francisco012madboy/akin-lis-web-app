@@ -1,6 +1,5 @@
 "use client";
-import React, { useState } from "react";
-import { TabMenu } from "primereact/tabmenu";
+import React from "react";
 import { APP_CONFIG } from "@/config/app";
 import { usePathname } from "next/navigation";
 import { View } from "@/components/view";
@@ -11,7 +10,6 @@ import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
 import { UserData } from "../profile/page";
-import { filterRoutesByAccess, filterSheduleByAccess } from "@/config/filteredAcessRoutes";
 
 interface ISchedule {
   children: React.ReactNode;
@@ -22,6 +20,11 @@ const breadcumbItem = [
     label: "Agendamento"
   }
 ];
+ const filterSheduleByAccess = (schedule: string) => {
+  return APP_CONFIG.ROUTES.SCHEDULE.filter((route) =>
+    route.access?.includes(schedule)
+  );
+};
 
 export default function Schedule({ children }: ISchedule) {
   const pathname = usePathname();

@@ -25,16 +25,16 @@ const breadcrumbItems = [
 ];
 
 export default function Dashboard() {
-  const { user } = useAuthStore()
+  const { user } = useAuthStore();
   const { data } = useQuery({
     queryKey: ['user-data'],
     queryFn: async () => {
       return await _axios.get<UserData>(`/users/${user?.id}`);
-    }
-  })
+    },
+  });
 
-  if(data?.data.tipo.includes("RECEPCIONISTA")){
-    return redirect('/akin/schedule/new')
+  if (data?.data.tipo === "RECEPCIONISTA" || data?.data.tipo === "TECNICO") {
+    return redirect("/akin/schedule/new");
   }
   
 

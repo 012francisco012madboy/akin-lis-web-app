@@ -10,6 +10,10 @@ import { IExamProps, Patient } from "../types";
 import { PatientDetails } from "./components/PatientDetails";
 import { ScheduleDetails } from "./components/ScheduleDetails";
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/utils/zustand-store/authStore";
+import { useQuery } from "@tanstack/react-query";
+import { UserData } from "../../profile/page";
+import { redirect } from "next/navigation";
 
 export type SchemaScheduleType = z.infer<typeof schemaSchedule>;
 
@@ -25,6 +29,14 @@ export default function New() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | undefined>();
   const [schedules, setSchedules] = useState([{ exam: "", date: new Date(), time: "" }]);
 
+  const { user } = useAuthStore();
+  const { data } = useQuery({
+    queryKey: ['user-data'],
+    queryFn: async () => {
+      return await _axios.get<UserData>(`/users/${user?.id}`);
+    },
+  });
+
   useEffect(() => {
     fetchPatientsAndExams();
   }, []);
@@ -34,6 +46,13 @@ export default function New() {
       setSelectedPatient(availablePatients.find((patient) => patient.id === selectedPatientId));
     }
   }, [selectedPatientId, availablePatients]);
+  
+ 
+  
+  if (data?.data.tipo === "CHEFE" || data?.data.tipo === "TECNICO") {
+    return redirect("/akin/schedule/completed");
+  }
+  
 
   const fetchPatientsAndExams = async () => {
     try {

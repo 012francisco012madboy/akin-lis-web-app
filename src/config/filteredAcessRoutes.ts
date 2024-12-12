@@ -7,8 +7,18 @@ export const filterRoutesByAccess = (userRole: string) => {
   );
 };
 
-export const filterSheduleByAccess = (schedule: string) => {
-  return APP_CONFIG.ROUTES.SCHEDULE.filter((route) =>
+
+
+export const filterSheduleByAccess = (schedule: string): boolean => {
+  // Validação inicial
+  return APP_CONFIG.ROUTES.SCHEDULE.some((route) =>
     route.access?.includes(schedule)
   );
 };
+
+  // const hasAccess = filterSheduleByAccess(data!.data.tipo);
+ // if (!hasAccess) {
+  //   return redirect("/akin/schedule/completed");
+  // } else{
+  //   console.log(!hasAccess)
+  // }

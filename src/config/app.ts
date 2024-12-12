@@ -50,7 +50,7 @@ export const APP_CONFIG = {
         label: "Pagamentos", 
         icon: CreditCard, 
         path: "/akin/payment", 
-        access: ["CHEFE"] 
+        access: ["RECEPCIONISTA"] 
       },
       { 
         label: "Mensagens", 
@@ -82,19 +82,19 @@ export const APP_CONFIG = {
         label: "Novo", 
         icon: CalendarPlus2, 
         path: "/akin/schedule/new", 
-        access: ["RECEPCIONISTA", "CHEFE"] 
+        access: ["RECEPCIONISTA"] 
       },
       { 
         label: "Solicitações", 
         icon: CalendarSearch, 
         path: "/akin/schedule/request", 
-        access: ["RECEPCIONISTA","TECNICO", "CHEFE"] 
+        access: ["RECEPCIONISTA"] 
       },
       { 
         label: "Concluídos", 
         icon: CalendarCheck2, 
         path: "/akin/schedule/completed", 
-        access: ["RECEPCIONISTA","CHEFE", "TECNICO"] 
+        access: ["RECEPCIONISTA","CHEFE"] 
       },
     ],
     PATIENT: {
