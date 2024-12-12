@@ -21,16 +21,13 @@ export default function RootLayout({
   return (
     <html lang="pt">
       <PrimeReactProvider>
-        <body className={inter.className + " bg-akin-cosmic-latte text-gray-700"}>{children}</body>
+
+          <body className={inter.className + " bg-akin-cosmic-latte text-gray-700"}>{children}</body>
       </PrimeReactProvider>
       <Toaster
         position="top-right"
         richColors={true}
         duration={1000}
-        // toastOptions={{
-          // unstyled: true,
-          // className:"p-4 rounded-lg ",
-        // }}
       />
     </html>
   );

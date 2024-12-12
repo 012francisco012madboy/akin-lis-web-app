@@ -1,56 +1,62 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { Label } from "../ui/label"
-import { Checkbox } from "../ui/checkbox"
-import Link from "next/link"
-import { Button } from "../ui/button"
-import { Input } from "../ui/input"
-import { APP_CONFIG } from "@/config/app"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { _axios } from "@/lib/axios"
-import { useAuthStore } from "@/utils/zustand-store/authStore"
+import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Label } from "../ui/label";
+import { Checkbox } from "../ui/checkbox";
+import Link from "next/link";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { APP_CONFIG } from "@/config/app";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { _axios } from "@/lib/axios";
+import { useAuthStore } from "@/utils/zustand-store/authStore";
+import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 
 type User = {
   id: string;
   access_token: string;
   refresh_token: string;
-}
+};
 
 export const Login = () => {
-  const [email, setEmail] = useState('');
-  const [senha, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [senha, setPassword] = useState("");
   const login = useAuthStore((state) => state.login);
-  const { isAuthenticated, user } = useAuthStore()
+  const { isAuthenticated, user } = useAuthStore();
   const router = useRouter();
 
+  const loginMutation = useMutation({
+    mutationFn: async () => {
+      const response = await _axios.post<User>("/auth/local/signin", { email, senha });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      ___showSuccessToastNotification({message:"Autenticação realizada!"})
+      login(data.access_token, data);
+      router.push("/akin/dashboard");
+    },
+    onError: (error: any) => {
+      console.error(error);
+      ___showErrorToastNotification(error.response?.data?.message || "Erro ao autenticar");
+    },
+  }
+  );
+
   useEffect(() => {
-    if (user != null) return router.push('/akin/dashboard')
-  }, [isAuthenticated, router, user])
+    if (user) router.push("/akin/dashboard");
+  }, [isAuthenticated, router, user]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    try {
-      const response = await _axios.post<User>('/auth/local/signin', { email, senha });
-      const { access_token } = response.data;
-      login(access_token, response.data);
-      router.push('/akin/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Erro ao autenticar');
-    }
+    loginMutation.mutate();
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-5">
-      <Image
-        className=""
-        src={APP_CONFIG.LOGO}
-        alt="Akin logo"
-      />
+      <Image src={APP_CONFIG.LOGO} alt="Akin logo" />
       <Card className="w-full max-w-md shadow-lg rounded-md bg-white">
         {/* Header */}
         <CardHeader>
@@ -114,8 +120,12 @@ export const Login = () => {
             </div>
 
             {/* Submit Button */}
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-              Entrar
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              disabled={loginMutation.isPending}
+            >
+              {loginMutation.isPending ? "Entrando..." : "Entrar"}
             </Button>
           </form>
         </CardContent>
@@ -130,4 +140,4 @@ export const Login = () => {
       </Card>
     </div>
   );
-}
+};
