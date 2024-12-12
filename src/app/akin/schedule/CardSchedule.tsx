@@ -5,6 +5,11 @@ import Image from "next/image";
 import Primary from "@/components/button/primary";
 import { View } from "@/components/view";
 import { Trash, CheckCircle } from "lucide-react";
+import { AllocateTechniciansModal, LabTechnician } from "./tecnico";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { _axios } from "@/lib/axios";
+import { Exam } from "../patient/[id]/exam-history/useExamHookData";
 
 interface ICardSchedule {
   data: ScheduleType;
@@ -12,18 +17,33 @@ interface ICardSchedule {
 
 export default function CardSchedule({ data }: ICardSchedule) {
   const [showExams, setShowExams] = useState(false);
+  const [groupedExams, setGroupedExams] = useState<Exam[]>([]);
+
+  const tecnico = useQuery({
+    queryKey: ["lab-tech"],
+    queryFn: async () => {
+      return await _axios.get<LabTechnician[]>("lab-technicians");
+    }
+  })
+
+  const handleGroupExams = () => {
+    const exams = data.Exame.map((exame) => ({
+      id: exame.id,
+      name: exame.Tipo_Exame.nome || "Nome não disponível",
+      scheduledAt: exame.data_agendamento,
+    }));
+    setGroupedExams(exams);
+  };
 
   const age = new Date().getFullYear() - new Date(data.Paciente.data_nascimento).getFullYear();
   const formattedDate = new Date(data.data_agendamento).toLocaleString();
-
-
 
   return (
     <div className="card shadow-xl border border-gray-300 rounded-lg flex flex-col items-center bg-white min-h-[23rem] max-h-[23rem] overflow-hidden transition-all duration-300 hover:scale-105">
       {/* Exame Information */}
       {showExams ? (
-        <div className="flex-1 rounded-t-lg w-full space-y-4 p-4 h-[19.2rem]">
-          <View.Scroll className="max-h-full pl-4 overflow-y-auto space-y-2">
+        <div className="flex-1 rounded-t-lg w-full [&::-webkit-scrollbar]:hidden space-y-4 p-4 h-[19.2rem]">
+          <View.Scroll className="max-h-full pl-4 [&::-webkit-scrollbar]:hidden overflow-y-auto space-y-2">
             {data.Exame.map((exame) => (
               <div key={exame.id} className="w-full pb-4 border-b border-gray-200 ">
                 <p className="font-semibold text-xl"> {exame.Tipo_Exame.nome || "Nome não disponível"}</p>
@@ -100,7 +120,18 @@ export default function CardSchedule({ data }: ICardSchedule) {
           onClick={() => setShowExams((prev) => !prev)}
           label={showExams ? "Ver Agendamento" : "Ver Exame"}
         />
-       
+        <AllocateTechniciansModal
+          exams={groupedExams}
+          technicians={tecnico.data ? tecnico.data.data : []}
+        >
+          <Button
+            className="w-full h-full"
+            onClick={handleGroupExams}
+          >
+            Alocar Técnicos
+          </Button>
+        </AllocateTechniciansModal>
+
       </div>
     </div>
   );

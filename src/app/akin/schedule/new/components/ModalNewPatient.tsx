@@ -22,12 +22,13 @@ export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: 
 
   const handleFormSubmit = async (data: FormData) => {
     const patientData = mapFormDataToPatient(data);
+    console.log(data)
 
     const validatedData = schemaSchedule.safeParse({
       patient_id: patientData.numero_identificacao,
       patient_phone: patientData.contacto_telefonico,
       patient_birth_day: new Date(patientData.data_nascimento),
-      patient_name: patientData.nome,
+      patient_name: patientData.nome_completo,
       patient_gender: data.get("gender") as string,
     });
 
@@ -42,13 +43,15 @@ export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: 
 
   const mapFormDataToPatient = (data: FormData) => ({
     numero_identificacao: data.get("identity") as string,
-    nome: data.get("name") as string,
+    nome_completo: data.get("name") as string,
     data_nascimento: new Date(data.get("birth_day") as string).toLocaleDateString("en-CA"),
     contacto_telefonico: data.get("phone_number") as string,
     id_sexo: genders.find((gender) => gender.value === data.get("gender") as string)?.id,
   });
 
   const savePatientData = async (patientData: object) => {
+    console.log("ola: ")
+    console.log(patientData)
     setIsSaving(true);
     try {
       const res = await _axios.post("/pacients", patientData);

@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 import {
   Dialog,
@@ -13,24 +14,32 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { Exam } from "../patient/[id]/exam-history/useExamHookData";
+import { _axios } from "@/lib/axios";
 
-interface Technician {
-  id: number;
-  name: string;
-  role: string; // Cargo do técnico
+
+export interface LabTechnician {
+  id: string,
+  nome_completo: string,
+  numero_identificacao: string,
+  data_nascimento: string,
+  cargo: string,
+  contacto_telefonico: string,
+  criado_aos: string,
+  atualizado_aos: string,
+  id_sexo: number,
+  id_usuario: string
 }
-
-interface Exam {
-  id: number;
-  name: string;
-  scheduledAt: string; // Data e hora do agendamento
+interface IProps {
+  examId: number;
+  id_tecnico_alocado: string;
 }
 
 interface AllocateTechniciansModalProps {
   children?: React.ReactNode;
-  technicians: Technician[];
+  technicians: LabTechnician[];
   exams: Exam[];
-  onAllocate?: (allocations: { examId: number; technicianIds: number[] }[]) => void;
+  onAllocate?: (allocations: { examId: number; id_tecnico_alocado: string[] }[]) => void;
 }
 
 export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> = ({
@@ -39,11 +48,11 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
   onAllocate,
   children,
 }) => {
-  const [selectedTechnicians, setSelectedTechnicians] = useState<{ [key: number]: Technician[] }>({});
+  const [selectedTechnicians, setSelectedTechnicians] = useState<{ [key: number]: LabTechnician[] }>({});
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
-  const handleTechnicianSelection = (examId: number, technician: Technician) => {
+  const handleTechnicianSelection = (examId: number, technician: LabTechnician) => {
     setSelectedTechnicians((prev) => {
       const currentSelection = prev[examId] || [];
       const isAlreadySelected = currentSelection.some((tech) => tech.id === technician.id);
@@ -56,25 +65,33 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
       };
     });
   };
+  const allocations = exams.map((exam) => ({
+    examId: exam.id,
+    id_tecnico_alocado: selectedTechnicians[exam.id]?.map((tech) => tech.id) || [],
+  }));
+  if (onAllocate) onAllocate(allocations);
 
-  const handleConfirm = () => {
-    const allocations = exams.map((exam) => ({
-      examId: exam.id,
-      technicianIds: selectedTechnicians[exam.id]?.map((tech) => tech.id) || [],
-    }));
-    if (onAllocate) onAllocate(allocations);
+  const handleConfirm = async () => {
+    allocations.map(async (e) => {
+      console.log(e.examId)
+      console.log({ id_tecnico_alocado: e.id_tecnico_alocado.toString() })
+
+      const res = await _axios.post(`/exams/technician/set/${e.examId}`, { id_tecnico_alocado: e.id_tecnico_alocado.toString() })
+
+      console.log(res)
+    })
   };
 
   const filteredTechnicians = technicians.filter(
     (tech) =>
-      tech.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tech.role.toLowerCase().includes(searchTerm.toLowerCase())
+      tech.nome_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tech.cargo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="w-full h-full sm:h-[95%] lg:min-w-[700px] lg:h-[600px] overflow-auto">
+      <DialogContent className="w-full h-full sm:h-[95%] lg:min-w-[700px] lg:h-[600px] overflow-auto [&::-webkit-scrollbar]:hidden">
         <DialogHeader>
           <DialogTitle>Alocar Técnicos</DialogTitle>
         </DialogHeader>
@@ -95,7 +112,7 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
                             variant="outline"
                             className="text-xs flex justify-between items-center"
                           >
-                            {tech.name}
+                            {tech.nome_completo}
                           </Badge>
                         ))}
                       </div>
@@ -121,15 +138,15 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
                         {filteredTechnicians.map((technician) => (
                           <div
                             key={technician.id}
-                            className={`flex flex-col items-start md:flex-row justify-between p-2  rounded-md cursor-pointer ${selectedTechnicians[exam.id]?.some((tech) => tech.id === technician.id)
+                            className={`flex flex-col items-start md:flex-row justify-between p-2  rounded-md my-1 cursor-pointer ${selectedTechnicians[exam.id]?.some((tech) => tech.id === technician.id)
                               ? "bg-blue-100"
                               : "hover:bg-gray-100"
                               }`}
                             onClick={() => handleTechnicianSelection(exam.id, technician)}
                           >
                             <div>
-                              <p className="text-sm font-medium">{technician.name}</p>
-                              <p className="text-xs text-gray-600">{technician.role}</p>
+                              <p className="text-sm font-medium">{technician.nome_completo}</p>
+                              <p className="text-xs text-gray-600">{technician.cargo}</p>
                             </div>
                             {selectedTechnicians[exam.id]?.some(
                               (tech) => tech.id === technician.id

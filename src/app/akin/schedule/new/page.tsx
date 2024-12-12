@@ -111,7 +111,7 @@ export default function New() {
 
 
     // Resetar os valores dos campos
-    if (getAutocompleteInput) getAutocompleteInput.value = "";
+    if (getAutocompleteInput) getAutocompleteInput.placeholder = " d";
     if (getCalendaryInput) getCalendaryInput.value = "";
     if (getGenderInput) getGenderInput.value = "";
     if (getPhoneNumberInput) getPhoneNumberInput.value = "";

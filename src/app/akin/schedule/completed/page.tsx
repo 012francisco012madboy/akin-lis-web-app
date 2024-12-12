@@ -4,19 +4,10 @@ import CardScheduleContainer from "../CardScheduleContainer";
 import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification } from "@/lib/sonner";
 import { useQuery } from "@tanstack/react-query";
+import { groupSchedulesByPatient } from "./groupSchedulesByPatient";
 
-function groupSchedulesByPatient(schedules: ScheduleType[]): Record<string, ScheduleType> {
-  return schedules.reduce((acc, schedule) => {
-    const patientId = schedule.Paciente.id;
-
-    if (!acc[patientId]) {
-      acc[patientId] = { ...schedule, Exame: [...schedule.Exame] };
-    } else {
-      acc[patientId].Exame.push(...schedule.Exame);
-    }
-
-    return acc;
-  }, {} as Record<string, ScheduleType>);
+function sortExamsByDate(exams: ScheduleType["Exame"]): ScheduleType["Exame"] {
+  return exams.sort((a, b) => new Date(a.data_agendamento).getTime() - new Date(b.data_agendamento).getTime());
 }
 
 export default function Completed() {
@@ -26,14 +17,17 @@ export default function Completed() {
       return await _axios.get<ScheduleType[]>("/schedulings/concluded")
     }
   })
-  
+
 
   if (isPending) {
     return <p>Processando...</p>
   }
 
   const groupedSchedules = groupSchedulesByPatient(data?.data || []);
-  const groupedSchedulesArray = Object.values(groupedSchedules);
+  const groupedSchedulesArray = Object.values(groupedSchedules).map(schedule => ({
+    ...schedule,
+    Exame: sortExamsByDate(schedule.Exame)
+  }));
 
   return (
     <div className="h-max px-6 pb-6">
