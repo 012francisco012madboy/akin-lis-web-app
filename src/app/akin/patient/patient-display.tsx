@@ -5,6 +5,8 @@ import { ListMode } from "./components/listModePatients";
 import { BlockMode } from "./components/blockModePatients";
 import { GridOrBlockDisplayButton } from "./components/gridOrBlockButtonMode";
 import { Input } from "@/components/ui/input";
+import { useAuthStore } from "@/utils/zustand-store/authStore";
+import { redirect } from "next/navigation";
 
 interface PatientDisplay {
   patients: PatientType[];
@@ -15,6 +17,9 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
   const [isSearching, setIsSearching] = useState(false);
   const [displayMode, setDisplayMode] = useState<DisplayMode>("list");
 
+  const { user } = useAuthStore();
+  if(user === null) redirect("/");
+
   function handleSearch(searchText: string) {
     setIsSearching(searchText.length > 0);
 
@@ -23,8 +28,6 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
     );
     setFilteredPatients(foundPatients);
   }
-
-
 
   return (
     <div className=" px-6 pt-4 pb-6 shadow-sm rounded-lg">
