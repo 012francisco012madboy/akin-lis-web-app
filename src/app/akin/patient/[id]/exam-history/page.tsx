@@ -181,6 +181,8 @@ export default function ExamsHistory() {
   const [exams, setExams] = useState<IExamProps[]>([])
   const [selectedExam, setSelectedExam] = useState<IExamProps | null>(null)
 
+  
+
   useEffect(() => {
     const fetchExams = async () => {
       try {
@@ -197,7 +199,7 @@ export default function ExamsHistory() {
   }, [id])
 
   const handleSelect = (exam: IExamProps | null) => {
-    console.log("Selected exam:", exam)
+    // console.log("Selected exam:", exam)
     setSelectedExam(exam)
   }
 
@@ -325,19 +327,19 @@ export default function ExamsHistory() {
         )}
       </div> */}
       <div className="bg-white shadow-md rounded-lg p-6 overflow-auto">
-      <h2 className="text-xl font-semibold text-gray-700 mb-4">
-        Exames Realizados
-      </h2>
-      {patient.data.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
+        <h2 className="text-xl font-semibold text-gray-700 mb-4">
+          Exames Realizados
+        </h2>
+        {patient.data.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
             <ExamCard data={patient.data} />
-         
-        </div>
-      ) : (
-        <p className="text-gray-600">Nenhum exame realizado ainda.</p>
-      )}
-    </div>
+
+          </div>
+        ) : (
+          <p className="text-gray-600">Nenhum exame realizado ainda.</p>
+        )}
+      </div>
     </View.Vertical>
 
   );

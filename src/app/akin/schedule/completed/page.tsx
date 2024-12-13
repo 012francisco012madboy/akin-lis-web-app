@@ -4,11 +4,9 @@ import CardScheduleContainer from "../CardScheduleContainer";
 import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification } from "@/lib/sonner";
 import { useQuery } from "@tanstack/react-query";
-import { groupSchedulesByPatient } from "./groupSchedulesByPatient";
+import { groupSchedulesByPatient } from "./_groupSchedulesByPatient";
+import { sortExamsByDate } from "./_sortExamsByDate";
 
-function sortExamsByDate(exams: ScheduleType["Exame"]): ScheduleType["Exame"] {
-  return exams.sort((a, b) => new Date(a.data_agendamento).getTime() - new Date(b.data_agendamento).getTime());
-}
 
 export default function Completed() {
   const { data, isPending } = useQuery({
@@ -16,7 +14,6 @@ export default function Completed() {
     queryFn: async () => {
       return await _axios.get<ScheduleType[]>("/schedulings/concluded")
     },
-    staleTime: 1000 * 6 * 10
   })
   const groupedSchedules = groupSchedulesByPatient(data?.data || []);
   const groupedSchedulesArray = Object.values(groupedSchedules).map(schedule => ({

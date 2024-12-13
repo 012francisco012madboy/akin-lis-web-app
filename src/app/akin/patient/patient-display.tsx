@@ -1,6 +1,5 @@
 "use client";
 
-import { InputText } from "@/components/input/input-text";
 import { useState } from "react";
 import { ListMode } from "./components/listModePatients";
 import { BlockMode } from "./components/blockModePatients";
@@ -24,6 +23,8 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
     );
     setFilteredPatients(foundPatients);
   }
+
+
 
   return (
     <div className=" px-6 pt-4 pb-6 shadow-sm rounded-lg">

@@ -23,7 +23,9 @@ const processQueue = (error: any, token: string | null) => {
 
 _axios.interceptors.request.use(
   async (config) => {
-    const { token } = useAuthStore.getState();
+    const { token ,logout} = useAuthStore.getState();
+
+    
 
     // if (!token) {
     //   if (!isRefreshing) {
@@ -48,6 +50,14 @@ _axios.interceptors.request.use(
     return config;
   },
   (error) => {
+    const { logout } = useAuthStore.getState();
+    console.log(error);
+    if (error.response?.status === 401) {
+      // Token expirou, realiza logout e redireciona para login
+      logout();
+      window.location.href = "/"; // Ajuste a rota de login conforme necessário
+    }
+
     return Promise.reject(error);
   }
 );

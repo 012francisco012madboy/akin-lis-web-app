@@ -25,7 +25,6 @@ export default function CardSchedule({ data }: ICardSchedule) {
     queryFn: async () => {
       return await _axios.get<LabTechnician[]>("lab-technicians");
     },
-    staleTime: 1000 * 60 * 5, // 5 minutos
   });
 
   const handleGroupExams = () => {

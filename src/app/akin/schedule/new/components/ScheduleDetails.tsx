@@ -84,14 +84,6 @@ export function ScheduleDetails({
               <label htmlFor="buttondisplay" className="font-bold block mb-2">
                 Hora
               </label>
-              {/* <Calendar
-                id="buttondisplay"
-                className="flex-1 text-black bg-gray-50 rounded-md shadow-sm border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                onChange={(time) => handleScheduleChange(index, "time", time)}
-                showIcon
-                timeOnly
-                hourFormat="24"
-              /> */}
               <TimePicker
                 onChange={(time) => handleScheduleChange(index, "time", time)}
               />
