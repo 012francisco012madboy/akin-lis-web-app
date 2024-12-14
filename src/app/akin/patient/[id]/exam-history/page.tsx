@@ -7,7 +7,7 @@ import { useExamHookData } from "./useExamHookData";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import { _axios } from "@/lib/axios";
-import { Combobox } from "@/components/combobox";
+import { Combobox } from "@/components/combobox/comboboxExam";
 import { IExamProps } from "@/app/akin/schedule/types";
 import { ExamCard } from "../utils/exam-history/exam-card";
 import { examsFilter, patient } from "../utils/exam-history/fake-data";

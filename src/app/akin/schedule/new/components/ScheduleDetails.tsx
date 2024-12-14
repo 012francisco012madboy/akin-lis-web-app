@@ -1,5 +1,5 @@
 "use client";
-import { Combobox } from "@/components/combobox";
+import { Combobox } from "@/components/combobox/comboboxExam";
 import { Skeleton } from "@/components/ui/skeleton";
 import { IExamProps } from "../../types";
 import { _axios } from "@/lib/axios";

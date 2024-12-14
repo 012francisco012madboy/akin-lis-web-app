@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/combobox/combobox";
-import Link from "next/link";
-import { useParams } from "next/navigation";
 
 
 const availableMaterials = [
@@ -25,7 +23,6 @@ export const MedicalMaterialsModal: React.FC<{ isOpen: boolean; onClose: () => v
   const [materials, setMaterials] = useState<Material[]>([]);
   const [selectedMaterial, setSelectedMaterial] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("");
-  const {id} = useParams()
 
   const addMaterial = () => {
     if (selectedMaterial && quantity && !isNaN(Number(quantity))) {
@@ -85,9 +82,7 @@ export const MedicalMaterialsModal: React.FC<{ isOpen: boolean; onClose: () => v
           <DialogClose asChild>
             <Button variant="outline">Cancelar</Button>
           </DialogClose>
-          <Link href={`/akin/patient/${id}/ready-exam`}>
-            <Button className="bg-akin-turquoise hover:bg-akin-turquoise/80">Seguinte</Button>
-          </Link>
+          <Button className="bg-akin-turquoise hover:bg-akin-turquoise/80">Seguinte</Button>
         </div>
       </DialogContent>
     </Dialog>
