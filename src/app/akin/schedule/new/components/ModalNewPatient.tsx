@@ -2,16 +2,13 @@
 import { Button } from "@/components/button";
 import { DialogWindow } from "@/components/dialog";
 import { Input } from "@/components/input";
-import { LoaderCircle, Save, UserRoundPlus } from "lucide-react";
+import { Save, UserRoundPlus } from "lucide-react";
 import { useState } from "react";
 import { schemaSchedule } from "../schemaZodNewPatient";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { _axios } from "@/lib/axios";
+import { genders, mapFormDataToPatient } from "../utils/mapFormDataToPatient";
 
-const genders = [
-  { id: 1, value: "Masculino" },
-  { id: 2, value: "Feminino" },
-];
 
 export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: PatientType) => void }) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -22,7 +19,6 @@ export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: 
 
   const handleFormSubmit = async (data: FormData) => {
     const patientData = mapFormDataToPatient(data);
-    console.log(data)
 
     const validatedData = schemaSchedule.safeParse({
       patient_id: patientData.numero_identificacao,
@@ -41,17 +37,8 @@ export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: 
     await savePatientData(patientData);
   };
 
-  const mapFormDataToPatient = (data: FormData) => ({
-    numero_identificacao: data.get("identity") as string,
-    nome_completo: data.get("name") as string,
-    data_nascimento: new Date(data.get("birth_day") as string).toLocaleDateString("en-CA"),
-    contacto_telefonico: data.get("phone_number") as string,
-    id_sexo: genders.find((gender) => gender.value === data.get("gender") as string)?.id,
-  });
-
   const savePatientData = async (patientData: object) => {
-    console.log("ola: ")
-    console.log(patientData)
+    // console.log(patientData)
     setIsSaving(true);
     try {
       const res = await _axios.post("/pacients", patientData);
@@ -158,6 +145,5 @@ const PatientRegistrationModal = ({
         />
       </div>
     </form>
-
   </DialogWindow.Window>
 );

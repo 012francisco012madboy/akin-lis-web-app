@@ -33,7 +33,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
         id: exame.id,
         name: exame.Tipo_Exame?.nome || "Nome não disponível",
         scheduledAt: exame.data_agendamento,
-
+        hourSchedule:exame.hora_agendamento
       }));
       // @ts-ignore
       setGroupedExams(exams);

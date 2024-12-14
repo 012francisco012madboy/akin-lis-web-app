@@ -33,7 +33,6 @@ export interface Exam {
     };
   }[]
 }
-
 export interface Appointment {
   id: number;
   id_paciente: string;
@@ -46,13 +45,6 @@ export interface Appointment {
   quantia_pagamento: number;
   data_pagamento: string | null;
   data_formatada: string;
-}
-
-interface ExamHistory {
-  Agendamento: Appointment;
-  id: number;
-  status: string;
-  exame: Exam;
 }
 
 export function useExamHookData(id: string | string[]) {

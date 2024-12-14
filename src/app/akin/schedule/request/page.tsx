@@ -36,8 +36,6 @@ export default function Request() {
 
     fetchScheduleData();
   }, []);
-
-
    
   if (data?.data.tipo === "CHEFE" || data?.data.tipo === "TECNICO") {
     return redirect("/akin/schedule/completed");

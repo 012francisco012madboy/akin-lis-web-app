@@ -23,6 +23,5 @@ export default function Home() {
         </aside>
       </section>
     </QueryClientProvider>
-
   );
 }

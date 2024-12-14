@@ -1,5 +1,4 @@
 
-
 export interface IExamProps {
   id: string | number;
   nome: string;

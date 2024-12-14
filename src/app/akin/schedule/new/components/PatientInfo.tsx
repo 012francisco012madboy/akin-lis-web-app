@@ -1,18 +1,12 @@
 import { Input } from "@/components/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GenderOption, Patient } from "../../types";
+import { Patient } from "../../types";
 
-
-const GENDERS: GenderOption[] = [
-  { id: 1, value: "Masculino" },
-  { id: 2, value: "Feminino" },
-];
 
 export function PatientInfo({ patient, isLoading }: {
   patient: Patient | undefined,
   isLoading: boolean
 }) {
- 
   return (
     <div className="flex flex-nowrap gap-2 ">
       {
@@ -32,15 +26,6 @@ export function PatientInfo({ patient, isLoading }: {
                 valueDate={patient?.data_nascimento ? new Date(patient.data_nascimento) : null}
                 className="flex-1 lg:w-[400px] bg-gray-100 rounded-md"
               />
-              {/* <Input.Dropdown
-                disabled
-                data={GENDERS}
-                name="gender"
-                placeholder="Sexo"
-                valueData={patient?.sexo.nome}
-                className="flex-1 bg-gray-100"
-              /> */}
-
               <input
                 disabled
                 name="gender"

@@ -27,7 +27,6 @@ function InfoItem({ label, value }: { label: string; value: string }) {
           copied ? (
             <span className="text-xs text-green-500 block ">
               Copiado!
-              {/* <CopyCheck size={18} className="cursor-pointer text-green-500" /> */}
             </span>
           ) : (
             <Copy size={18} className="cursor-pointer" onClick={handleCopy} />
@@ -205,8 +204,6 @@ export function PatientResumeInfo({
           }
         </Card>
       </div>
-
-
     </div>
   );
 }

@@ -1,11 +1,10 @@
 import { Input } from "@/components/input";
-import { AppLayout } from "@/components/layout";
 import { View } from "@/components/view";
 import { Search, SquarePen, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/button";
 import { MOCK_MESSAGES } from "@/mocks/message";
 import Avatar from "@/components/avatar";
-import { cn } from "@/lib/utils"; // Helper para classes condicionais.
+import { cn } from "@/lib/utils"; 
 
 interface IMessage {}
 
@@ -18,9 +17,6 @@ export default async function Message({}: IMessage) {
   const messages = await getMessages();
   return (
     <View.Vertical className="h-screen bg-gray-50">
-      {/* Header */}
-      {/* <AppLayout.ContainerHeader label="Mensagens" /> */}
-
       {/* Toolbar */}
       <div className="flex justify-between px-6 py-4 bg-white border-b">
         <Button.Primary icon={<SquarePen className="mr-2" />}>Escrever</Button.Primary>

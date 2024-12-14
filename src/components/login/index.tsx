@@ -9,20 +9,13 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { APP_CONFIG } from "@/config/app";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
+import { validateEmail, validatePassword } from "./validation/login-validation";
 
-const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-const validatePassword = (password: string): boolean => {
-  return password.length >= 6;
-};
 
 type User = {
   id: string;
@@ -38,6 +31,7 @@ export const Login = () => {
   const login = useAuthStore((state) => state.login);
   const { isAuthenticated, user } = useAuthStore();
   const router = useRouter();
+  const pathname = usePathname();
 
   const loginMutation = useMutation({
     mutationFn: async () => {
@@ -58,8 +52,9 @@ export const Login = () => {
   });
 
   useEffect(() => {
+    if ((user === null) && (pathname.startsWith("/akin/"))) return;
     if (user) router.push("/akin/dashboard");
-  }, [isAuthenticated, router, user]);
+  }, [isAuthenticated, router, user, pathname]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
