@@ -2,14 +2,11 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { MoveDiagonal, Trash } from "lucide-react";
-import { useParams } from "next/navigation";
 
-const SampleVisualizationPage = ({ patientName }: { patientName: string }) => {
-  const { id } = useParams();
+export default function SampleVisualizationPage (){
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [capturedImages, setCapturedImages] = useState<string[]>([]);
   const [notes, setNotes] = useState<string>("");
@@ -34,7 +31,7 @@ const SampleVisualizationPage = ({ patientName }: { patientName: string }) => {
     <div className="min-h-screen bg-gray-50 p-4 overflow-y-auto">
       {/* Header */}
       <header className="bg-white shadow py-4 px-6 flex gap-2 flex-col lg:flex-row justify-between items-start lg:items-center">
-        <h1 className="text-lg font-semibold">Paciente: Jorge Mateus {patientName}</h1>
+        <h1 className="text-lg font-semibold">Paciente: Jorge Mateus</h1>
         <h1 className="text-lg font-semibold">Exame: Malária</h1>
         <Button onClick={() => setIsModalOpen(true)}>Iniciar Visualização</Button>
       </header>
@@ -163,4 +160,3 @@ const SampleVisualizationPage = ({ patientName }: { patientName: string }) => {
   );
 };
 
-export default SampleVisualizationPage;
