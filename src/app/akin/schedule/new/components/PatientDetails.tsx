@@ -25,6 +25,7 @@ export function PatientDetails({ isLoading, selectedPatient, onPatientSelect, au
           <AutoComplete
             placeholder={selectedPatient?.nome_completo || "Nome completo do paciente"}
             name="name"
+            id="idname"
             lookingFor="paciente"
             dataFromServer={autoCompleteData}
             setSelectedItemId={onPatientSelect}

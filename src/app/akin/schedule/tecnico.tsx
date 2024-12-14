@@ -138,8 +138,11 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
                   <h3 className="text-lg font-semibold text-gray-900">{exam.name}</h3>
                   {/* @ts-ignore */}
                   <p className="text-sm text-gray-600">Data: {exam.scheduledAt}</p>
-                   {/* @ts-ignore */}
-                   <p className="text-sm text-gray-600">Hora: {exam.hourSchedule}</p>
+                  {/* @ts-ignore */}
+                  <p className="text-sm text-gray-600">Hora: {exam.hourSchedule}</p>
+                  {/* @ts-ignore */}
+                  <p className="text-sm text-gray-600">Técnico Alocado: {exam.id_tecnico_alocado != null ? "1 alocado" : "0 alocado"}</p>
+
                   {/* @ts-ignore */}
                   {errors[exam.id] && (
                     // @ts-ignore

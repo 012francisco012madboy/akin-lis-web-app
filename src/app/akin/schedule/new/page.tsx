@@ -14,6 +14,7 @@ import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { useQuery } from "@tanstack/react-query";
 import { UserData } from "../../profile/page";
 import { redirect } from "next/navigation";
+import { resetInputs } from "./utils/reset-inputs-func";
 
 export type SchemaScheduleType = z.infer<typeof schemaSchedule>;
 
