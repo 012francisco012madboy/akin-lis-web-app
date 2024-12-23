@@ -36,7 +36,6 @@ export default function Menu() {
     queryFn: async () => {
       return await _axios.get<UserData>(`/users/${user?.id}`);
     },
-    staleTime: 1000 * 60 * 5,
   });
 
   const routes = data ? filterRoutesByAccess(data.data.tipo) : [];
