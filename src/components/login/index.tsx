@@ -15,6 +15,7 @@ import { _axios } from "@/lib/axios";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { validateEmail, validatePassword } from "./validation/login-validation";
+import { Eye, EyeOff } from "lucide-react";
 
 
 type User = {
@@ -28,6 +29,7 @@ export const Login = () => {
   const [senha, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const login = useAuthStore((state) => state.login);
   const { isAuthenticated, user } = useAuthStore();
   const router = useRouter();
@@ -115,19 +117,26 @@ export const Login = () => {
             </div>
 
             {/* Password Input */}
-            <div>
+            <div className="relative">
               <Label htmlFor="password" className="text-gray-700">
                 Senha
               </Label>
               <Input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={senha}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Digite sua senha"
                 aria-label="Digite sua senha"
                 className="mt-2"
               />
+              <button
+                type="button"
+                className="absolute right-4 top-[52px] transform text-gray-500 -translate-y-1/2"
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+              </button>
               {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
             </div>
 
