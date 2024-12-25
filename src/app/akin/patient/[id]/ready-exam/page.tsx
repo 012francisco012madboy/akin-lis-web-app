@@ -3,10 +3,12 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { MoveDiagonal, Trash } from "lucide-react";
+import AutomatedAnalysis from "./modalAutomatiImage";
 
-export default function SampleVisualizationPage (){
+export default function SampleVisualizationPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [capturedImages, setCapturedImages] = useState<string[]>([]);
   const [notes, setNotes] = useState<string>("");
@@ -27,15 +29,46 @@ export default function SampleVisualizationPage (){
     console.log("Generating report with:", { capturedImages, notes });
   };
 
+  //Analysis Automatized Modal
+  const [isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen] = useState(false); // Para análise automatizada
+
+  const handleAutomatedAnalysisOpen = () => {
+    setIsAutomatedAnalysisOpen(true);
+  };
+
+  const handleAutomatedAnalysisClose = () => {
+    setIsAutomatedAnalysisOpen(false);
+  };
   return (
     <div className="min-h-screen bg-gray-50 p-4 overflow-y-auto">
       {/* Header */}
-      <header className="bg-white shadow py-4 px-6 flex gap-2 flex-col lg:flex-row justify-between items-start lg:items-center">
+      <header className="bg-white shadow py-2 px-5 flex gap-2 flex-col lg:flex-row justify-between items-start lg:items-center">
         <h1 className="text-lg font-semibold">Paciente: Jorge Mateus</h1>
         <h1 className="text-lg font-semibold">Exame: Malária</h1>
-        <Button onClick={() => setIsModalOpen(true)}>Iniciar Visualização</Button>
+        <DropdownMenu onOpenChange={(open) => {
+          console.log("Menu state:", open);
+        }}>
+          <DropdownMenuTrigger className="bg-black text-white px-2 py-2 rounded-md hover:bg-black/90">
+            Iniciar Analíse
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent aria-roledescription="menu">
+            <DropdownMenuItem onClick={() => { setIsModalOpen(true); }}>
+              Analíse Manual
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => { handleAutomatedAnalysisOpen(); }}>
+              Analíse Automatizada
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
+      {/* Automated Analysis Section */}
+      <Dialog open={isAutomatedAnalysisOpen} onOpenChange={handleAutomatedAnalysisClose}>
+        <DialogContent className="max-w-7xl w-full h-full lg:h-[96%] overflow-y-auto">
+          <AutomatedAnalysis isAutomatedAnalysisOpen={isAutomatedAnalysisOpen} />
+        </DialogContent>
+      </Dialog>
       {/* Modal for Visualization */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-7xl w-full h-full lg:h-[96%] overflow-y-auto">
@@ -108,9 +141,8 @@ export default function SampleVisualizationPage (){
                   className="bg-blue-500 text-white hover:bg-blue-600"
                   onClick={() => setSelectedImage(image)}
                 >
-                <MoveDiagonal />
+                  <MoveDiagonal />
                 </Button>
-
 
               </div>
             </div>
@@ -159,4 +191,3 @@ export default function SampleVisualizationPage (){
     </div>
   );
 };
-
