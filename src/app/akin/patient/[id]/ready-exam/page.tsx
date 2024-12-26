@@ -24,11 +24,13 @@ export default function SampleVisualizationPage() {
     setCapturedImages((prev) => prev.filter((img) => img !== image));
   };
 
+  // Laudo Modal
+  const [laudoModalOpen, setLaudoModalOpen] = useState(false);
   const handleGenerateReport = () => {
-    // Implement report generation logic
-    console.log("Generating report with:", { capturedImages, notes });
+    // Lógica de geração de relatório (simulada)
+    console.log("Gerando relatório com notas:", notes);
+    setLaudoModalOpen(true); // Abre o modal do laudo
   };
-
   //Analysis Automatized Modal
   const [isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen] = useState(false); // Para análise automatizada
 
@@ -188,6 +190,76 @@ export default function SampleVisualizationPage() {
           Concluir
         </Button>
       </div>
+
+
+      <Dialog open={laudoModalOpen} onOpenChange={() => setLaudoModalOpen(false)}>
+        <DialogContent className="max-w-4xl w-full h-[95%] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Laudo de Análise Microscópica</DialogTitle>
+          </DialogHeader>
+          <div className="max-w-4xl bg-white shadow-lg rounded-lg overflow-y-auto">
+            {/* Cabeçalho */}
+            <header className="bg-blue-600 text-white rounded-t-lg p-4">
+              <p className="text-sm mt-1">Emitido em: 25/12/2024</p>
+            </header>
+
+            {/* Informações do Paciente */}
+            <section className="p-4 border-b">
+              <h2 className="text-lg font-semibold">Informações do Paciente</h2>
+              <p><strong>Nome:</strong> João da Silva</p>
+              <p><strong>Idade:</strong> 45 anos</p>
+              <p><strong>Identificação:</strong> #12345</p>
+            </section>
+
+            {/* Detalhes da Análise */}
+            <section className="p-4 border-b">
+              <h2 className="text-lg font-semibold">Detalhes da Análise</h2>
+              <p className="mt-2">
+                Durante a análise microscópica, foi possível observar estruturas celulares compatíveis com um tecido saudável. Não foram identificados sinais de anormalidades significativas. A análise incluiu coloração por hematoxilina-eosina e aumento de até 1000x.
+              </p>
+            </section>
+
+            {/* Imagens Capturadas */}
+            <section className="p-4 border-b">
+              <h2 className="text-lg font-semibold">Imagens Capturadas</h2>
+              <div className="grid grid-cols-2 gap-4 mt-2">
+                <img
+                  src="https://via.placeholder.com/150"
+                  alt="Imagem 1"
+                  className="rounded shadow"
+                />
+                <img
+                  src="https://via.placeholder.com/150"
+                  alt="Imagem 2"
+                  className="rounded shadow"
+                />
+              </div>
+            </section>
+
+            {/* Conclusão e Assinatura */}
+            <section className="p-4">
+              <h2 className="text-lg font-semibold">Conclusão</h2>
+              <p className="mt-2">
+                Baseado nos resultados, não foram detectadas alterações relevantes. Recomenda-se acompanhamento regular e realização de exames complementares se necessário.
+              </p>
+
+              <div className="mt-6">
+                <p><strong>Assinatura do Profissional:</strong></p>
+                <p>Dr. Ana Clara Mendes</p>
+                <p>CRM: 123456</p>
+              </div>
+            </section>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" className="bg-akin-turquoise text-white">
+              Partilhar
+            </Button>
+            <Button variant="outline" onClick={() => setLaudoModalOpen(false)}>
+              Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
