@@ -70,6 +70,10 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
       return { ...prev, [examId]: newSelection };
     });
   };
+  const allExamsAllocated = exams.every(
+    //@ts-ignore
+    (exam) => exam.id_tecnico_alocado != null || (selectedTechnicians[exam.id]?.length || 0) > 0
+  );
 
   const handleConfirm = async () => {
 
@@ -128,108 +132,115 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
           <DialogTitle>Alocar Técnicos</DialogTitle>
         </DialogHeader>
         <div className="space-y-6">
-          {exams.map((exam) => (
-            // @ts-ignore
-            <div key={exam.id} className="border-b border-gray-200 pb-4">
-              <div className="flex items-start justify-between">
-                <div>
-
-                  {/* @ts-ignore */}
-                  <h3 className="text-lg font-semibold text-gray-900">{exam.name}</h3>
-                  {/* @ts-ignore */}
-                  <p className="text-sm text-gray-600">Data: {exam.scheduledAt}</p>
-                  {/* @ts-ignore */}
-                  <p className="text-sm text-gray-600">Hora: {exam.hourSchedule}</p>
-                  {/* @ts-ignore */}
-                  <p className="text-sm text-gray-600">Técnico Alocado: {exam.id_tecnico_alocado != null ? "1 alocado" : "0 alocado"}</p>
-
-                  {/* @ts-ignore */}
-                  {errors[exam.id] && (
-                    // @ts-ignore
-                    <p className="text-sm text-red-500 mt-2">{errors[exam.id]}</p>
-                  )}
-                  {isExpanded && (
-                    <div className="mt-4 space-y-2">
+          {
+            allExamsAllocated ? (
+              <div className="text-center text-lg font-medium text-gray-700">
+                Todos os exames já foram alocados com técnicos.
+              </div>
+            ) : (
+              exams.map((exam) => (
+                // @ts-ignore
+                <div key={exam.id} className="border-b border-gray-200 pb-4">
+                  <div className="flex items-start justify-between">
+                    <div>
                       {/* @ts-ignore */}
-                      {selectedTechnicians[exam.id]?.map((tech) => (
-                        <Badge
-                          key={tech.id}
-                          variant="outline"
-                          className="text-xs flex justify-between items-center"
-                        >
-                          {tech.nome_completo}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                      <h3 className="text-lg font-semibold text-gray-900">{exam.name}</h3>
+                      {/* @ts-ignore */}
+                      <p className="text-sm text-gray-600">Data: {exam.scheduledAt}</p>
+                      {/* @ts-ignore */}
+                      <p className="text-sm text-gray-600">Hora: {exam.hourSchedule}</p>
+                      {/* @ts-ignore */}
+                      <p className="text-sm text-gray-600">Técnico Alocado: {exam.id_tecnico_alocado != null ? "1 alocado" : "0 alocado"}</p>
 
-                {isExpanded && (
-                  <div className="w-1/2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Selecionar Técnicos
-                    </label>
-                    <div className="space-y-2">
-                      <Input
-                        placeholder="Pesquise por nome ou cargo"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="mb-2"
-                      />
-                      <ScrollArea className="max-h-40 border rounded-md p-2 overflow-auto">
-                        {filteredTechnicians.map((technician) => (
-                          // @ts-ignore
-                          <div
-                            key={technician.id}
-                            className={`flex flex-col items-start md:flex-row justify-between p-2  rounded-md my-1 cursor-pointer 
-                              ${
-                              // @ts-ignore
-                              selectedTechnicians[exam.id]?.some((tech) => tech.id === technician.id)
-                                ? "bg-blue-100"
-                                : "hover:bg-gray-100"
-                              }`}
-                            // @ts-ignore
-                            onClick={() => handleTechnicianSelection(exam.id, technician)}
-                          >
-                            <div>
-                              <p className="text-sm font-medium">{technician.nome_completo}</p>
-                              <p className="text-xs text-gray-600">{technician.cargo}</p>
-                            </div>
-                            {
-                              // @ts-ignore
-                              selectedTechnicians[exam.id]?.some(
-                                (tech) => tech.id === technician.id
-                              ) && (
-                                <Badge variant="secondary" className="text-xs">
-                                  Selecionado
-                                </Badge>
-                              )
-                            }
-                          </div>
-                        ))}
-                      </ScrollArea>
+                      {/* @ts-ignore */}
+                      {errors[exam.id] && (
+                        // @ts-ignore
+                        <p className="text-sm text-red-500 mt-2">{errors[exam.id]}</p>
+                      )}
+                      {isExpanded && (
+                        <div className="mt-4 space-y-2">
+                          {/* @ts-ignore */}
+                          {selectedTechnicians[exam.id]?.map((tech) => (
+                            <Badge
+                              key={tech.id}
+                              variant="outline"
+                              className="text-xs flex justify-between items-center"
+                            >
+                              {tech.nome_completo}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </div>
+
+                    {isExpanded && (
+                      <div className="w-1/2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Selecionar Técnicos
+                        </label>
+                        <div className="space-y-2">
+                          <Input
+                            placeholder="Pesquise por nome ou cargo"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="mb-2"
+                          />
+                          <ScrollArea className="max-h-40 border rounded-md p-2 overflow-auto">
+                            {filteredTechnicians.map((technician) => (
+                              // @ts-ignore
+                              <div
+                                key={technician.id}
+                                className={`flex flex-col items-start md:flex-row justify-between p-2  rounded-md my-1 cursor-pointer 
+                                  ${
+                                  // @ts-ignore
+                                  selectedTechnicians[exam.id]?.some((tech) => tech.id === technician.id)
+                                    ? "bg-blue-100"
+                                    : "hover:bg-gray-100"
+                                  }`}
+                                // @ts-ignore
+                                onClick={() => handleTechnicianSelection(exam.id, technician)}
+                              >
+                                <div>
+                                  <p className="text-sm font-medium">{technician.nome_completo}</p>
+                                  <p className="text-xs text-gray-600">{technician.cargo}</p>
+                                </div>
+                                {
+                                  // @ts-ignore
+                                  selectedTechnicians[exam.id]?.some(
+                                    (tech) => tech.id === technician.id
+                                  ) && (
+                                    <Badge variant="secondary" className="text-xs">
+                                      Selecionado
+                                    </Badge>
+                                  )
+                                }
+                              </div>
+                            ))}
+                          </ScrollArea>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <Button
-                  variant="ghost"
-                  className="flex items-center gap-2"
-                  onClick={() => setIsExpanded((prev) => !prev)}
-                >
-                  {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  {isExpanded ? "Ocultar Seleção" : "Exibir Seleção"}
-                </Button>
-                {!isExpanded && (
-                  <Badge variant="secondary" className="text-xs">
-                    {/* @ts-ignore */}
-                    Total: {selectedTechnicians[exam.id]?.length || 0} técnico(s)
-                  </Badge>
-                )}
-              </div>
-            </div>
-          ))}
+                  <div className="mt-4 flex items-center justify-between">
+                    <Button
+                      variant="ghost"
+                      className="flex items-center gap-2"
+                      onClick={() => setIsExpanded((prev) => !prev)}
+                    >
+                      {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      {isExpanded ? "Ocultar Seleção" : "Exibir Seleção"}
+                    </Button>
+                    {!isExpanded && (
+                      <Badge variant="secondary" className="text-xs">
+                        {/* @ts-ignore */}
+                        Total: {selectedTechnicians[exam.id]?.length || 0} técnico(s)
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              ))
+            )
+          }
         </div>
         <DialogFooter className="mt-6 flex flex-col-reverse gap-3 lg:flex-row">
           <Button variant="outline"

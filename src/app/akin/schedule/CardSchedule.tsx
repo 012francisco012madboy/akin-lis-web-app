@@ -19,7 +19,6 @@ export default function CardSchedule({ data }: ICardSchedule) {
   const [showExams, setShowExams] = useState(false);
   const [groupedExams, setGroupedExams] = useState<Exam[]>([]);
 
-
   const tecnico = useQuery({
     queryKey: ["lab-tech"],
     queryFn: async () => {
@@ -29,16 +28,24 @@ export default function CardSchedule({ data }: ICardSchedule) {
 
   const handleGroupExams = () => {
     if (data?.Exame?.length > 0) {
-      const exams = data.Exame.map((exame) => ({
-        id: exame.id,
-        name: exame.Tipo_Exame?.nome || "Nome não disponível",
-        scheduledAt: exame.data_agendamento,
-        hourSchedule:exame.hora_agendamento,
-        id_tecnico_alocado:exame.id_tecnico_alocado
-      }));
+      const exams = data.Exame
+        .filter((exame) => !exame.id_tecnico_alocado) // Excluir exames com técnicos alocados
+        .map((exame) => ({
+          id: exame.id,
+          name: exame.Tipo_Exame?.nome || "Nome não disponível",
+          scheduledAt: exame.data_agendamento,
+          hourSchedule: exame.hora_agendamento,
+          id_tecnico_alocado: exame.id_tecnico_alocado,
+        }));
       // @ts-ignore
       setGroupedExams(exams);
     }
+  };
+
+  const getTecnicoNome = (id: string | null) => {
+    if (!id || !tecnico.data || tecnico.data.data.length === 0) return "Sem técnico alocado";
+    const tecnicoEncontrado = tecnico.data?.data.find((t) => t.id === id);
+    return tecnicoEncontrado?.nome_completo || "Técnico não encontrado";
   };
 
   const age =
@@ -92,7 +99,10 @@ export default function CardSchedule({ data }: ICardSchedule) {
                     className={` text-xs font-medium  ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
                       }`}
                   >
-                    {(exame.id_tecnico_alocado && exame.id_tecnico_alocado!.length > 0) ? `${"1"} alocado(s)` : "Sem técnico alocado"}
+                    {/* {(exame.id_tecnico_alocado && exame.id_tecnico_alocado!.length > 0) ? `${exame.id_tecnico_alocado}` : "Sem técnico alocado"} */}
+                    {
+                      getTecnicoNome(exame.id_tecnico_alocado)
+                    }
                   </span>
                 </p>
               </div>
@@ -149,7 +159,6 @@ export default function CardSchedule({ data }: ICardSchedule) {
             Alocar Técnicos
           </Button>
         </AllocateTechniciansModal>
-
       </div>
     </div>
   );
