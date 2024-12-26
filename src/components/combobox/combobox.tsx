@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 
-
-
 interface ComboboxProps {
   options: string[];
   value: string | null;

@@ -3,10 +3,26 @@ import { ResponseData } from "./types";
 import { AlerDialogNextExam } from "./_alertDialog";
 import { MedicalMaterialsModal } from "./_materialModal";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { _axios } from "@/lib/axios";
+import { LabTechnician } from "@/app/akin/schedule/tecnico";
 
 export const ExamCard = ({ data }: ResponseData) => {
   const [isNextExamOpen, setIsNextExamOpen] = useState<boolean>(false);
   const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState<boolean>(false);
+
+  const techLab = useQuery({
+    queryKey: ["tech-lab"],
+    queryFn: async () => {
+      return await _axios.get<LabTechnician[]>("/lab-technicians");
+    }
+  });
+
+  const getNameTech = (id: string | null) => {
+    if (id === null) return 'Não atribuído';
+    const tech = techLab.data?.data.find((tech) => tech.id === id);
+    return tech?.nome_completo;
+  }
 
   const handleIgnore = () => {
     setIsNextExamOpen(false);
@@ -22,7 +38,18 @@ export const ExamCard = ({ data }: ResponseData) => {
           <p className="text-gray-700"><span className="font-medium">Status:</span> {exam.status}</p>
           <p className="text-gray-700"><span className="font-medium">Status do Pagamento:</span> {exam.status_pagamento}</p>
           <p className="text-gray-700"><span className="font-medium">Preço:</span> {exam.Tipo_Exame.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
-          <p className="text-gray-700"><span className="font-medium">Técnico Alocado:</span> {exam.id_tecnico_alocado || 'Não atribuído'}</p>
+          <p className="text-gray-700 flex items-center gap-1">
+            <span className="font-medium">
+              Técnico Alocado: {" "}
+            </span>
+            {
+              techLab.isLoading ? (
+                <span className="animate-pulse bg-gray-200 h-5 w-20 inline-block"></span>
+              ) :(
+                getNameTech(exam.id_tecnico_alocado)
+              )
+            }
+          </p>
         </div>
         <div className="flex flex-col min-h-full">
           <span

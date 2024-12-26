@@ -1,70 +1,19 @@
 "use client"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Copy, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Exam } from "../../[id]/exam-history/useExamHookData";
-import { useState } from "react";
 import { ResponseData } from "../../[id]/next-exam/types";
+import { AvatarSection } from "./_avatarSection";
+import { InfoGroup } from "./_infoGroup";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { _axios } from "@/lib/axios";
+import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
+import { Combobox } from "@/components/combobox/combobox";
 
-// Componentes reutilizáveis
-function InfoItem({ label, value }: { label: string; value: string }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(value).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
-  return (
-    <article className="w-[300px] bg-gray-100 p-1 tracking-tighter rounded-md shadow-sm">
-      <h4 className="flex justify-between items-center text-sm text-gray-400 font-medium">
-        {label}
-        {
-          copied ? (
-            <span className="text-xs text-green-500 block ">
-              Copiado!
-            </span>
-          ) : (
-            <Copy size={18} className="cursor-pointer" onClick={handleCopy} />
-          )
-        }
-      </h4>
-      <p>{value}</p>
-    </article>
-  );
-}
-
-function InfoGroup({ title, items }: { title?: string; items: { label: string; value: string }[] }) {
-  return (
-    <div className="space-y-2">
-      {title && <h2 className="flex justify-between items-center text-sm text-gray-400 font-medium">{title}</h2>}
-      {items.map((item, index) => (
-        <InfoItem key={index} label={item.label} value={item.value} />
-      ))}
-    </div>
-  );
-}
-
-function AvatarSection({ imageSrc }: { imageSrc: string }) {
-  return (
-    <div className="w-max flex flex-col items-center">
-      <Avatar className="size-[150px]">
-        <AvatarImage className="object-cover" src={imageSrc} />
-        <AvatarFallback>CN</AvatarFallback>
-      </Avatar>
-      <h2 className="flex gap-2 text-sm items-center text-akin-turquoise cursor-pointer">
-        {/* eslint-disable-next-line jsx-a11y/alt-text */}
-        <Image size={14} />
-        Trocar foto
-      </h2>
-    </div>
-  );
-}
-
+const genderOptions = ["Masculino", "Femenino"]
 // Componente principal
 export function PatientResumeInfo({
   patient,
@@ -75,6 +24,54 @@ export function PatientResumeInfo({
   basicExamHistory?: Exam,
   basicNextExam?: ResponseData
 }) {
+  const [isSaving, setIsSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [formData, setFormData] = useState<{
+    nome_completo: string;
+    numero_identificacao: string;
+    id_sexo: number;
+    data_nascimento: string;
+    contacto_telefonico: string;
+    sexo: sexoType;
+  }>({
+    nome_completo: patient.nome_completo,
+    numero_identificacao: patient.numero_identificacao,
+    id_sexo: patient.id_sexo,
+    data_nascimento: patient.data_nascimento,
+    contacto_telefonico: patient.contacto_telefonico,
+    sexo: {
+      nome: patient.sexo.nome
+    }
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    const dataToSend = {
+      nome_completo: formData.nome_completo,
+      numero_identificacao: formData.numero_identificacao,
+      id_sexo: parseInt(formData.id_sexo.toString(), 10),
+      data_nascimento: formData.data_nascimento,
+      contacto_telefonico: formData.contacto_telefonico,
+    };
+
+    try {
+      setIsSaving(true);
+      const response = await _axios.patch(`/pacients/${patient.id}`, dataToSend);
+      ___showSuccessToastNotification({ message: "Dados atualizados com sucesso" });
+    } catch (error) {
+      console.error(error);
+      ___showErrorToastNotification({ message: "Erro ao salvar dados" });
+    } finally {
+      setIsSaving(false);
+      setIsEditing(false);
+    }
+  };
+
   const personalInfo = [
     { label: "Nome do paciente", value: patient.nome_completo },
     { label: "Bilhete de Identidade", value: patient.numero_identificacao },
@@ -84,10 +81,6 @@ export function PatientResumeInfo({
     { label: "Contacto", value: patient.contacto_telefonico },
   ];
 
-  const assignedStaff = [
-    { label: "Doutor", value: "Paulo Sauimbo" },
-    { label: "Enfermeiros", value: "Albertina Tchela, Miguel Bungo" },
-  ];
 
   return (
     <div className=" w-full gap-x-5 gap-y-5 pb-5 flex flex-col md:justify-between lg:flex-row  overflow-auto  [&::-webkit-scrollbar]:hidden ">
@@ -98,19 +91,93 @@ export function PatientResumeInfo({
             <AvatarSection imageSrc="https://images.pexels.com/photos/12202417/pexels-photo-12202417.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" />
           </CardTitle>
           <CardDescription>
-            <InfoGroup
-              items={[
-                { label: "Paciente registado", value: new Date(patient.data_registro).toString() },
-              ]}
-            />
-            <InfoGroup title="Técnicos já alocados" items={assignedStaff} />
+            <h3 className="text-md font-medium text-black/50">Informações do Paciente</h3>
+            <InfoGroup items={personalInfo} />
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <h3 className="text-md font-medium text-black/50">Informações do Paciente</h3>
-          <InfoGroup items={personalInfo} />
+
+          <Button
+            className="mt-4 bg-akin-turquoise hover:bg-akin-turquoise/80 text-white"
+            onClick={() => setIsEditing(true)}
+          >
+            Editar Informações
+          </Button>
         </CardContent>
       </Card>
+
+      {/* Card de Edição */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Informações do Paciente</DialogTitle>
+          </DialogHeader>
+          <form className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-gray-800 font-medium" htmlFor="nome_completo">Nome do Paciente</label>
+              <Input
+                id="nome_completo"
+                placeholder="Nome do Paciente"
+                name="nome_completo"
+                value={formData.nome_completo}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-gray-800 font-medium" htmlFor="numero_identificacao">Bilhete de Identidade</label>
+              <Input
+                id="numero_identificacao"
+                placeholder="Bilhete de Identidade"
+                name="numero_identificacao"
+                value={formData.numero_identificacao}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-gray-800 font-medium" htmlFor="id_sexo">Gênero</label>
+          
+              <Combobox
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    id_sexo: value === "Masculino" ? 1 : 2,
+                  }))
+                }
+                value={formData.sexo.nome}
+                options={genderOptions}
+                placeholder="Genero"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-gray-800 font-medium" htmlFor="data_nascimento">Data de Nascimento</label>
+              <Input
+                id="data_nascimento"
+                placeholder="Data de Nascimento"
+                name="data_nascimento"
+                type="date"
+                value={formData.data_nascimento}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-gray-800 font-medium" htmlFor="contacto_telefonico">Contacto</label>
+              <Input
+                id="contacto_telefonico"
+                placeholder="Contacto"
+                name="contacto_telefonico"
+                value={formData.contacto_telefonico}
+                onChange={handleInputChange}
+              />
+            </div>
+          </form>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setIsEditing(false)}>
+              Cancelar
+            </Button>
+            <Button className="bg-akin-turquoise hover:bg-akin-turquoise/80" onClick={handleSave}>{isSaving ? "Salvando..." : "Salvar"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="space-y-5 w-ful">
         {/* Card de histórico */}
