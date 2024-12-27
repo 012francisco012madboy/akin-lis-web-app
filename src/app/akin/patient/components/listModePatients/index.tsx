@@ -23,12 +23,6 @@ export function ListMode({ patientList }: { patientList: PatientType[] }) {
     <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
       <div className="flex justify-between items-center p-4">
         <h2 className="text-lg font-medium text-gray-700">Lista de Pacientes</h2>
-        {/* <button
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
-          onClick={handleReload}
-        >
-          Recarregar
-        </button> */}
       </div>
       <table className="min-w-full divide-y divide-gray-200 text-sm">
         {/* Cabeçalho */}
@@ -89,11 +83,10 @@ export function ListMode({ patientList }: { patientList: PatientType[] }) {
           {Array.from({ length: totalPages }).map((_, idx) => (
             <button
               key={idx}
-              className={`px-3 py-1 text-sm font-medium border rounded ${
-                currentPage === idx + 1
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-500 hover:bg-gray-100"
-              }`}
+              className={`px-3 py-1 text-sm font-medium border rounded ${currentPage === idx + 1
+                ? "bg-blue-600 text-white"
+                : "bg-white text-gray-500 hover:bg-gray-100"
+                }`}
               onClick={() => handlePageChange(idx + 1)}
             >
               {idx + 1}
