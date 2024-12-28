@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import clsx from "clsx";
 
 interface AutocompleteProps {
-  suggestions: string[];
+  suggestions: { value: string; id: string }[];
   onSelect: (value: string) => void;
   placeholder?: string;
-  className?: string; // Estilo da div raiz
-  inputClassName?: string; // Estilo do input
-  listClassName?: string; // Estilo da lista de sugestões
-  itemClassName?: string; // Estilo dos itens na lista
-  hoverClassName?: string; // Estilo ao passar o mouse nos itens
+  className?: string;
+  inputClassName?: string;
+  listClassName?: string;
+  itemClassName?: string;
+  hoverClassName?: string;
+  reset?: boolean; // Nova prop para resetar o estado
 }
 
 const Autocomplete: React.FC<AutocompleteProps> = ({
@@ -21,9 +22,12 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
   listClassName,
   itemClassName,
   hoverClassName,
+  reset,
 }) => {
   const [query, setQuery] = useState("");
-  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState<
+    { value: string; id: string }[]
+  >([]);
   const [isFocused, setIsFocused] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,17 +35,25 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
     setQuery(value);
     setFilteredSuggestions(
       suggestions.filter((item) =>
-        item.toLowerCase().includes(value.toLowerCase())
+        item.value.toLowerCase().includes(value.toLowerCase())
       )
     );
   };
 
-  const handleSelect = (value: string) => {
-    setQuery(value);
-    setFilteredSuggestions([]);
-    onSelect(value);
-    setIsFocused(false);
+  const onChangeValueFn = (selected: { value: string; id: string }) => {
+    onSelect(selected.id); // Passa o ID do item selecionado para o callback
+    setQuery(selected.value); // Atualiza o campo de entrada com o valor selecionado
+    setFilteredSuggestions([]); // Limpa a lista de sugestões
+    setIsFocused(false); // Fecha a lista de sugestões
   };
+
+  // Efeito para resetar o input e as sugestões
+  useEffect(() => {
+    if (reset) {
+      setQuery(""); // Limpa o valor do input
+      setFilteredSuggestions([]); // Limpa as sugestões filtradas
+    }
+  }, [reset]);
 
   return (
     <div className={clsx("relative w-full", className)}>
@@ -67,14 +79,14 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
           {filteredSuggestions.map((suggestion, index) => (
             <li
               key={index}
-              onClick={() => handleSelect(suggestion)}
+              onClick={() => onChangeValueFn(suggestion)}
               className={clsx(
                 "cursor-pointer px-4 py-2",
                 itemClassName,
                 hoverClassName ? hoverClassName : "hover:bg-indigo-100"
               )}
             >
-              {suggestion}
+              {suggestion.value}
             </li>
           ))}
         </ul>

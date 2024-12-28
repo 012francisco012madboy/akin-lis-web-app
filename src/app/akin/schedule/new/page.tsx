@@ -29,6 +29,7 @@ export default function New() {
   const [selectedPatientId, setSelectedPatientId] = useState<string>("");
   const [selectedPatient, setSelectedPatient] = useState<Patient | undefined>();
   const [schedules, setSchedules] = useState([{ exam: "", date: new Date(), time: "" }]);
+  const [resetPatient, setResetPatient] = useState(false);
 
   const { user } = useAuthStore();
   const { data } = useQuery({
@@ -84,7 +85,6 @@ export default function New() {
       if (!schedule.exam) {
         errors.push(`Exame não selecionado para o agendamento ${index + 1}`);
       }
-      console.log(schedule.date);
 
       const scheduleDateTime = new Date(`${schedule.date}T${schedule.time}`);
       if (scheduleDateTime < today) {
@@ -120,7 +120,6 @@ export default function New() {
   };
   const handleSubmit = async () => {
     const validation = validateSchedule();
-
     if (!validation.isValid) return;
 
     setIsSaving(true);
@@ -132,18 +131,21 @@ export default function New() {
         setSelectedPatient(undefined);
         setSelectedPatientId("");
         resetInputs()
+        setResetPatient(true);
       } else {
         ___showErrorToastNotification({ message: "Erro ao marcar agendamento. Tente novamente." });
+        setResetPatient(false);
       }
     } catch (error) {
       ___showErrorToastNotification({ message: "Erro ao marcar agendamento. Contate o suporte." });
+      setResetPatient(false);
     } finally {
       setIsSaving(false);
     }
   };
 
   return (
-    <div className="min-h-screen px-6 py-2 pb-5 bg-gray-50">
+    <div className="min-h-screen px-6 py-2 pb-5 bg-gray-50 overflow-x-hidden">
       {/* Cabeçalho */}
       <div className={"flex flex-col md:flex-row justify-between pr-3 mb-4"}>
         <h1 className="text-2xl font-semibold text-gray-800 mb-3">Novo Agendamento</h1>
@@ -166,6 +168,7 @@ export default function New() {
               selectedPatient={selectedPatient}
               autoCompleteData={patientAutoComplete}
               onPatientSelect={(patientId) => setSelectedPatientId(patientId)}
+              resetPatient={resetPatient}
             />
           </div>
 

@@ -52,9 +52,6 @@ export function ScheduleDetails({
     onChange(updatedSchedules);
   };
 
-
-
-
   const handleAddSchedule = () => {
     onChange([...schedules, { exam: "", date: new Date(), time: "" }]);
   };
@@ -87,7 +84,7 @@ export function ScheduleDetails({
             </label>
             <Calendar
               id="buttondisplay"
-              className="w-full h-10 bg-gray-50 rounded-md shadow-sm border-gray-300 focus:ring-0 focus:border-none focus-visible:ring-0"
+              className="w-full h-10 px-4 bg-gray-50 rounded-md shadow-sm border-gray-300 focus:ring-0 focus:border-none focus-visible:ring-0"
               onChange={(date) => handleScheduleChange(index, "date", date)}
               showIcon
               dateFormat="yy/m/d"

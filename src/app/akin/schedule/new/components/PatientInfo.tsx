@@ -24,13 +24,13 @@ export function PatientInfo({ patient, isLoading }: {
                 placeholder="Data de Nascimento"
                 maxDate={new Date()}
                 valueDate={patient?.data_nascimento ? new Date(patient.data_nascimento) : null}
-                className="flex-1 lg:w-[400px] bg-gray-100 rounded-md"
+                className="flex-1 h-12 px-3 lg:w-[400px] bg-gray-100 rounded-md"
               />
               <input
                 disabled
                 name="gender"
                 placeholder="Sexo"
-                className="rounded-lg bg-gray-100 text-gray-400"
+                className="rounded-lg bg-gray-50 h-12 px-3 text-gray-400"
                 value={patient?.sexo.nome}
               />
             </div>
