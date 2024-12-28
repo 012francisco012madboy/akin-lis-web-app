@@ -22,15 +22,28 @@ export function ScheduleDetails({
 
   const handleScheduleChange = (index: number, key: string, eventOrValue: any) => {
     const value = eventOrValue?.value || eventOrValue; // Extrai o campo 'value' se disponível
-
-    // Formatar o valor dependendo do tipo (data ou hora)
     let formattedValue = value;
-    if (key === "date" && value instanceof Date) {
-      // Pega somente a data no formato 'YYYY-MM-DD'
-      formattedValue = value.toISOString().split("T")[0];
-    } else if (key === "time" && value instanceof Date) {
-      // Pega somente a hora no formato 'HH:mm'
-      formattedValue = value.toTimeString().split(" ")[0].slice(0, 5);
+
+    if (key === "date") {
+      const dateValue = value instanceof Date ? value : new Date(value);
+
+      if (!isNaN(dateValue.getTime())) {
+        // Ajusta para horário local
+        const localDate = new Date(dateValue.getTime() - dateValue.getTimezoneOffset() * 60 * 1000);
+        formattedValue = localDate.toISOString().split("T")[0]; // Formato 'YYYY-MM-DD'
+        // console.log("Data formatada:", formattedValue);
+      } else {
+        // console.error("Valor inválido para data:", value);
+      }
+    } else if (key === "time") {
+      const timeValue = value instanceof Date ? value : new Date(`1970-01-01T${value}`);
+
+      if (!isNaN(timeValue.getTime())) {
+        formattedValue = timeValue.toTimeString().split(" ")[0].slice(0, 5); // Formato 'HH:mm'
+        // console.log("Hora formatada:", formattedValue);
+      } else {
+        // console.error("Valor inválido para hora:", value);
+      }
     }
 
     // Atualiza os agendamentos com o valor formatado
@@ -38,6 +51,8 @@ export function ScheduleDetails({
     updatedSchedules[index] = { ...updatedSchedules[index], [key]: formattedValue };
     onChange(updatedSchedules);
   };
+
+
 
 
   const handleAddSchedule = () => {

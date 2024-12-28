@@ -54,10 +54,10 @@ export default function CardSchedule({ data }: ICardSchedule) {
 
   //[&::-webkit-scrollbar]:hidden 
   return (
-    <div className="card shadow-xl border border-gray-300 rounded-lg flex flex-col items-center bg-white min-h-[400px] max-h-[250px] overflow-hidden transition-all duration-300 hover:scale-105">
+    <div className="card shadow-xl border border-gray-300 rounded-lg flex flex-col items-center bg-white min-h-[400px] max-h-[250px]  transition-all duration-300 hover:scale-105">
       {/* Exame Information */}
       {showExams ? (
-        <div className="flex-1 rounded-t-lg w-full [&::-webkit-scrollbar]:hidden space-y-4 p-4 h-[19.2rem]">
+        <div className="flex-1 rounded-t-lg w-full overflow-y-scroll [&::-webkit-scrollbar]:hidden space-y-4 p-4 h-[19.2rem]">
           <View.Scroll className="max-h-full pl-4 overflow-y-auto space-y-2">
             {data.Exame.map((exame) => (
               <div key={exame.id} className="w-full pb-4 border-b border-gray-200 ">

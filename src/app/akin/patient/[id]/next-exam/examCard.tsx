@@ -6,10 +6,19 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
 import { LabTechnician } from "@/app/akin/schedule/tecnico";
+import { useAuthStore } from "@/utils/zustand-store/authStore";
+import { UserData } from "@/app/akin/profile/page";
 
 export const ExamCard = ({ data }: ResponseData) => {
+  const { user } = useAuthStore();
   const [isNextExamOpen, setIsNextExamOpen] = useState<boolean>(false);
   const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState<boolean>(false);
+  const { data: userData } = useQuery({
+    queryKey: ['user-data'],
+    queryFn: async () => {
+      return await _axios.get<UserData>(`/users/${user?.id}`);
+    },
+  });
 
   const techLab = useQuery({
     queryKey: ["tech-lab"],
@@ -45,7 +54,7 @@ export const ExamCard = ({ data }: ResponseData) => {
             {
               techLab.isLoading ? (
                 <span className="animate-pulse bg-gray-200 h-5 w-20 inline-block"></span>
-              ) :(
+              ) : (
                 getNameTech(exam.id_tecnico_alocado)
               )
             }
@@ -60,12 +69,18 @@ export const ExamCard = ({ data }: ResponseData) => {
           >
             {exam.status}
           </span>
-          <Button
-            className="mt-24 text-md font-medium"
-            onClick={() => setIsNextExamOpen(true)}
-          >
-            Começar
-          </Button>
+          {
+            userData?.data?.tipo === 'TECNICO' || userData?.data?.tipo === 'RECEPCIONISTA' ? (
+              <p></p>
+            ) : (
+              <Button
+                className="mt-24 text-md font-medium"
+                onClick={() => setIsNextExamOpen(true)}
+              >
+                Começar
+              </Button>
+            )
+          }
         </div>
         <>
           <AlerDialogNextExam

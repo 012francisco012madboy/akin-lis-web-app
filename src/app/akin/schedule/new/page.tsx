@@ -47,7 +47,7 @@ export default function New() {
       setSelectedPatient(availablePatients.find((patient) => patient.id === selectedPatientId));
     }
   }, [selectedPatientId, availablePatients]);
-  
+
   if (data?.data.tipo === "CHEFE" || data?.data.tipo === "TECNICO") {
     return redirect("/akin/schedule/completed");
   }
@@ -84,6 +84,7 @@ export default function New() {
       if (!schedule.exam) {
         errors.push(`Exame não selecionado para o agendamento ${index + 1}`);
       }
+      console.log(schedule.date);
 
       const scheduleDateTime = new Date(`${schedule.date}T${schedule.time}`);
       if (scheduleDateTime < today) {
@@ -117,7 +118,6 @@ export default function New() {
       },
     };
   };
-
   const handleSubmit = async () => {
     const validation = validateSchedule();
 
