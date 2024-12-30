@@ -76,28 +76,39 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
   );
 
   const handleConfirm = async () => {
-
-    const errors = exams.reduce((acc, exam) => {
-      // @ts-ignore
-      const selected = selectedTechnicians[exam.id] || [];
-      // @ts-ignore
-      if (selected.length === 0) acc[exam.id] = "Selecione pelo menos um técnico.";
-      // @ts-ignore
-      else if (selected.length > 1) acc[exam.id] = "Selecione apenas um técnico.";
-      return acc;
-    }, {});
-
-    setErrors(errors);
-
-    if (Object.keys(errors).length > 0) return;
-    const allocations = exams.map((exam) => ({
-      // @ts-ignore
-      examId: exam.id,
-      // @ts-ignore
-      id_tecnico_alocado: selectedTechnicians[exam.id]?.map((tech) => tech.id) || [],
+    const allocations = Object.entries(selectedTechnicians).map(([examId, technicians]) => ({
+      examId: Number(examId),
+      id_tecnico_alocado: technicians.map((tech) => tech.id),
     }));
 
-    if (onAllocate) onAllocate(allocations);
+    if (allocations.length === 0) {
+      ___showErrorToastNotification({
+        message: "Nenhuma alocação foi realizada. Selecione técnicos para pelo menos um exame.",
+      });
+      return;
+    }
+    //Logica para alocar tecnicos de uma só vez para cada exame
+    // const errors = exams.reduce((acc, exam) => {
+    //   // @ts-ignore
+    //   const selected = selectedTechnicians[exam.id] || [];
+    //   // @ts-ignore
+    //   if (selected.length === 0) acc[exam.id] = "Selecione pelo menos um técnico.";
+    //   // @ts-ignore
+    //   else if (selected.length > 1) acc[exam.id] = "Selecione apenas um técnico.";
+    //   return acc;
+    // }, {});
+
+    // setErrors(errors);
+
+    // if (Object.keys(errors).length > 0) return;
+    // const allocations = exams.map((exam) => ({
+    //   // @ts-ignore
+    //   examId: exam.id,
+    //   // @ts-ignore
+    //   id_tecnico_alocado: selectedTechnicians[exam.id]?.map((tech) => tech.id) || [],
+    // }));
+
+    // if (onAllocate) onAllocate(allocations);
     setIsLoading(true);
     try {
       const res = await Promise.all(
@@ -110,10 +121,8 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
       ___showSuccessToastNotification({ message: "Alocação confirmada!" })
       setIsLoading(false);
       setIsSucess(false);
-      console.log(res)
     } catch (error) {
       ___showErrorToastNotification({ message: "Erro ao confirmar Alocação!" })
-      console.error("Erro ao alocar técnicos:", error);
     }
   };
 

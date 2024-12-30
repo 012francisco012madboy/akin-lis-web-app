@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Primary from "@/components/button/primary";
 import { View } from "@/components/view";
-import { Trash, CheckCircle } from "lucide-react";
+import { Trash, CheckCircle, Pencil } from "lucide-react";
 import { AllocateTechniciansModal, LabTechnician } from "./tecnico";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -61,7 +61,28 @@ export default function CardSchedule({ data }: ICardSchedule) {
           <View.Scroll className="max-h-full pl-4 overflow-y-auto space-y-2">
             {data.Exame.map((exame) => (
               <div key={exame.id} className="w-full pb-4 border-b border-gray-200 ">
-                <p className="font-semibold text-xl"> {exame.Tipo_Exame.nome || "Nome não disponível"}</p>
+
+                <p className="font-semibold text-xl flex justify-between items-center mr-3">
+                  {exame.Tipo_Exame.nome || "Nome não disponível"}
+
+                  <div className="relative group">
+                    <Pencil size={18}
+                      className="cursor-pointer text-gray-500"
+                      onClick={() => {
+                        window.location.href = `/akin/patient/${data.id_paciente}/next-exam`;
+                      }}
+                    />
+                    <span className="absolute cursor-pointer -left-8 top-full mt-1 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => {
+                        window.location.href = `/akin/patient/${data.id_paciente}/next-exam`;
+                      }}
+                    >
+                      Editar
+                    </span>
+                  </div>
+
+                </p>
+
                 <p className="pl-6  text-gray-500 text-sm font-semibold">
                   Estado:{" "}
                   <span
