@@ -7,19 +7,20 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { APP_CONFIG } from "@/config/app";
 import { useState } from "react";
+import { _axios } from "@/lib/axios";
 
 export const Register = () => {
   const [formData, setFormData] = useState({
-    nome_completo: "",
-    data_nascimento: "",
-    numero_identificacao: "",
-    id_sexo: "",
-    cargo: "",
-    contacto_telefonico: "",
+    // nome_completo: "",
+    // data_nascimento: "",
+    // numero_identificacao: "",
+    // id_sexo: "",
+    tipo: "",
+    // cargo: "",
+    // contacto_telefonico: "",
     nome: "",
     email: "",
     senha: "",
-    tipo: "CHEFE",
     status: "ATIVO",
   });
 
@@ -28,10 +29,16 @@ export const Register = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui, você pode adicionar validação e lógica para enviar os dados ao servidor.
-    console.log("Dados do formulário:", formData);
+    try {
+      const response = await _axios.post("auth/local/signup", formData);
+      console.log("Resposta do servidor:");
+      console.log(response.data);
+    } catch (error) {
+      console.error("Erro ao enviar dados do formulário:", error);
+      
+    }
   };
 
   return (
@@ -52,82 +59,14 @@ export const Register = () => {
         <CardContent>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <Label htmlFor="nome_completo">Nome Completo</Label>
-              <Input
-                id="nome_completo"
-                name="nome_completo"
-                type="text"
-                value={formData.nome_completo}
-                onChange={handleInputChange}
-                placeholder="Digite o nome completo"
-              />
-            </div>
-            <div>
-              <Label htmlFor="data_nascimento">Data de Nascimento</Label>
-              <Input
-                id="data_nascimento"
-                name="data_nascimento"
-                type="date"
-                value={formData.data_nascimento}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <Label htmlFor="numero_identificacao">Número de Identificação</Label>
-              <Input
-                id="numero_identificacao"
-                name="numero_identificacao"
-                type="text"
-                value={formData.numero_identificacao}
-                onChange={handleInputChange}
-                placeholder="Digite o número de identificação"
-              />
-            </div>
-            <div>
-              <Label htmlFor="id_sexo">Sexo</Label>
-              <Select
-                onValueChange={(value) => setFormData({ ...formData, id_sexo: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o sexo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">Masculino</SelectItem>
-                  <SelectItem value="2">Feminino</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="cargo">Cargo</Label>
-              <Input
-                id="cargo"
-                name="cargo"
-                type="text"
-                value={formData.cargo}
-                onChange={handleInputChange}
-                placeholder="Digite o cargo"
-              />
-            </div>
-            <div>
-              <Label htmlFor="contacto_telefonico">Contato Telefônico</Label>
-              <Input
-                id="contacto_telefonico"
-                name="contacto_telefonico"
-                type="tel"
-                value={formData.contacto_telefonico}
-                onChange={handleInputChange}
-                placeholder="Digite o número de telefone"
-              />
-            </div>
-            <div>
-              <Label htmlFor="nome">Nome de Usuário</Label>
+              <Label htmlFor="nome">Nome Completo</Label>
               <Input
                 id="nome"
                 name="nome"
                 type="text"
                 value={formData.nome}
                 onChange={handleInputChange}
-                placeholder="Digite o nome de usuário"
+                placeholder="Digite o nome completo"
               />
             </div>
             <div>
@@ -141,6 +80,91 @@ export const Register = () => {
                 placeholder="Digite o email"
               />
             </div>
+            {/* <div>
+              <Label htmlFor="data_nascimento">Data de Nascimento</Label>
+              <Input
+                id="data_nascimento"
+                name="data_nascimento"
+                type="date"
+                value={formData.data_nascimento}
+                onChange={handleInputChange}
+              />
+            </div> */}
+            {/* <div>
+              <Label htmlFor="numero_identificacao">Número de Identificação</Label>
+              <Input
+                id="numero_identificacao"
+                name="numero_identificacao"
+                type="text"
+                value={formData.numero_identificacao}
+                onChange={handleInputChange}
+                placeholder="Digite o número de identificação"
+              />
+            </div> */}
+            {/* <div>
+              <Label htmlFor="id_sexo">Sexo</Label>
+              <Select
+                onValueChange={(value) => setFormData({ ...formData, id_sexo: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o sexo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Masculino</SelectItem>
+                  <SelectItem value="2">Feminino</SelectItem>
+                </SelectContent>
+              </Select>
+            </div> */}
+            <div>
+              <Label htmlFor="id_cargo">Cargo</Label>
+              <Select
+                onValueChange={(value) => setFormData({ ...formData, tipo: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o cargo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {/* <SelectItem value="TECNICO">Técnico</SelectItem> */}
+                  <SelectItem value="CHEFE">Chefe de Laboratório</SelectItem>
+                  <SelectItem value="RECEPCIONISTA">Recepcionista</SelectItem>
+                </SelectContent>
+              </Select>
+
+            </div>
+            {/* <div>
+              <Label htmlFor="cargo">Cargo</Label>
+              <Input
+                id="cargo"
+                name="cargo"
+                type="text"
+                value={formData.cargo}
+                onChange={handleInputChange}
+                placeholder="Digite o cargo"
+              />
+            </div> */}
+            {/* <div>
+              <Label htmlFor="contacto_telefonico">Contato Telefônico</Label>
+              <Input
+                id="contacto_telefonico"
+                name="contacto_telefonico"
+                type="tel"
+                value={formData.contacto_telefonico}
+                onChange={handleInputChange}
+                placeholder="Digite o número de telefone"
+              />
+            </div> */}
+            {/* <div>
+              <Label htmlFor="nome">Nome de Usuário</Label>
+              <Input
+                id="nome"
+                name="nome"
+                type="text"
+                value={formData.nome}
+                onChange={handleInputChange}
+                placeholder="Digite o nome de usuário"
+              />
+            </div> */}
+
             <div>
               <Label htmlFor="senha">Senha</Label>
               <Input
