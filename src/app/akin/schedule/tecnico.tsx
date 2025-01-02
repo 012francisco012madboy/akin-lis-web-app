@@ -56,23 +56,21 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
     setSelectedTechnicians((prev) => {
       const currentSelection = prev[examId] || [];
       const isAlreadySelected = currentSelection.some((tech) => tech.id === technician.id);
-
+  
+      // Atualização da seleção
       const newSelection = isAlreadySelected
         ? currentSelection.filter((tech) => tech.id !== technician.id)
-        : [...currentSelection, technician];
-
-      if (newSelection.length > 1) {
-        setErrors((prevErrors) => ({ ...prevErrors, [examId]: "Selecione apenas um técnico." }));
-      } else {
-        setErrors((prevErrors) => ({ ...prevErrors, [examId]: "" }));
-      }
-
+        : [technician]; // Permita apenas um técnico por exame
+  
+      console.log("Novo estado selecionado:", newSelection);
+  
       return { ...prev, [examId]: newSelection };
     });
   };
+  
   const allExamsAllocated = exams.every(
-    //@ts-ignore
-    (exam) => exam.id_tecnico_alocado != null || (selectedTechnicians[exam.id]?.length || 0) > 0
+    //@ts-ignore 
+    (exam) => exam.id_tecnico_alocado != null
   );
 
   const handleConfirm = async () => {
@@ -87,28 +85,7 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
       });
       return;
     }
-    //Logica para alocar tecnicos de uma só vez para cada exame
-    // const errors = exams.reduce((acc, exam) => {
-    //   // @ts-ignore
-    //   const selected = selectedTechnicians[exam.id] || [];
-    //   // @ts-ignore
-    //   if (selected.length === 0) acc[exam.id] = "Selecione pelo menos um técnico.";
-    //   // @ts-ignore
-    //   else if (selected.length > 1) acc[exam.id] = "Selecione apenas um técnico.";
-    //   return acc;
-    // }, {});
-
-    // setErrors(errors);
-
-    // if (Object.keys(errors).length > 0) return;
-    // const allocations = exams.map((exam) => ({
-    //   // @ts-ignore
-    //   examId: exam.id,
-    //   // @ts-ignore
-    //   id_tecnico_alocado: selectedTechnicians[exam.id]?.map((tech) => tech.id) || [],
-    // }));
-
-    // if (onAllocate) onAllocate(allocations);
+   
     setIsLoading(true);
     try {
       const res = await Promise.all(
@@ -123,6 +100,8 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
       setIsSucess(false);
     } catch (error) {
       ___showErrorToastNotification({ message: "Erro ao confirmar Alocação!" })
+    }finally{
+      setIsLoading(false);
     }
   };
 
