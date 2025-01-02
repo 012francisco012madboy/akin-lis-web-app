@@ -105,7 +105,7 @@ const PatientRegistrationModal = ({
       <Input.InputText
         placeholder="Nome do Paciente"
         name="name"
-        className="border border-gray-300 rounded-lg 0 transition-all placeholder-gray-500 text-gray-800"
+        className="border-[1px] bg-white border-gray-300 rounded-lg 0 transition-all placeholder-gray-500 text-gray-800"
       />
       <div className="flex flex-wrap gap-4">
         <Input.CalenderDate
@@ -114,26 +114,26 @@ const PatientRegistrationModal = ({
           maxDate={new Date()}
           name="birth_day"
           valueDate={null}
-          className="border ring-0 border-gray-300 rounded-lg focus:border-none focus:ring-0 transition-all placeholder-gray-500 text-gray-800"
+          className="border-[1px] pl-2.5 bg-white ring-0 h-12  border-gray-300 rounded-lg focus:border-none focus:ring-0 transition-all placeholder-gray-800 text-gray-800 "
         />
         <Input.Dropdown
           data={genders}
           name="gender"
           placeholder="Selecione o sexo"
-          className="border ring-0 border-gray-300 rounded-lg focus:border-none focus:ring-0 transition-all placeholder-gray-500 text-gray-800"
+          className="border-[1px] bg-white ring-0 border-gray-300 rounded-lg focus:border-none focus:ring-0 transition-all placeholder-gray-500 text-gray-800"
         />
       </div>
       <Input.InputText
         placeholder="Contacto telefónico"
         name="phone_number"
         type="number"
-        className="border border-gray-300 rounded-lg   transition-all placeholder-gray-500 text-gray-800"
+        className="border-[1px] bg-white border-gray-300 rounded-lg   transition-all placeholder-gray-500 text-gray-800"
       />
       <Input.InputText
         placeholder="Bilhete de Identidade"
         maxLength={14}
         name="identity"
-        className="border border-gray-300 rounded-lg  transition-all placeholder-gray-500 text-gray-800"
+        className="border-[1px] bg-white border-gray-300 rounded-lg  transition-all placeholder-gray-500 text-gray-800"
       />
       <div className="flex justify-end gap-4 mt-6">
         <Button.Primary

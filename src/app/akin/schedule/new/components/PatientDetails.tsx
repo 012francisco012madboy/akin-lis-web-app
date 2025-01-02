@@ -36,7 +36,7 @@ export function PatientDetails({ isLoading, selectedPatient, onPatientSelect, au
           <Autocomplete
             suggestions={autoCompleteData}
             onSelect={onPatientSelect}
-            placeholder="Nome completo do paciente"
+            placeholder={selectedPatient?.nome_completo || "Nome completo do paciente"}
             reset={resetPatient}
           />
         </div>
