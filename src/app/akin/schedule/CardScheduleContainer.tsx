@@ -1,8 +1,9 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CardSchedule from "./CardSchedule";
+// import { Combobox } from "@/components/combobox/combobox";
 
 interface ICardScheduleContainer {
   schedule: ScheduleType[];
@@ -12,9 +13,14 @@ interface ICardScheduleContainer {
 
 const ITEMS_PER_PAGE = 9;
 
+const all = "all";
+const allocated = "allocated";
+const notAllocated = "notAllocated";
+
 export default function CardScheduleContainer({ schedule, title, isLoading }: ICardScheduleContainer) {
   const [filteredSchedule, setFilteredSchedule] = useState<ScheduleType[]>(schedule);
   const [isSearching, setIsSearching] = useState(false);
+  const [filterByTechnician, setFilterByTechnician] = useState<typeof all | typeof allocated | typeof notAllocated>(all);
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalItems = filteredSchedule.length;
@@ -27,13 +33,29 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
       const filtered = schedule.filter((s) =>
         s.Paciente?.nome_completo?.toLowerCase().includes(searchText.toLowerCase())
       );
-      setFilteredSchedule(filtered);
+      applyFilters(filtered);
     }
   };
 
+  const applyFilters = useCallback((baseSchedule: ScheduleType[]) => {
+    let filtered = baseSchedule;
+
+    if (filterByTechnician === allocated) {
+      filtered = filtered.filter((s) =>
+        s.Exame?.some((exame) => exame.id_tecnico_alocado !== null)
+      );
+    } else if (filterByTechnician === notAllocated) {
+      filtered = filtered.filter((s) =>
+        s.Exame?.some((exame) => exame.id_tecnico_alocado === null)
+      );
+    }
+
+    setFilteredSchedule(filtered);
+  }, [filterByTechnician]);
+
   useEffect(() => {
-    setFilteredSchedule(schedule);
-  }, [schedule]);
+    applyFilters(schedule);
+  }, [schedule, filterByTechnician, applyFilters]);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentItems = filteredSchedule.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -52,12 +74,30 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
           {title} <span className="text-sm text-gray-600">({schedule.length})</span>
         </h1>
 
-        <div className="flex items-center space-x-4 mt-1">
+        <div className="flex flex-col lg:flex-row items-center space-y-2 lg:space-y-0 lg:space-x-4 mt-1">
           <Input
             className="w-full max-w-xs ring-0 focus:ring-0 focus-visible:ring-0"
             placeholder="Procurar por paciente"
             onChange={(e) => handleSearch(e.target.value)}
           />
+          {/* 
+          <Combobox
+            value={filterByTechnician}
+            onChange={(value) => setFilterByTechnician(value as typeof all | typeof allocated | typeof notAllocated)}
+            options={[all, allocated, notAllocated]}
+            placeholder="Filtrar por alocação"
+            
+          /> */}
+
+          <select
+            className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-nonefocus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
+            value={filterByTechnician}
+            onChange={(e) => setFilterByTechnician(e.target.value as typeof all | typeof allocated | typeof notAllocated)}
+          >
+            <option value={all}>Todos</option>
+            <option value={allocated}>Técnicos Alocados</option>
+            <option value={notAllocated}>Técnicos Não Alocados</option>
+          </select>
         </div>
       </header>
 
@@ -77,11 +117,28 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
         <div>
           {currentItems.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentItems.map((data, index) => (
-                <Card key={index} className="p-4">
-                  <CardSchedule data={data} />
-                </Card>
-              ))}
+              {currentItems.map((data, index) => {
+                // Filtrar exames no nível do card com base no filtro aplicado
+                const filteredExams = data.Exame?.filter((exame) => {
+                  if (filterByTechnician === allocated) {
+                    return exame.id_tecnico_alocado !== null;
+                  } else if (filterByTechnician === notAllocated) {
+                    return exame.id_tecnico_alocado === null;
+                  }
+                  return true; // Para "all", incluir todos os exames
+                });
+
+                // Se não houver exames correspondentes ao filtro, não renderizar o card
+                if (!filteredExams || filteredExams.length === 0) {
+                  return null;
+                }
+
+                return (
+                  <Card key={index} className="p-4">
+                    <CardSchedule data={{ ...data, Exame: filteredExams }} />
+                  </Card>
+                );
+              })}
             </div>
           ) : (
             <p className="text-gray-500">Nenhum agendamento encontrado.</p>
