@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { View } from "@/components/view";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
-import { useExamHookData } from "./useExamHookData";
+import { Exam, useExamHookData } from "./useExamHookData";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import { _axios } from "@/lib/axios";
@@ -12,6 +12,7 @@ import { IExamProps } from "@/app/akin/schedule/types";
 import { ExamCard } from "../utils/exam-history/exam-card";
 import { examsFilter, patient } from "../utils/exam-history/fake-data";
 import { PatientByIdProfileSkeleton } from "../utils/exam-history/patientByIdProfileSkeleton";
+import { useQuery } from "@tanstack/react-query";
 
 export default function ExamsHistory() {
   const { id } = useParams();
@@ -19,6 +20,14 @@ export default function ExamsHistory() {
   const [namePatient, setNamePatient] = useState("")
   const [exams, setExams] = useState<IExamProps[]>([])
   const [selectedExam, setSelectedExam] = useState<IExamProps | null>(null)
+
+  const historyExams = useQuery({ 
+    queryKey: ["exams-history"],
+    queryFn: async () => {
+      const response = await _axios.get<Exam>(`/exams/history/${id}`);
+      return response.data;
+    }
+  });
 
   useEffect(() => {
     const fetchExams = async () => {
@@ -45,7 +54,7 @@ export default function ExamsHistory() {
     { label: "Histórico de Exame" },
   ];
 
-  if (loading || namePatient == "")
+  if (loading || namePatient == ""  || historyExams.isLoading) 
     return (
       <View.Vertical className="flex min-h-screen bg-gray-50">
         <CustomBreadcrumb items={breadcrumbItems} borderB />
@@ -53,11 +62,11 @@ export default function ExamsHistory() {
       </View.Vertical>
     );
 
-  if (error)
+  if (error || historyExams.isError)
     return (
       <View.Vertical className="flex justify-center items-center min-h-screen bg-gray-50">
         <CustomBreadcrumb items={breadcrumbItems} borderB />
-        <p className="text-lg text-red-500">Erro: {error}</p>
+        <p className="text-lg text-red-500">Ocorreu um erro ao carregar os dados</p>
       </View.Vertical>
     );
 
@@ -99,7 +108,7 @@ export default function ExamsHistory() {
         </h2>
         {patient.data.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <ExamCard data={patient.data} />
+            <ExamCard data={historyExams.data!.data} />
           </div>
         ) : (
           <p className="text-gray-600">Nenhum exame realizado ainda.</p>

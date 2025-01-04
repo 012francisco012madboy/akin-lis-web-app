@@ -1,8 +1,9 @@
+import { Button } from "@/components/ui/button";
 import { Exam } from "../../exam-history/useExamHookData";
 
 
 const getStatusColor = (status: string) => {
-  switch (status.toLowerCase()) {
+  switch (String(status).toLowerCase()) {
     case "pendente":
       return "yellow-500";
     case "concluído":
@@ -17,16 +18,16 @@ const getStatusColor = (status: string) => {
 export const ExamCard: React.FC<Exam> = ({ data }) => (
   data.map((exame) => (
     <div key={exame.id} className="border rounded-lg p-4 shadow-sm bg-gray-50 hover:bg-gray-100 transition">
-      <h3 className="text-lg font-medium text-gray-800 mb-2">{exame.exame.nome}</h3>
+      <h3 className="text-lg font-medium text-gray-800 mb-2">{exame.Tipo_Exame.nome}</h3>
       <p className="text-sm text-gray-600 font-bold mb-1">
-        Descrição: <span className="font-medium">{exame.exame.descricao}</span>
+        Descrição: <span className="font-medium">{exame.Tipo_Exame.descricao}</span>
       </p>
       <p className="text-sm text-gray-600 font-bold mb-1">
         Data do Agendamento:{" "}
-        <span className="font-medium">{exame.Agendamento.data_agendamento}</span>
+        <span className="font-medium">{exame.data_agendamento}</span>
       </p>
       <p className="text-sm text-gray-600 font-bold mb-1">
-        Hora: <span className="font-medium">{exame.Agendamento.hora_agendamento}</span>
+        Hora: <span className="font-medium">{exame.hora_agendamento}</span>
       </p>
       <p className="text-sm text-gray-600 font-bold mb-1">
         Unidade de Saúde:{" "}
@@ -48,18 +49,20 @@ export const ExamCard: React.FC<Exam> = ({ data }) => (
         Status do Pagamento:{" "}
         <span
           className={`font-medium text-${getStatusColor(
-            exame.Agendamento.status_pagamento
+            exame.status_pagamento
           )}`}
         >
-          {exame.Agendamento.status_pagamento}
+          {exame.status_pagamento}
         </span>
       </p>
       <p className="text-sm text-gray-600 font-bold mb-1">
-        Valor Pago:{" "}
+        Valor a ser pago:{" "}
         <span className="font-medium">
-          {exame.Agendamento.status_pagamento}
+          {exame.Tipo_Exame.preco}
         </span>
       </p>
+
+      <Button className="h-8 w-full mt-5 bg-akin-turquoise hover:bg-akin-turquoise/80">Reenviar laudo</Button>
     </div>
   ))
 

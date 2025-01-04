@@ -135,7 +135,7 @@ export function PatientResumeInfo({
             </div>
             <div className="space-y-2">
               <label className="text-gray-800 font-medium" htmlFor="id_sexo">Gênero</label>
-          
+
               <Combobox
                 onChange={(value) =>
                   setFormData((prev) => ({
@@ -192,7 +192,9 @@ export function PatientResumeInfo({
                   key={index}
                   className="flex flex-col gap-2 bg-white shadow-sm rounded-md p-4 border border-gray-100 hover:shadow-md transition-shadow"
                 >
-                  <p className="font-semibold text-gray-800 text-base">{exam.exame.nome}</p>
+                  <p className="font-semibold text-gray-800 text-base">
+                    {exam.Tipo_Exame.nome}
+                  </p>
                   <p className="text-sm text-gray-600">
                     <strong>Data de Agendamento:</strong> {exam.Agendamento.data_agendamento}
                   </p>

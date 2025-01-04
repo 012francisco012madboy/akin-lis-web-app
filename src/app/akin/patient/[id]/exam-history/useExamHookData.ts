@@ -6,6 +6,9 @@ export interface Exam {
     id: number;
     id_agendamento: number;
     id_tipo_Exame: number;
+    status_pagamento: string;
+    data_agendamento: string;
+    hora_agendamento: string;
     status: string;
     exame: {
       id: number;
@@ -18,15 +21,21 @@ export interface Exam {
       Protocolo_Exame: number;
       Utilizacao_Material: number;
     };
+    Tipo_Exame: {
+      id: number,
+      nome: string,
+      descricao: string,
+      preco: number,
+      status: string,
+      criado_aos: Date,
+      atualizado_aos: Date
+    },
     Agendamento: {
       id: number;
       id_paciente: string;
       id_tecnico_alocado: string | null;
       id_unidade_de_saude: number;
-      data_agendamento: string;
-      hora_agendamento: string;
       status: string;
-      status_pagamento: string;
       quantia_pagamento: number;
       data_pagamento: string | null;
       data_formatada: string;
