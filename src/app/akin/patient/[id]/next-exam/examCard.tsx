@@ -55,7 +55,7 @@ export const ExamCard = ({ data }: ResponseData) => {
             <span>
               {exam.Tipo_Exame.nome}
             </span>
-            
+
             <div className="relative group">
               <Pencil size={18}
                 className="cursor-pointer text-gray-500"
@@ -65,6 +65,7 @@ export const ExamCard = ({ data }: ResponseData) => {
                   date: exam.data_agendamento,
                   time: exam.hora_agendamento,
                   technicianId: exam.id_tecnico_alocado,
+                  status: exam.status,
                 })}
               />
               <span className="absolute cursor-pointer -left-8 top-5 mt-0 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity"
@@ -74,6 +75,7 @@ export const ExamCard = ({ data }: ResponseData) => {
                   date: exam.data_agendamento,
                   time: exam.hora_agendamento,
                   technicianId: exam.id_tecnico_alocado,
+                  status: exam.status,
                 })}
               >
                 Editar
@@ -88,6 +90,7 @@ export const ExamCard = ({ data }: ResponseData) => {
                 onSave={() => {
                   setIsModalOpen(false);
                 }}
+                active
               />
             </div>
 
