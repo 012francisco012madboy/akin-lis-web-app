@@ -8,11 +8,20 @@ import { _axios } from "@/lib/axios";
 import { LabTechnician } from "@/app/akin/schedule/tecnico";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { UserData } from "@/app/akin/profile/page";
+import { Pencil } from "lucide-react";
+import { EditScheduleFormModal } from "@/app/akin/schedule/editScheduleData";
 
 export const ExamCard = ({ data }: ResponseData) => {
   const { user } = useAuthStore();
   const [isNextExamOpen, setIsNextExamOpen] = useState<boolean>(false);
   const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState<boolean>(false);
+  const [selectedExam, setSelectedExam] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleEditClick = (exam: any) => {
+    setSelectedExam(exam);
+    setIsModalOpen(true);
+  };
   const { data: userData } = useQuery({
     queryKey: ['user-data'],
     queryFn: async () => {
@@ -42,7 +51,47 @@ export const ExamCard = ({ data }: ResponseData) => {
     data.map((exam) => (
       <div key={exam.id} className="bg-white shadow-lg rounded-xl p-6 mb-6 flex flex-col md:flex-row md:justify-between items-start md:items-center">
         <div className="space-y-2">
-          <h3 className="text-xl font-bold text-gray-900">{exam.Tipo_Exame.nome}</h3>
+          <h3 className="text-xl font-bold text-gray-900 flex items-bottom gap-5 ">
+            <span>
+              {exam.Tipo_Exame.nome}
+            </span>
+            
+            <div className="relative group">
+              <Pencil size={18}
+                className="cursor-pointer text-gray-500"
+                onClick={() => handleEditClick({
+                  id: exam.id,
+                  name: exam.Tipo_Exame?.nome,
+                  date: exam.data_agendamento,
+                  time: exam.hora_agendamento,
+                  technicianId: exam.id_tecnico_alocado,
+                })}
+              />
+              <span className="absolute cursor-pointer -left-8 top-5 mt-0 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => handleEditClick({
+                  id: exam.id,
+                  name: exam.Tipo_Exame?.nome,
+                  date: exam.data_agendamento,
+                  time: exam.hora_agendamento,
+                  technicianId: exam.id_tecnico_alocado,
+                })}
+              >
+                Editar
+              </span>
+
+              <EditScheduleFormModal
+                open={isModalOpen}
+                exam={selectedExam}
+                examId={exam.id}
+                techName={getNameTech(exam.id_tecnico_alocado)}
+                onClose={() => setIsModalOpen(false)}
+                onSave={() => {
+                  setIsModalOpen(false);
+                }}
+              />
+            </div>
+
+          </h3>
           <p className="text-gray-700"><span className="font-medium">Data:</span> {exam.data_agendamento} às {exam.hora_agendamento}</p>
           <p className="text-gray-700"><span className="font-medium">Status:</span> {exam.status}</p>
           <p className="text-gray-700"><span className="font-medium">Status do Pagamento:</span> {exam.status_pagamento}</p>
@@ -61,6 +110,7 @@ export const ExamCard = ({ data }: ResponseData) => {
           </p>
         </div>
         <div className="flex flex-col min-h-full">
+
           <span
             className={`px-4 py-2 rounded-full text-sm font-semibold ${exam.status === 'PENDENTE'
               ? 'bg-yellow-100 text-yellow-700'
