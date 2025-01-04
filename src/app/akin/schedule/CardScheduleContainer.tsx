@@ -18,7 +18,12 @@ const allocated = "allocated";
 const notAllocated = "notAllocated";
 
 export default function CardScheduleContainer({ schedule, title, isLoading }: ICardScheduleContainer) {
-  const [filteredSchedule, setFilteredSchedule] = useState<ScheduleType[]>(schedule);
+  const [filteredSchedule, setFilteredSchedule] = useState<ScheduleType[]>(
+    schedule.map((s) => ({
+      ...s,
+      Exame: s.Exame?.filter((exame) => exame.status === "PENDENTE"), // Excluir exames realizados
+    })).filter((s) => s.Exame && s.Exame.length > 0) // Excluir cards sem exames pendentes
+  );
   const [isSearching, setIsSearching] = useState(false);
   const [filterByTechnician, setFilterByTechnician] = useState<typeof all | typeof allocated | typeof notAllocated>(all);
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,6 +44,11 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
 
   const applyFilters = useCallback((baseSchedule: ScheduleType[]) => {
     let filtered = baseSchedule;
+    // Filtrar apenas exames pendentes
+    filtered = filtered.map((schedule) => ({
+      ...schedule,
+      Exame: schedule.Exame?.filter((exame) => exame.status === "PENDENTE"), // Excluir exames realizados
+    })).filter((schedule) => schedule.Exame && schedule.Exame.length > 0); // Excluir cards sem exames pendentes
 
     if (filterByTechnician === allocated) {
       filtered = filtered.filter((s) =>
