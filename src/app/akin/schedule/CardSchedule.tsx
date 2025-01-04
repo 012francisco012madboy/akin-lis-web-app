@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
 import { Exam } from "../patient/[id]/exam-history/useExamHookData";
+import { EditScheduleFormModal } from "./editScheduleData";
 
 interface ICardSchedule {
   data: ScheduleType;
@@ -18,6 +19,13 @@ interface ICardSchedule {
 export default function CardSchedule({ data }: ICardSchedule) {
   const [showExams, setShowExams] = useState(false);
   const [groupedExams, setGroupedExams] = useState<Exam[]>([]);
+  const [selectedExam, setSelectedExam] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleEditClick = (exam: any) => {
+    setSelectedExam(exam);
+    setIsModalOpen(true);
+  };
 
   const tecnico = useQuery({
     queryKey: ["lab-tech"],
@@ -43,11 +51,21 @@ export default function CardSchedule({ data }: ICardSchedule) {
   };
 
   const getTecnicoNome = (id: string | null) => {
-    if (!id || !tecnico.data || tecnico.data.data.length === 0) return "Sem técnico alocado";
-    const tecnicoEncontrado = tecnico.data?.data.find((t) => t.id === id);
+    if (!id) return "Sem técnico alocado";
+  
+    // Verifica se os dados estão sendo carregados ou se houve um erro
+    if (tecnico.isLoading) return "Carregando técnicos...";
+    if (tecnico.isError) return "Erro ao carregar técnicos";
+  
+    // Verifica se os dados existem e têm o formato esperado
+    const tecnicosData = tecnico.data?.data || [];
+    if (tecnicosData.length === 0) return "Sem técnico alocado";
+  
+    // Busca o técnico pelo ID
+    const tecnicoEncontrado = tecnicosData.find((t) => t.id === id);
     return tecnicoEncontrado?.nome_completo || "Técnico não encontrado";
   };
-
+  
   const age =
     data?.Paciente?.data_nascimento &&
     new Date().getFullYear() - new Date(data.Paciente.data_nascimento).getFullYear();
@@ -64,23 +82,48 @@ export default function CardSchedule({ data }: ICardSchedule) {
 
                 <p className="font-semibold text-xl flex justify-between items-center mr-3">
                   {exame.Tipo_Exame.nome || "Nome não disponível"}
-
+                  {/* <EditScheduleFormModal> */}
                   <div className="relative group">
                     <Pencil size={18}
                       className="cursor-pointer text-gray-500"
-                      onClick={() => {
-                        window.location.href = `/akin/patient/${data.id_paciente}/next-exam`;
-                      }}
+                    // onClick={() => {
+                    //   window.location.href = `/akin/patient/${data.id_paciente}/next-exam`;
+                    // }}
+                    onClick={() => handleEditClick({
+                      id: exame.id,
+                      name: exame.Tipo_Exame?.nome,
+                      date: exame.data_agendamento,
+                      time: exame.hora_agendamento,
+                      technicianId: exame.id_tecnico_alocado,
+                    })}
                     />
-                    <span className="absolute cursor-pointer -left-8 top-full mt-1 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => {
-                        window.location.href = `/akin/patient/${data.id_paciente}/next-exam`;
-                      }}
+                    <span className="absolute cursor-pointer -left-8 top-5 mt-0 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                    // onClick={() => {
+                    //   window.location.href = `/akin/patient/${data.id_paciente}/next-exam`;
+                    // }}
+                    onClick={() => handleEditClick({
+                      id: exame.id,
+                      name: exame.Tipo_Exame?.nome,
+                      date: exame.data_agendamento,
+                      time: exame.hora_agendamento,
+                      technicianId: exame.id_tecnico_alocado,
+                    })}
                     >
                       Editar
                     </span>
-                  </div>
 
+                    <EditScheduleFormModal
+                      open={isModalOpen}
+                      exam={selectedExam}
+                      examId={exame.id}
+                      techName={getTecnicoNome(exame.id_tecnico_alocado)}
+                      onClose={() => setIsModalOpen(false)}
+                      onSave={() => {
+                        setIsModalOpen(false);
+                      }}
+                    />
+                  </div>
+                  {/* </EditScheduleFormModal> */}
                 </p>
 
                 <p className="pl-6  text-gray-500 text-sm font-semibold">
