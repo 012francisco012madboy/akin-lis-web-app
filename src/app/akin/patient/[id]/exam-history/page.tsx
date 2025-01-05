@@ -21,7 +21,7 @@ export default function ExamsHistory() {
   const [exams, setExams] = useState<IExamProps[]>([])
   const [selectedExam, setSelectedExam] = useState<IExamProps | null>(null)
 
-  const historyExams = useQuery({ 
+  const historyExams = useQuery({
     queryKey: ["exams-history"],
     queryFn: async () => {
       const response = await _axios.get<Exam>(`/exams/history/${id}`);
@@ -54,7 +54,7 @@ export default function ExamsHistory() {
     { label: "Histórico de Exame" },
   ];
 
-  if (loading || namePatient == ""  || historyExams.isLoading) 
+  if (loading || namePatient == "" || historyExams.isLoading)
     return (
       <View.Vertical className="flex min-h-screen bg-gray-50">
         <CustomBreadcrumb items={breadcrumbItems} borderB />
@@ -106,7 +106,8 @@ export default function ExamsHistory() {
         <h2 className="text-xl font-semibold text-gray-700 mb-4">
           Exames Realizados
         </h2>
-        {patient.data.length > 0 ? (
+        {historyExams.data!.data.length > 0 ? (
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <ExamCard data={historyExams.data!.data} />
           </div>
