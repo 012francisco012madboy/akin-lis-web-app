@@ -196,10 +196,10 @@ export function PatientResumeInfo({
                     {exam.Tipo_Exame.nome}
                   </p>
                   <p className="text-sm text-gray-600">
-                    <strong>Data de Agendamento:</strong> {exam.Agendamento.data_agendamento}
+                    <strong>Data de Agendamento:</strong> {exam.data_agendamento}
                   </p>
                   <p className="text-sm text-gray-600">
-                    <strong>Status do Exame:</strong> {exam.Agendamento.status}
+                    <strong>Status do Exame:</strong> {exam.Tipo_Exame.status}
                   </p>
                 </div>
               ))
