@@ -17,7 +17,8 @@ import {
   UsersRound, 
   CalendarPlus2, 
   CalendarSearch, 
-  CalendarCheck2 
+  CalendarCheck2, 
+  UserRoundCog
 } from "lucide-react";
 
 export const APP_CONFIG = {
@@ -45,6 +46,12 @@ export const APP_CONFIG = {
         icon: UsersRound, 
         path: "/akin/patient", 
         access: ["RECEPCIONISTA","CHEFE", "TECNICO"] 
+      },
+      { 
+        label: "Gestão Equipe", 
+        icon: UserRoundCog, 
+        path: "/akin/team-management", 
+        access: ["CHEFE", "TECNICO"] 
       },
       { 
         label: "Pagamentos", 

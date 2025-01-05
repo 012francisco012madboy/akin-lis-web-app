@@ -33,12 +33,11 @@ export default function Item({ item, activeSegment }: IItem) {
           size={25}
           data-isLogout={isLogout}
           className={cn(
-            "p-1 rounded-lg transition ease-in-out",
+            "p-1 rounded-lg transition ease-in-out ",
             {
               "bg-sky-400 text-akin-white-smoke": isActive,
               "group-hover:bg-sky-400 group-hover:text-akin-white-smoke":
                 !isLogout && !isActive,
-              "group-hover:bg-[#ff5e5e]": isLogout,
               "bg-akin-yellow-light/40": !isActive && !isLogout,
             }
           )}
