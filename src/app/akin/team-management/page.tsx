@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from "@/components/ui/dialog";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
@@ -137,7 +137,7 @@ export default function TeamManagement() {
           <option value="Ocupado">Ocupado</option>
           <option value="Livre">Livre</option>
         </select>
-        <Button className="bg-akin-turquoise hover:bg-akin-turquoise/80 "  onClick={() => setFormModalOpen(true)}>Cadastrar Técnico</Button>
+        <Button className="bg-akin-turquoise hover:bg-akin-turquoise/80 " onClick={() => setFormModalOpen(true)}>Cadastrar Técnico</Button>
         {/* <Button variant={"outline"} className=" border-akin-turquoise hover:bg-akin-turquoise hover:text-white "  onClick={() => setFormModalOpen(true)}>Criar Equipe</Button> */}
       </div>
 
@@ -146,7 +146,10 @@ export default function TeamManagement() {
           <Card key={technician.id}>
             <CardHeader className="flex justify-between relative">
               <div className="flex items-center gap-4">
-                <Avatar className="w-12 h-12" />
+                <Avatar className="w-12 h-12">
+                  <AvatarImage src=""/>
+                  <AvatarFallback>{technician.name.charAt(0)}</AvatarFallback>
+                </Avatar>
                 <div>
                   <h2 className="text-lg font-semibold">{technician.name}</h2>
                   <p className="text-sm text-gray-500">{technician.role}</p>
