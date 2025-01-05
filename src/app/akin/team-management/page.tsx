@@ -137,7 +137,8 @@ export default function TeamManagement() {
           <option value="Ocupado">Ocupado</option>
           <option value="Livre">Livre</option>
         </select>
-        <Button onClick={() => setFormModalOpen(true)}>Cadastrar Técnico</Button>
+        <Button className="bg-akin-turquoise hover:bg-akin-turquoise/80 "  onClick={() => setFormModalOpen(true)}>Cadastrar Técnico</Button>
+        {/* <Button variant={"outline"} className=" border-akin-turquoise hover:bg-akin-turquoise hover:text-white "  onClick={() => setFormModalOpen(true)}>Criar Equipe</Button> */}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
@@ -183,10 +184,10 @@ export default function TeamManagement() {
                 Status: <span className={`font-bold ${technician.status === "Ocupado" ? "text-red-500" : "text-green-500"}`}>{technician.status}</span>
               </p>
             </CardContent>
-            <CardFooter className="flex justify-between gap-2">
-              <Button variant="outline">Mensagem</Button>
-              <Button variant="outline">Chamada</Button>
-              <Button onClick={() => {
+            <CardFooter className="flex flex-col xl:flex-row justify-between gap-2">
+              <Button className="w-full" variant="outline">Mensagem</Button>
+              <Button className="w-full" variant="outline">Chamada</Button>
+              <Button className="w-full bg-akin-turquoise hover:bg-akin-turquoise/80" onClick={() => {
                 setSelectedTechnician(technician);
                 setModalOpen(true);
               }}>Ver Mais</Button>
