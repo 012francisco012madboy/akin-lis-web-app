@@ -8,8 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { APP_CONFIG } from "@/config/app";
 import { useState } from "react";
 import { _axios } from "@/lib/axios";
+import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 
 export const Register = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     // nome_completo: "",
     // data_nascimento: "",
@@ -29,15 +31,20 @@ export const Register = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async(e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const response = await _axios.post("auth/local/signup", formData);
-      console.log("Resposta do servidor:");
-      console.log(response.data);
+      if (response.status === 201) {
+        ___showSuccessToastNotification({ message: "Usuário cadastrado com sucesso" });
+      }
+      window.location.href = "/";
     } catch (error) {
-      console.error("Erro ao enviar dados do formulário:", error);
-      
+      ___showErrorToastNotification({ message: "Erro ao enviar dados do formulário" });
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -177,7 +184,7 @@ export const Register = () => {
               />
             </div>
             <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-              Cadastrar
+             {isLoading ? "Cadastrando..." : "Cadastrar"}
             </Button>
           </form>
         </CardContent>
