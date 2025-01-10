@@ -74,6 +74,7 @@ export const Register = () => {
                 value={formData.nome}
                 onChange={handleInputChange}
                 placeholder="Digite o nome completo"
+                disabled={isLoading}
               />
             </div>
             <div>
@@ -85,6 +86,7 @@ export const Register = () => {
                 value={formData.email}
                 onChange={handleInputChange}
                 placeholder="Digite o email"
+                disabled={isLoading}
               />
             </div>
             {/* <div>
@@ -128,12 +130,12 @@ export const Register = () => {
                 onValueChange={(value) => setFormData({ ...formData, tipo: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione o cargo" />
+                  <SelectValue placeholder="Selecione o cargo"   />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent >
                   {/* <SelectItem value="TECNICO">Técnico</SelectItem> */}
-                  <SelectItem value="CHEFE">Chefe de Laboratório</SelectItem>
-                  <SelectItem value="RECEPCIONISTA">Recepcionista</SelectItem>
+                  <SelectItem value="CHEFE"  disabled={isLoading}>Chefe de Laboratório</SelectItem>
+                  <SelectItem value="RECEPCIONISTA" disabled={isLoading} >Recepcionista</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -181,9 +183,10 @@ export const Register = () => {
                 value={formData.senha}
                 onChange={handleInputChange}
                 placeholder="Digite a senha"
+                disabled={isLoading}
               />
             </div>
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700"  disabled={isLoading}>
              {isLoading ? "Cadastrando..." : "Cadastrar"}
             </Button>
           </form>
