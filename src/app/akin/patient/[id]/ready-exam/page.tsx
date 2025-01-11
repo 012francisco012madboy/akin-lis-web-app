@@ -38,9 +38,6 @@ export default function SampleVisualizationPage() {
     setIsAutomatedAnalysisOpen(true);
   };
 
-  const handleAutomatedAnalysisClose = () => {
-    setIsAutomatedAnalysisOpen(false);
-  };
   return (
     <div className="min-h-screen bg-gray-50 p-4 overflow-y-auto">
       {/* Header */}
@@ -80,14 +77,6 @@ export default function SampleVisualizationPage() {
           </div>
         )
       }
-
-
-      {/* <Dialog open={isAutomatedAnalysisOpen} onOpenChange={handleAutomatedAnalysisClose}>
-        <DialogContent className="max-w-7xl w-full h-full lg:h-[96%] overflow-y-auto">
-
-        </DialogContent>
-      </Dialog> */}
-
 
       {/* Modal for Visualization */}
       {
