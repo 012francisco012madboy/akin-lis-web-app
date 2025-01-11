@@ -187,7 +187,7 @@ export function PatientResumeInfo({
           </CardHeader>
           <CardContent className="p-4 space-y-4">
             {basicExamHistory?.data && basicExamHistory.data.length > 0 ? (
-              basicExamHistory.data.slice(0, 2).map((exam, index) => (
+              basicExamHistory.data.slice(0, 1).map((exam, index) => (
                 <div
                   key={index}
                   className="flex flex-col gap-2 bg-white shadow-sm rounded-md p-4 border border-gray-100 hover:shadow-md transition-shadow"
