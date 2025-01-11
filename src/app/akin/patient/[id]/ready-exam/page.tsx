@@ -44,7 +44,7 @@ export default function SampleVisualizationPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 overflow-y-auto">
       {/* Header */}
-      <header className="bg-white shadow py-2 px-5 flex gap-2 flex-col lg:flex-row justify-between items-start lg:items-center">
+      <header className="bg-white shadow py-2 px-5 flex gap-2 flex-col lg:flex-row justify-between items-start lg:items-center rounded-md">
         <h1 className="text-lg font-semibold">Paciente: Jorge Mateus</h1>
         <h1 className="text-lg font-semibold">Exame: Malária</h1>
         <DropdownMenu onOpenChange={(open) => {
@@ -66,51 +66,116 @@ export default function SampleVisualizationPage() {
       </header>
 
       {/* Automated Analysis Section */}
-      <Dialog open={isAutomatedAnalysisOpen} onOpenChange={handleAutomatedAnalysisClose}>
-        <DialogContent className="max-w-7xl w-full h-full lg:h-[96%] overflow-y-auto">
-          <AutomatedAnalysis isAutomatedAnalysisOpen={isAutomatedAnalysisOpen} />
-        </DialogContent>
-      </Dialog>
-      {/* Modal for Visualization */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-7xl w-full h-full lg:h-[96%] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Visualização de Amostras</DialogTitle>
-          </DialogHeader>
 
-          <div className="flex flex-col lg:flex-row gap-4 max-h-[600px]">
-            {/* Camera View */}
-            <div className="lg:flex-1 bg-black h-80 lg:h-auto rounded-lg relative">
-              <div className="absolute inset-0 flex items-center justify-center text-white">
-                {/* Replace with actual camera feed */}
-                <p className="text-lg">Câmera Ativa</p>
-              </div>
-              <Button
-                onClick={handleCaptureImage}
-                className="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-600"
-              >
-                Capturar Imagem
-              </Button>
-            </div>
+      {
+        isAutomatedAnalysisOpen && (
+          <div id="modal" className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="max-w-7xl w-full h-full lg:h-[96%] bg-white rounded-lg overflow-y-auto shadow-lg">
 
-            {/* Notes Section */}
-            <div className="flex-1 bg-white p-4 rounded-lg shadow">
-              <Textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Escreva suas anotações aqui..."
-                className="w-full h-72 max-h-[550px]"
+              <AutomatedAnalysis
+                isAutomatedAnalysisOpen={isAutomatedAnalysisOpen}
+                setIsAutomatedAnalysisOpen={setIsAutomatedAnalysisOpen}
               />
             </div>
           </div>
+        )
+      }
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-              Fechar
-            </Button>
-          </DialogFooter>
+
+      {/* <Dialog open={isAutomatedAnalysisOpen} onOpenChange={handleAutomatedAnalysisClose}>
+        <DialogContent className="max-w-7xl w-full h-full lg:h-[96%] overflow-y-auto">
+
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
+
+
+      {/* Modal for Visualization */}
+      {
+        isModalOpen && (
+          // <Dialog open={true} >
+          //   <DialogContent className="max-w-7xl w-full h-full lg:h-[96%] overflow-y-auto">
+          //     <DialogHeader>
+          //       <DialogTitle>Visualização de Amostras</DialogTitle>
+          //     </DialogHeader>
+
+          //     <div className="flex flex-col lg:flex-row gap-4 max-h-[600px]">
+          //       {/* Camera View */}
+          //       <div className="lg:flex-1 bg-black h-80 lg:h-auto rounded-lg relative">
+          //         <div className="absolute inset-0 flex items-center justify-center text-white">
+          //           {/* Replace with actual camera feed */}
+          //           <p className="text-lg">Câmera Ativa</p>
+          //         </div>
+          //         <Button
+          //           onClick={handleCaptureImage}
+          //           className="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-600"
+          //         >
+          //           Capturar Imagem
+          //         </Button>
+          //       </div>
+
+          //       {/* Notes Section */}
+          //       <div className="flex-1 bg-white p-4 rounded-lg shadow">
+          //         <Textarea
+          //           value={notes}
+          //           onChange={(e) => setNotes(e.target.value)}
+          //           placeholder="Escreva suas anotações aqui..."
+          //           className="w-full h-72 max-h-[550px]"
+          //         />
+          //       </div>
+          //     </div>
+
+          //     <DialogFooter>
+          //       <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+          //         Fechar
+          //       </Button>
+          //     </DialogFooter>
+          //   </DialogContent>
+          // </Dialog>
+          <div id="modal" className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="max-w-7xl w-full h-full lg:h-[96%] bg-white rounded-lg overflow-y-auto shadow-lg">
+              {/* <!-- Header --> */}
+              <div className="p-4 border-b">
+                <h2 className="text-lg font-semibold">Visualização de Amostras</h2>
+              </div>
+
+              {/* <!-- Content --> */}
+              <div className="p-4 flex flex-col lg:flex-row gap-4 max-h-[600px]">
+                {/* <!-- Camera View --> */}
+                <div className="lg:flex-1 bg-black h-80 lg:h-auto rounded-lg relative">
+                  <div className="absolute inset-0 flex items-center justify-center text-white">
+                    <p className="text-lg">Câmera Ativa</p>
+                  </div>
+                  <Button
+                    onClick={() => handleCaptureImage()}
+                    className="absolute bottom-4 right-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    Capturar Imagem
+                  </Button>
+                </div>
+
+                {/* <!-- Notes Section --> */}
+                <div className="flex-1 bg-white p-4 rounded-lg shadow">
+                  <Textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Escreva suas anotações aqui..."
+                    className="w-full h-72 max-h-[500px] min-h-[400px]"
+                  />
+                </div>
+              </div>
+
+              {/* <!-- Footer --> */}
+              <div className="p-4 border-t flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 border rounded bg-gray-100 hover:bg-gray-200">
+                  Fechar
+                </Button>
+              </div>
+            </div>
+          </div>
+        )
+      }
 
       {/* Captured Images Section */}
       <section className="mt-6">
