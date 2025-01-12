@@ -149,7 +149,7 @@ export const Login = () => {
                 </Label>
               </div>
               <Link
-                href="/forgot-password"
+                href="/auth/forgot-password"
                 className="text-sm text-blue-500 hover:underline"
               >
                 Esqueceu sua senha?
