@@ -13,7 +13,7 @@ interface CameraProps {
   videoClassName?: string; // Classe de estilo para o elemento de vídeo
 }
 
-const CustomCameraWithModal = forwardRef<{
+const CustomCamera = forwardRef<{
   captureImage: () => void;
 }, CameraProps>(
   ({ getAllVideoDevices, getCapturedImage, className, videoClassName }, ref) => {
@@ -91,7 +91,7 @@ const CustomCameraWithModal = forwardRef<{
     return (
       <div className={className}>
         <div
-          className={`w-full max-w-md h-96 border border-gray-300 rounded-lg overflow-hidden ${videoClassName}`}
+          className={`w-full h-96 border border-gray-300 rounded-lg overflow-hidden ${videoClassName}`}
         >
           <video
             ref={videoRef}
@@ -106,8 +106,8 @@ const CustomCameraWithModal = forwardRef<{
   }
 );
 
-CustomCameraWithModal.displayName = "CustomCameraWithModal";
-export default CustomCameraWithModal;
+CustomCamera.displayName = "CustomCamera";
+export default CustomCamera;
 
 
 

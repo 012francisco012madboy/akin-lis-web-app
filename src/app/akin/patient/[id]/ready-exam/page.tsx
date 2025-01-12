@@ -7,21 +7,35 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { MoveDiagonal, Trash } from "lucide-react";
 import AutomatedAnalysis from "./modalAutomatiImage";
+import { ManualExam } from "./manualExam";
 
 export default function SampleVisualizationPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [capturedImages, setCapturedImages] = useState<string[]>([]);
-  const [notes, setNotes] = useState<string>("");
+  const [notes, setNotes] = useState<Record<string, string>>({});
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen] = useState(false);
 
   const handleCaptureImage = () => {
-    // Simulate capturing an image (replace with actual camera capture logic)
     const newImage = `data:image/png;base64,${Math.random().toString(36).substring(2)}`;
     setCapturedImages((prev) => [...prev, newImage]);
   };
 
   const handleDeleteImage = (image: string) => {
     setCapturedImages((prev) => prev.filter((img) => img !== image));
+    setNotes((prev) => {
+      const updatedNotes = { ...prev };
+      delete updatedNotes[image];
+      return updatedNotes;
+    });
+  };
+
+  const handleNoteChange = (image: string, value: string) => {
+    setNotes((prev) => ({ ...prev, [image]: value }));
+  };
+
+  const handleAutomatedAnalysisOpen = () => {
+    setIsAutomatedAnalysisOpen(true);
   };
 
   // Laudo Modal
@@ -30,12 +44,6 @@ export default function SampleVisualizationPage() {
     // Lógica de geração de relatório (simulada)
     console.log("Gerando relatório com notas:", notes);
     setLaudoModalOpen(true); // Abre o modal do laudo
-  };
-  //Analysis Automatized Modal
-  const [isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen] = useState(false); // Para análise automatizada
-
-  const handleAutomatedAnalysisOpen = () => {
-    setIsAutomatedAnalysisOpen(true);
   };
 
   return (
@@ -63,12 +71,10 @@ export default function SampleVisualizationPage() {
       </header>
 
       {/* Automated Analysis Section */}
-
       {
         isAutomatedAnalysisOpen && (
           <div id="modal" className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="max-w-7xl w-full h-full lg:h-[96%] bg-white rounded-lg overflow-y-auto shadow-lg">
-
               <AutomatedAnalysis
                 isAutomatedAnalysisOpen={isAutomatedAnalysisOpen}
                 setIsAutomatedAnalysisOpen={setIsAutomatedAnalysisOpen}
@@ -79,137 +85,41 @@ export default function SampleVisualizationPage() {
       }
 
       {/* Modal for Visualization */}
-      {
-        isModalOpen && (
-          // <Dialog open={true} >
-          //   <DialogContent className="max-w-7xl w-full h-full lg:h-[96%] overflow-y-auto">
-          //     <DialogHeader>
-          //       <DialogTitle>Visualização de Amostras</DialogTitle>
-          //     </DialogHeader>
+      {isModalOpen && (
+        <ManualExam
+          setIsModalOpen={setIsModalOpen}
+          onCaptureImage={(images) => {
+            console.log("Imagens capturadas:", images);
+            setCapturedImages(images);
+          }}
+        />
+      )}
 
-          //     <div className="flex flex-col lg:flex-row gap-4 max-h-[600px]">
-          //       {/* Camera View */}
-          //       <div className="lg:flex-1 bg-black h-80 lg:h-auto rounded-lg relative">
-          //         <div className="absolute inset-0 flex items-center justify-center text-white">
-          //           {/* Replace with actual camera feed */}
-          //           <p className="text-lg">Câmera Ativa</p>
-          //         </div>
-          //         <Button
-          //           onClick={handleCaptureImage}
-          //           className="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-600"
-          //         >
-          //           Capturar Imagem
-          //         </Button>
-          //       </div>
-
-          //       {/* Notes Section */}
-          //       <div className="flex-1 bg-white p-4 rounded-lg shadow">
-          //         <Textarea
-          //           value={notes}
-          //           onChange={(e) => setNotes(e.target.value)}
-          //           placeholder="Escreva suas anotações aqui..."
-          //           className="w-full h-72 max-h-[550px]"
-          //         />
-          //       </div>
-          //     </div>
-
-          //     <DialogFooter>
-          //       <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-          //         Fechar
-          //       </Button>
-          //     </DialogFooter>
-          //   </DialogContent>
-          // </Dialog>
-          <div id="modal" className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="max-w-7xl w-full h-full lg:h-[96%] bg-white rounded-lg overflow-y-auto shadow-lg">
-              {/* <!-- Header --> */}
-              <div className="p-4 border-b">
-                <h2 className="text-lg font-semibold">Visualização de Amostras</h2>
-              </div>
-
-              {/* <!-- Content --> */}
-              <div className="p-4 flex flex-col lg:flex-row gap-4 max-h-[600px]">
-                {/* <!-- Camera View --> */}
-                <div className="lg:flex-1 bg-black h-80 lg:h-auto rounded-lg relative">
-                  <div className="absolute inset-0 flex items-center justify-center text-white">
-                    <p className="text-lg">Câmera Ativa</p>
-                  </div>
-                  <Button
-                    onClick={() => handleCaptureImage()}
-                    className="absolute bottom-4 right-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    Capturar Imagem
-                  </Button>
-                </div>
-
-                {/* <!-- Notes Section --> */}
-                <div className="flex-1 bg-white p-4 rounded-lg shadow">
-                  <Textarea
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Escreva suas anotações aqui..."
-                    className="w-full h-72 max-h-[500px] min-h-[400px]"
-                  />
-                </div>
-              </div>
-
-              {/* <!-- Footer --> */}
-              <div className="p-4 border-t flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border rounded bg-gray-100 hover:bg-gray-200">
-                  Fechar
-                </Button>
-              </div>
-            </div>
-          </div>
-        )
-      }
-
-      {/* Captured Images Section */}
       <section className="mt-6">
         <h2 className="text-xl font-bold mb-4">Imagens Capturadas</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {capturedImages.map((image, idx) => (
             <div key={idx} className="relative bg-gray-100 p-2 rounded-lg shadow-md">
-              <div className="size-[200px] rounded-md bg-black">
-                <img
-                  src={image}
-                  alt={`Captured ${idx}`}
-                  className="w-full h-40 object-cover rounded-lg"
-                  onClick={() => setSelectedImage(image)}
-                />
-              </div>
-
-              <div className="absolute top-2 right-2 flex flex-col gap-5">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="bg-red-500 text-white hover:bg-red-600"
-                  onClick={() => handleDeleteImage(image)}
-                >
-                  <Trash />
-                </Button>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="bg-blue-500 text-white hover:bg-blue-600"
-                  onClick={() => setSelectedImage(image)}
-                >
-                  <MoveDiagonal />
-                </Button>
-
-              </div>
+              <img
+                src={image}
+                alt={`Captured ${idx}`}
+                className="w-full h-40 object-cover rounded-lg"
+                onClick={() => setSelectedImage(image)}
+              />
+              <Button
+                variant="outline"
+                className="absolute top-2 right-2 bg-red-500 text-white hover:bg-red-600"
+                onClick={() => handleDeleteImage(image)}>
+                <Trash />
+              </Button>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Selected Image and Notes Modal */}
       {selectedImage && (
         <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-          <DialogContent className="max-w-xl h-full lg:h-[95%]  overflow-y-auto">
+          <DialogContent className="max-w-xl h-full lg:h-[95%] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Imagem Capturada</DialogTitle>
             </DialogHeader>
@@ -220,23 +130,21 @@ export default function SampleVisualizationPage() {
                 className="w-full h-auto rounded-lg"
               />
             </div>
-
-
             <div className="mt-4">
               <Textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+                value={notes[selectedImage] || ""}
+                onChange={(e) => handleNoteChange(selectedImage, e.target.value)}
                 placeholder="Anotações para esta imagem..."
                 className="w-full h-40 max-h-52"
               />
             </div>
-
             <DialogFooter>
               <Button onClick={() => setSelectedImage(null)}>Fechar</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       )}
+
 
       {/* Generate Report Button */}
       <div className="mt-6 flex justify-end">
@@ -314,6 +222,6 @@ export default function SampleVisualizationPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </div >
   );
 };
