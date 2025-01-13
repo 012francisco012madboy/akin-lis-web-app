@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
@@ -16,11 +15,6 @@ export default function SampleVisualizationPage() {
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen] = useState(false);
-
-  const handleCaptureImage = () => {
-    const newImage = `data:image/png;base64,${Math.random().toString(36).substring(2)}`;
-    setCapturedImages((prev) => [...prev, newImage]);
-  };
 
   const handleDeleteImage = (image: string) => {
     setCapturedImages((prev) => prev.filter((img) => img !== image));
@@ -123,10 +117,9 @@ export default function SampleVisualizationPage() {
                   variant="outline"
                   className=" w-[20px] h-[30px] absolute top-3 right-3 bg-akin-turquoise text-white hover:bg-akin-turquoise/90"
                   onClick={() => setSelectedImage(image)}>
-                  <MoveDiagonalIcon/>
+                  <MoveDiagonalIcon />
                 </Button>
               </div>
-
             </div>
           ))}
         </div>
@@ -139,7 +132,9 @@ export default function SampleVisualizationPage() {
               <DialogTitle>Imagem Capturada</DialogTitle>
             </DialogHeader>
             <div className="w-full h-[300px] bg-black rounded-md">
-              <img
+              <Image
+                width={300}
+                height={300}
                 src={selectedImage}
                 alt="Selected"
                 className="w-full h-auto rounded-lg"
@@ -200,12 +195,16 @@ export default function SampleVisualizationPage() {
             <section className="p-4 border-b">
               <h2 className="text-lg font-semibold">Imagens Capturadas</h2>
               <div className="grid grid-cols-2 gap-4 mt-2">
-                <img
+                <Image
+                  width={300}
+                  height={300}
                   src="https://via.placeholder.com/150"
                   alt="Imagem 1"
                   className="rounded shadow"
                 />
-                <img
+                <Image
+                  width={300}
+                  height={300}
                   src="https://via.placeholder.com/150"
                   alt="Imagem 2"
                   className="rounded shadow"

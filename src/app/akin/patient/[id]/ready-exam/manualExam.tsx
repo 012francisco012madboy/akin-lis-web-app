@@ -2,7 +2,7 @@
 import CustomCamera from "@/app/akin/camera/camera";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-// import Image from "next/image";
+import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 
 interface IManualExamProps {
@@ -11,7 +11,10 @@ interface IManualExamProps {
 }
 
 export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptureImage }) => {
-  const cameraRef = useRef<{ captureImage: () => void } | null>(null);
+  const cameraRef = useRef<{
+    captureImage: () => void;
+    stopCamera: () => void;
+  }>(null);
 
   const [capturedImages, setCapturedImages] = useState<string[]>([]);
   const [notes, setNotes] = useState<string>("");
@@ -24,11 +27,17 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
     }
   };
 
+  const handleCloseModal = () => {
+    if (cameraRef.current) {
+      cameraRef.current.stopCamera();
+    }
+  };
+
   // Monitor changes to getCapturedImage and update the capturedImages array
   useEffect(() => {
     if (getCapturedImage) {
       const updatedImages = [...capturedImages, getCapturedImage];
-      setCapturedImages(updatedImages);
+      setCapturedImages((prev) => [...prev, getCapturedImage]);
       onCaptureImage(updatedImages);
       setCapturedImage(null); // Reset captured image after adding
     }
@@ -90,7 +99,7 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
         </div>
 
         {/* Captured Images */}
-        {/* <div className="p-4">
+        <div className="p-4">
           <h2 className="text-lg font-semibold mb-4">Imagens Capturadas</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {capturedImages.map((image, index) => (
@@ -105,13 +114,13 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
               </div>
             ))}
           </div>
-        </div> */}
+        </div>
 
         {/* Footer */}
         <div className="p-4 border-t flex justify-end gap-2">
           <Button
             variant="outline"
-            onClick={() => setIsModalOpen(false)}
+            onClick={() => { setIsModalOpen(false); handleCloseModal(); }}
             className="px-4 py-2 border rounded bg-gray-100 hover:bg-gray-200"
           >
             Fechar
