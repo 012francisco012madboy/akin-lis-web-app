@@ -47,9 +47,7 @@ export default function SampleVisualizationPage() {
       <header className="bg-white shadow py-2 px-5 flex gap-2 flex-col lg:flex-row justify-between items-start lg:items-center rounded-md">
         <h1 className="text-lg font-semibold">Paciente: Jorge Mateus</h1>
         <h1 className="text-lg font-semibold">Exame: Malária</h1>
-        <DropdownMenu onOpenChange={(open) => {
-          console.log("Menu state:", open);
-        }}>
+        <DropdownMenu >
           <DropdownMenuTrigger className="bg-black text-white px-2 py-2 rounded-md hover:bg-black/90">
             Iniciar Analíse
           </DropdownMenuTrigger>
@@ -84,9 +82,9 @@ export default function SampleVisualizationPage() {
         <ManualExam
           setIsModalOpen={setIsModalOpen}
           onCaptureImage={(images) => {
-            console.log("Imagens capturadas ola:", images);
+            // console.log("Imagens capturadas ola:", images);
             setCapturedImages(images);
-            console.log("ola:", capturedImages)
+            // console.log("ola:", capturedImages)
           }}
         />
       )}

@@ -47,7 +47,7 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
     <div id="modal" className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="max-w-7xl w-full h-full lg:h-[96%] bg-white rounded-lg overflow-y-auto shadow-lg">
         {/* Header */}
-        <div className="p-4 border-b flex justify-between items-center">
+        <div className="p-4 border-b flex flex-col md:flex-row justify-between items-center">
           <h2 className="text-lg font-semibold">Visualização de Amostras</h2>
           <select
             onChange={(e) => {
@@ -77,6 +77,7 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
               ref={cameraRef}
               getCapturedImage={(e: string | null) => setCapturedImage(e)}
               getAllVideoDevices={(devices: MediaDeviceInfo[]) => setDevices(devices)}
+              className="h-full w-full"
               videoClassName="h-full w-full"
             />
             <Button
@@ -99,8 +100,8 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
         </div>
 
         {/* Captured Images */}
-        <div className="p-4">
-          <h2 className="text-lg font-semibold mb-4">Imagens Capturadas</h2>
+        <div className="p-4 flex">
+          <h2 className="text-lg font-semibold mb-4">Imagens Capturadas ({capturedImages.length})</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {capturedImages.map((image, index) => (
               <div key={index} className="relative w-full h-64 bg-gray-100 rounded overflow-hidden">
