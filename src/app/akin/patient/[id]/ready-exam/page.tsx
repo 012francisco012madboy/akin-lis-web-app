@@ -1,11 +1,11 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { MoveDiagonal, Trash } from "lucide-react";
+import { MoveDiagonalIcon, Trash } from "lucide-react";
 import AutomatedAnalysis from "./modalAutomatiImage";
 import { ManualExam } from "./manualExam";
 
@@ -15,11 +15,6 @@ export default function SampleVisualizationPage() {
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen] = useState(false);
-
-  const handleCaptureImage = () => {
-    const newImage = `data:image/png;base64,${Math.random().toString(36).substring(2)}`;
-    setCapturedImages((prev) => [...prev, newImage]);
-  };
 
   const handleDeleteImage = (image: string) => {
     setCapturedImages((prev) => prev.filter((img) => img !== image));
@@ -52,9 +47,7 @@ export default function SampleVisualizationPage() {
       <header className="bg-white shadow py-2 px-5 flex gap-2 flex-col lg:flex-row justify-between items-start lg:items-center rounded-md">
         <h1 className="text-lg font-semibold">Paciente: Jorge Mateus</h1>
         <h1 className="text-lg font-semibold">Exame: Malária</h1>
-        <DropdownMenu onOpenChange={(open) => {
-          console.log("Menu state:", open);
-        }}>
+        <DropdownMenu >
           <DropdownMenuTrigger className="bg-black text-white px-2 py-2 rounded-md hover:bg-black/90">
             Iniciar Analíse
           </DropdownMenuTrigger>
@@ -89,8 +82,9 @@ export default function SampleVisualizationPage() {
         <ManualExam
           setIsModalOpen={setIsModalOpen}
           onCaptureImage={(images) => {
-            console.log("Imagens capturadas:", images);
+            // console.log("Imagens capturadas ola:", images);
             setCapturedImages(images);
+            // console.log("ola:", capturedImages)
           }}
         />
       )}
@@ -100,18 +94,30 @@ export default function SampleVisualizationPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {capturedImages.map((image, idx) => (
             <div key={idx} className="relative bg-gray-100 p-2 rounded-lg shadow-md">
-              <img
+              <Image
+                width={300}
+                height={300}
                 src={image}
                 alt={`Captured ${idx}`}
                 className="w-full h-40 object-cover rounded-lg"
                 onClick={() => setSelectedImage(image)}
               />
-              <Button
-                variant="outline"
-                className="absolute top-2 right-2 bg-red-500 text-white hover:bg-red-600"
-                onClick={() => handleDeleteImage(image)}>
-                <Trash />
-              </Button>
+
+              <div className="flex gap-5">
+                <Button
+                  variant="outline"
+                  className=" w-[20px] h-[30px] absolute top-3 right-14 bg-red-500 text-white hover:bg-red-600"
+                  onClick={() => handleDeleteImage(image)}>
+                  <Trash />
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className=" w-[20px] h-[30px] absolute top-3 right-3 bg-akin-turquoise text-white hover:bg-akin-turquoise/90"
+                  onClick={() => setSelectedImage(image)}>
+                  <MoveDiagonalIcon />
+                </Button>
+              </div>
             </div>
           ))}
         </div>
@@ -124,7 +130,9 @@ export default function SampleVisualizationPage() {
               <DialogTitle>Imagem Capturada</DialogTitle>
             </DialogHeader>
             <div className="w-full h-[300px] bg-black rounded-md">
-              <img
+              <Image
+                width={300}
+                height={300}
                 src={selectedImage}
                 alt="Selected"
                 className="w-full h-auto rounded-lg"
@@ -185,12 +193,16 @@ export default function SampleVisualizationPage() {
             <section className="p-4 border-b">
               <h2 className="text-lg font-semibold">Imagens Capturadas</h2>
               <div className="grid grid-cols-2 gap-4 mt-2">
-                <img
+                <Image
+                  width={300}
+                  height={300}
                   src="https://via.placeholder.com/150"
                   alt="Imagem 1"
                   className="rounded shadow"
                 />
-                <img
+                <Image
+                  width={300}
+                  height={300}
                   src="https://via.placeholder.com/150"
                   alt="Imagem 2"
                   className="rounded shadow"

@@ -15,12 +15,12 @@ interface CameraProps {
 
 const CustomCamera = forwardRef<{
   captureImage: () => void;
+  stopCamera: () => void;
 }, CameraProps>(
   ({ getAllVideoDevices, getCapturedImage, className, videoClassName }, ref) => {
     const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-    const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(
-      null
-    );
+    const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null); // Estado para erros
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -38,9 +38,12 @@ const CustomCamera = forwardRef<{
 
           if (videoDevices.length > 0) {
             setSelectedDeviceId(videoDevices[0].deviceId);
+          } else {
+            setError("Nenhuma câmera disponível.");
           }
-        } catch (error) {
-          console.error("Erro ao acessar dispositivos de vídeo:", error);
+        } catch (err) {
+          setError("Erro ao acessar dispositivos de vídeo. Verifique as permissões.");
+          console.error("Erro ao acessar dispositivos de vídeo:", err);
         }
       };
 
@@ -52,6 +55,7 @@ const CustomCamera = forwardRef<{
       if (selectedDeviceId) {
         startCamera(selectedDeviceId);
       }
+      return () => stopCamera(); // Liberar recursos ao desmontar
     }, [selectedDeviceId]);
 
     const startCamera = async (deviceId: string) => {
@@ -63,9 +67,19 @@ const CustomCamera = forwardRef<{
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.play();
+          setError(null); // Limpar erros anteriores
         }
-      } catch (error) {
-        console.error("Erro ao iniciar a câmera:", error);
+      } catch (err) {
+        setError("Erro ao iniciar a câmera. Verifique as permissões.");
+        console.error("Erro ao iniciar a câmera:", err);
+      }
+    };
+
+    const stopCamera = () => {
+      if (videoRef.current?.srcObject) {
+        const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+        tracks.forEach((track) => track.stop());
+        videoRef.current.srcObject = null; // Limpar o stream no elemento de vídeo
       }
     };
 
@@ -80,16 +94,25 @@ const CustomCamera = forwardRef<{
           const imageData = canvas.toDataURL("image/png");
           getCapturedImage(imageData);
         }
+      } else {
+        console.error("Erro ao capturar imagem: vídeo ou canvas não disponível.");
+        setError("Erro ao capturar imagem.");
       }
     };
 
     // Permitir que funções sejam expostas ao componente pai
     useImperativeHandle(ref, () => ({
       captureImage,
+      stopCamera, // Expor a função stopCamera
     }));
 
     return (
       <div className={className}>
+        {error && (
+          <div className="text-red-500 mb-4">
+            {error}
+          </div>
+        )}
         <div
           className={`w-full h-96 border border-gray-300 rounded-lg overflow-hidden ${videoClassName}`}
         >
@@ -108,10 +131,6 @@ const CustomCamera = forwardRef<{
 
 CustomCamera.displayName = "CustomCamera";
 export default CustomCamera;
-
-
-
-
 
 
 //ollllllllllllllllll
