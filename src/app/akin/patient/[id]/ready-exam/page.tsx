@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { MoveDiagonal, Trash } from "lucide-react";
+import { MoveDiagonalIcon, Trash } from "lucide-react";
 import AutomatedAnalysis from "./modalAutomatiImage";
 import { ManualExam } from "./manualExam";
 
@@ -89,8 +90,9 @@ export default function SampleVisualizationPage() {
         <ManualExam
           setIsModalOpen={setIsModalOpen}
           onCaptureImage={(images) => {
-            console.log("Imagens capturadas:", images);
+            console.log("Imagens capturadas ola:", images);
             setCapturedImages(images);
+            console.log("ola:", capturedImages)
           }}
         />
       )}
@@ -100,18 +102,31 @@ export default function SampleVisualizationPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {capturedImages.map((image, idx) => (
             <div key={idx} className="relative bg-gray-100 p-2 rounded-lg shadow-md">
-              <img
+              <Image
+                width={300}
+                height={300}
                 src={image}
                 alt={`Captured ${idx}`}
                 className="w-full h-40 object-cover rounded-lg"
                 onClick={() => setSelectedImage(image)}
               />
-              <Button
-                variant="outline"
-                className="absolute top-2 right-2 bg-red-500 text-white hover:bg-red-600"
-                onClick={() => handleDeleteImage(image)}>
-                <Trash />
-              </Button>
+
+              <div className="flex gap-5">
+                <Button
+                  variant="outline"
+                  className=" w-[20px] h-[30px] absolute top-3 right-14 bg-red-500 text-white hover:bg-red-600"
+                  onClick={() => handleDeleteImage(image)}>
+                  <Trash />
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className=" w-[20px] h-[30px] absolute top-3 right-3 bg-akin-turquoise text-white hover:bg-akin-turquoise/90"
+                  onClick={() => setSelectedImage(image)}>
+                  <MoveDiagonalIcon/>
+                </Button>
+              </div>
+
             </div>
           ))}
         </div>

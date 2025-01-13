@@ -2,7 +2,7 @@
 import CustomCamera from "@/app/akin/camera/camera";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import Image from "next/image";
+// import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 
 interface IManualExamProps {
