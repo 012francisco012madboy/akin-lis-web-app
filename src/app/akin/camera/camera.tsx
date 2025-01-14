@@ -38,6 +38,7 @@ const CustomCamera = forwardRef<{
 
           if (videoDevices.length > 0) {
             setSelectedDeviceId(videoDevices[0].deviceId);
+            setError(null); // Limpar erros se câmeras forem detectadas
           } else {
             setError("Nenhuma câmera disponível.");
           }
@@ -54,6 +55,7 @@ const CustomCamera = forwardRef<{
     useEffect(() => {
       if (selectedDeviceId) {
         startCamera(selectedDeviceId);
+        setError(null); // Limpar erros anteriores
       }
       return () => stopCamera(); // Liberar recursos ao desmontar
     }, [selectedDeviceId]);
@@ -84,20 +86,25 @@ const CustomCamera = forwardRef<{
     };
 
     const captureImage = () => {
-      if (videoRef.current && canvasRef.current) {
-        const canvas = canvasRef.current;
-        const context = canvas.getContext("2d");
-        if (context) {
-          canvas.width = videoRef.current.videoWidth;
-          canvas.height = videoRef.current.videoHeight;
-          context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-          const imageData = canvas.toDataURL("image/png");
-          getCapturedImage(imageData);
-        }
-      } else {
-        console.error("Erro ao capturar imagem: vídeo ou canvas não disponível.");
-        setError("Erro ao capturar imagem.");
+      if (!videoRef.current || !canvasRef.current) {
+        setError("Erro ao capturar imagem: vídeo ou canvas não disponível.");
+        return;
       }
+      
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
+
+      if (!context) {
+        setError("Erro ao capturar imagem: contexto do canvas não disponível.");
+        return;
+      }
+
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      const imageData = canvas.toDataURL("image/png");
+      getCapturedImage(imageData);
+      setError(null); // Limpar erro após captura
     };
 
     // Permitir que funções sejam expostas ao componente pai
@@ -108,20 +115,19 @@ const CustomCamera = forwardRef<{
 
     return (
       <div className={className}>
-        {error && (
-          <div className="text-red-500 mb-4">
-            {error}
-          </div>
-        )}
         <div
           className={`w-full h-96 border border-gray-300 rounded-lg overflow-hidden ${videoClassName}`}
         >
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            className="w-full h-full object-cover"
-          ></video>
+          {error ? (
+            <p className="text-red-500 text-center">{error}</p>
+          ) : (
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              className="w-full h-full object-cover"
+            ></video>
+          )}
         </div>
         <canvas ref={canvasRef} className="hidden"></canvas>
       </div>
@@ -131,6 +137,7 @@ const CustomCamera = forwardRef<{
 
 CustomCamera.displayName = "CustomCamera";
 export default CustomCamera;
+
 
 
 //ollllllllllllllllll
