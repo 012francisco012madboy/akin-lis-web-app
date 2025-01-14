@@ -2,12 +2,13 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { MoveDiagonalIcon, Trash } from "lucide-react";
 import AutomatedAnalysis from "./modalAutomatiImage";
 import { ManualExam } from "./manualExam";
+import { CapturedImages } from "./components/listCaptureImages";
+import { ImageModal } from "./components/selectedCaptureImages";
+
 
 export default function SampleVisualizationPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -184,98 +185,5 @@ export default function SampleVisualizationPage() {
         </DialogContent>
       </Dialog>
     </div >
-  );
-};
-
-
-interface ImageModalProps {
-  selectedImage: string | null;
-  notes: Record<string, string>;
-  handleNoteChange: (image: string, value: string) => void;
-  setSelectedImage: (image: string | null) => void;
-}
-
-const ImageModal: React.FC<ImageModalProps> = ({ selectedImage, notes, handleNoteChange, setSelectedImage }) => {
-  if (!selectedImage) return null;
-
-  return (
-    <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-      <DialogContent className="max-w-5xl h-full lg:h-[95%] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Imagem Capturada</DialogTitle>
-        </DialogHeader>
-        <div className="w-full h-max flex gap-5 justify-between bg-red-500">
-          <div className="w-full h-full bg-black rounded-md">
-            <Image
-              width={300}
-              height={300}
-              src={selectedImage}
-              alt="Selected"
-              className="w-full h-full rounded-lg"
-            />
-          </div>
-          <div className="w-full bg-violet-500">
-            <Textarea
-              value={notes[selectedImage] || ""}
-              onChange={(e) => handleNoteChange(selectedImage, e.target.value)}
-              placeholder="Anotações para esta imagem..."
-              className="w-full h-full"
-            />
-          </div>
-        </div>
-
-        <DialogFooter>
-          <Button onClick={() => setSelectedImage(null)}>Fechar</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-// export default ImageModal;
-
-interface CapturedImagesProps {
-  capturedImages: string[];
-  setSelectedImage: (image: string | null) => void;
-  handleDeleteImage: (image: string) => void;
-}
-
-const CapturedImages: React.FC<CapturedImagesProps> = ({ capturedImages, setSelectedImage, handleDeleteImage }) => {
-  return (
-    <section className="mt-6">
-      <h2 className="text-xl font-bold mb-4">Imagens Capturadas</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {capturedImages.map((image, idx) => (
-          <div key={idx} className="relative bg-gray-100 p-2 rounded-lg shadow-md">
-            <Image
-              width={300}
-              height={300}
-              src={image}
-              alt={`Captured ${idx}`}
-              className="w-full h-40 object-cover rounded-lg"
-              onClick={() => setSelectedImage(image)}
-            />
-
-            <div className="flex gap-5">
-              <Button
-                variant="outline"
-                className=" w-[20px] h-[30px] absolute top-3 right-14 bg-red-500 text-white hover:bg-red-600"
-                onClick={() => handleDeleteImage(image)}
-              >
-                <Trash />
-              </Button>
-
-              <Button
-                variant="outline"
-                className=" w-[20px] h-[30px] absolute top-3 right-3 bg-akin-turquoise text-white hover:bg-akin-turquoise/90"
-                onClick={() => setSelectedImage(image)}
-              >
-                <MoveDiagonalIcon />
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
   );
 };
