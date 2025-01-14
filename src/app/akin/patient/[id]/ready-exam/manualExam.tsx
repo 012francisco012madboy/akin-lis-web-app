@@ -102,8 +102,9 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
         {/* Captured Images */}
         <div className="p-4 flex">
           <h2 className="text-lg font-semibold mb-4">Imagens Capturadas ({capturedImages.length})</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {/* <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {capturedImages.map((image, index) => (
+              console.log(" image", image),
               <div key={index} className="relative w-full h-64 bg-gray-100 rounded overflow-hidden">
                 <Image
                   src={image}
@@ -114,7 +115,7 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
                 />
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
 
         {/* Footer */}

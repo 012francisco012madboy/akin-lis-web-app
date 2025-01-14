@@ -82,9 +82,11 @@ export default function SampleVisualizationPage() {
         <ManualExam
           setIsModalOpen={setIsModalOpen}
           onCaptureImage={(images) => {
-            // console.log("Imagens capturadas ola:", images);
-            setCapturedImages(images);
-            // console.log("ola:", capturedImages)
+            setCapturedImages((prevImages) => {
+              // Filtrar imagens novas que não estão na lista atual
+              const newImages = images.filter((image) => !prevImages.includes(image));
+              return [...prevImages, ...newImages];
+            });
           }}
         />
       )}
