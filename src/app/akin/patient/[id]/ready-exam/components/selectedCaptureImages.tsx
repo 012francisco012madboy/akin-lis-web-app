@@ -38,18 +38,22 @@ export const ImageModal: React.FC<ImageModalProps> = ({
     const [selectedShape, setSelectedShape] = useState<"rect" | "circle" | null>(null);
     const [shapes, setShapes] = useState<Shape[]>([]);
     const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null);
-    const transformerRef = useRef<any>(null);
-    const stageRef = useRef<any>(null);
+    const transformerRef = useRef<Konva.Transformer>(null);
+    const stageRef = useRef<Konva.Stage>(null);
 
     useEffect(() => {
         if (transformerRef.current && selectedShapeId) {
-            const selectedNode = stageRef.current.findOne(`#${selectedShapeId}`);
-            transformerRef.current.nodes([selectedNode]);
-            transformerRef.current.getLayer()?.batchDraw();
+            const selectedNode = stageRef.current?.findOne(`#${selectedShapeId}`);
+            if (selectedNode) {
+                transformerRef.current.nodes([selectedNode]);
+                transformerRef.current.getLayer()?.batchDraw();
+            }
+        } else {
+            transformerRef.current?.nodes([]);
         }
     }, [selectedShapeId]);
 
-    const handleCanvasClick = (e: any) => {
+    const handleCanvasClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
         if (!selectedShape) return;
 
         const stage = e.target.getStage();
@@ -86,11 +90,9 @@ export const ImageModal: React.FC<ImageModalProps> = ({
         setSelectedShapeId(null);
     };
 
-    const handleTransform = (id: string, newAttrs: any) => {
+    const handleTransform = (id: string, newAttrs: Partial<Shape>) => {
         setShapes((prevShapes) =>
-            prevShapes.map((shape) =>
-                shape.id === id ? { ...shape, ...newAttrs } : shape
-            )
+            prevShapes.map((shape) => (shape.id === id ? { ...shape, ...newAttrs } : shape))
         );
     };
 
@@ -103,92 +105,21 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                     <DialogTitle>Imagem Capturada</DialogTitle>
                 </DialogHeader>
                 <div className="w-full h-full flex flex-col gap-5">
-                    <div className="flex gap-5 justify-between">
-                        <Button onClick={() => setSelectedShape("rect")}>Adicionar Retângulo</Button>
-                        <Button onClick={() => setSelectedShape("circle")}>Adicionar Círculo</Button>
-                        <Button onClick={handleDeleteShape} disabled={!selectedShapeId}>
-                            Excluir Forma Selecionada
-                        </Button>
-                        <Button onClick={() => setSelectedShape(null)}>Desativar Seleção</Button>
-                    </div>
-                    <div className="relative w-[400px] object-fill h-[400px] bg-black rounded-md">
-                        <Image
-                            width={300}
-                            height={300}
-                            src={selectedImage}
-                            alt="Selected"
-                            className="absolute w-full h-full rounded-lg"
-                        />
-                        <Stage
-                            width={window.innerWidth * 0.9}
-                            height={400}
-                            className="absolute top-0 left-0"
-                            onClick={handleCanvasClick}
-                            ref={stageRef}
-                        >
-                            <Layer>
-                                {shapes.map((shape) => {
-                                    const isSelected = shape.id === selectedShapeId;
-                                    return shape.type === "rect" ? (
-                                        <Rect
-                                            key={shape.id}
-                                            id={shape.id}
-                                            x={shape.x}
-                                            y={shape.y}
-                                            width={shape.width}
-                                            height={shape.height}
-                                            fill="rgba(0, 123, 255, 0.5)"
-                                            draggable
-                                            onClick={() => handleShapeSelect(shape.id)}
-                                            onDragEnd={(e) =>
-                                                handleTransform(shape.id, {
-                                                    x: e.target.x(),
-                                                    y: e.target.y(),
-                                                })
-                                            }
-                                            onTransformEnd={(e) => {
-                                                const node = e.target;
-                                                const newAttrs = {
-                                                    x: node.x(),
-                                                    y: node.y(),
-                                                    width: node.width() * node.scaleX(),
-                                                    height: node.height() * node.scaleY(),
-                                                };
-                                                handleTransform(shape.id, newAttrs);
-                                            }}
-                                        />
-                                    ) : (
-                                        <Circle
-                                            key={shape.id}
-                                            id={shape.id}
-                                            x={shape.x}
-                                            y={shape.y}
-                                            radius={shape.radius}
-                                            fill="rgba(220, 53, 69, 0.5)"
-                                            draggable
-                                            onClick={() => handleShapeSelect(shape.id)}
-                                            onDragEnd={(e) =>
-                                                handleTransform(shape.id, {
-                                                    x: e.target.x(),
-                                                    y: e.target.y(),
-                                                })
-                                            }
-                                            onTransformEnd={(e) => {
-                                                const node = e.target;
-                                                const newAttrs = {
-                                                    x: node.x(),
-                                                    y: node.y(),
-                                                    radius: (node as Konva.Circle).radius() * node.scaleX(),
-                                                };
-                                                handleTransform(shape.id, newAttrs);
-                                            }}
-                                        />
-                                    );
-                                })}
-                                <Transformer ref={transformerRef} />
-                            </Layer>
-                        </Stage>
-                    </div>
+                    <ShapeControls
+                        setSelectedShape={setSelectedShape}
+                        handleDeleteShape={handleDeleteShape}
+                        isShapeSelected={!!selectedShapeId}
+                    />
+                    <CanvasArea
+                        selectedImage={selectedImage}
+                        shapes={shapes}
+                        handleCanvasClick={handleCanvasClick}
+                        handleShapeSelect={handleShapeSelect}
+                        handleTransform={handleTransform}
+                        selectedShapeId={selectedShapeId}
+                        transformerRef={transformerRef}
+                        stageRef={stageRef}
+                    />
                     <Textarea
                         value={notes[selectedImage] || ""}
                         onChange={(e) => handleNoteChange(selectedImage, e.target.value)}
@@ -203,3 +134,117 @@ export const ImageModal: React.FC<ImageModalProps> = ({
         </Dialog>
     );
 };
+
+const ShapeControls: React.FC<{
+    setSelectedShape: React.Dispatch<React.SetStateAction<"rect" | "circle" | null>>;
+    handleDeleteShape: () => void;
+    isShapeSelected: boolean;
+}> = ({ setSelectedShape, handleDeleteShape, isShapeSelected }) => (
+    <div className="flex gap-5 justify-between">
+        <Button onClick={() => setSelectedShape("rect")}>Adicionar Retângulo</Button>
+        <Button onClick={() => setSelectedShape("circle")}>Adicionar Círculo</Button>
+        <Button onClick={handleDeleteShape} disabled={!isShapeSelected}>
+            Excluir Forma Selecionada
+        </Button>
+        <Button onClick={() => setSelectedShape(null)}>Desativar Seleção</Button>
+    </div>
+);
+
+const CanvasArea: React.FC<{
+    selectedImage: string;
+    shapes: Shape[];
+    handleCanvasClick: (e: Konva.KonvaEventObject<MouseEvent>) => void;
+    handleShapeSelect: (id: string) => void;
+    handleTransform: (id: string, newAttrs: Partial<Shape>) => void;
+    selectedShapeId: string | null;
+    transformerRef: React.RefObject<Konva.Transformer>;
+    stageRef: React.RefObject<Konva.Stage>;
+}> = ({
+    selectedImage,
+    shapes,
+    handleCanvasClick,
+    handleShapeSelect,
+    handleTransform,
+    selectedShapeId,
+    transformerRef,
+    stageRef,
+}) => (
+    <div className="relative w-[400px] h-[400px] bg-black rounded-md">
+        <Image
+            width={300}
+            height={300}
+            src={selectedImage}
+            alt="Selected"
+            className="absolute w-full h-full rounded-lg"
+        />
+        <Stage
+            width={window.innerWidth * 0.9}
+            height={400}
+            className="absolute top-0 left-0"
+            onClick={handleCanvasClick}
+            ref={stageRef}
+        >
+            <Layer>
+                {shapes.map((shape) => {
+                    const isSelected = shape.id === selectedShapeId;
+                    return shape.type === "rect" ? (
+                        <Rect
+                            key={shape.id}
+                            id={shape.id}
+                            x={shape.x}
+                            y={shape.y}
+                            width={shape.width}
+                            height={shape.height}
+                            fill={isSelected ? "rgba(0, 123, 255, 0.7)" : "rgba(0, 123, 255, 0.5)"}
+                            draggable
+                            onClick={() => handleShapeSelect(shape.id)}
+                            onDragEnd={(e) =>
+                                handleTransform(shape.id, {
+                                    x: e.target.x(),
+                                    y: e.target.y(),
+                                })
+                            }
+                            onTransformEnd={(e) => {
+                                const node = e.target;
+                                const newAttrs = {
+                                    x: node.x(),
+                                    y: node.y(),
+                                    width: node.width() * node.scaleX(),
+                                    height: node.height() * node.scaleY(),
+                                };
+                                handleTransform(shape.id, newAttrs);
+                            }}
+                        />
+                    ) : (
+                        <Circle
+                            key={shape.id}
+                            id={shape.id}
+                            x={shape.x}
+                            y={shape.y}
+                            radius={shape.radius}
+                            fill={isSelected ? "rgba(220, 53, 69, 0.7)" : "rgba(220, 53, 69, 0.5)"}
+                            draggable
+                            onClick={() => handleShapeSelect(shape.id)}
+                            onDragEnd={(e) =>
+                                handleTransform(shape.id, {
+                                    x: e.target.x(),
+                                    y: e.target.y(),
+                                })
+                            }
+                            onTransformEnd={(e) => {
+                                const node = e.target;
+                                const newAttrs = {
+                                    x: node.x(),
+                                    y: node.y(),
+                                    radius: (node as Konva.Circle).radius() * node.scaleX(),
+                                };
+                                handleTransform(shape.id, newAttrs);
+                            }}
+                        />
+                    );
+                })}
+                <Transformer ref={transformerRef} />
+            </Layer>
+        </Stage>
+    </div>
+);
