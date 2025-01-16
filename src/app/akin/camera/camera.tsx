@@ -119,7 +119,7 @@ const CustomCamera = forwardRef<{
           className={`w-full h-96 border border-gray-300 rounded-lg overflow-hidden ${videoClassName}`}
         >
           {error ? (
-            <p className="text-red-500 text-center">{error}</p>
+            <p className="text-red-500 text-center w-full h-full bg-black">{error}</p>
           ) : (
             <video
               ref={videoRef}

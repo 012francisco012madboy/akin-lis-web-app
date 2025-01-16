@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import CustomCamera from "@/app/akin/camera/camera";
+import { ___showErrorToastNotification } from "@/lib/sonner";
 
 export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen }: { isAutomatedAnalysisOpen: boolean, setIsAutomatedAnalysisOpen: (value: boolean) => void }) {
 
@@ -19,8 +20,7 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
   const [timer, setTimer] = useState(1);
   const [capturedImages, setCapturedImages] = useState<string[]>([]);
   const [message, setMessage] = useState("");
-  const maxCaptures = 20;
-
+  const [maxCaptures, setMaxCaptures] = useState(20);
 
   const handleStartCapturing = () => {
     setIsCapturing(true);
@@ -30,19 +30,39 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
   };
 
   const handleCaptureImage = React.useCallback(() => {
-    const newImage = `data:image/png;base64,${Math.random().toString(36).substring(2)}`;
-    setCapturedImages((prev) => [...prev, newImage]);
+    if (!devices.length) {
+      ___showErrorToastNotification({
+        message: "Nenhuma câmera detectada. Conecte uma câmera para capturar imagens.",
+      });
+      setError("Nenhuma câmera detectada. Conecte uma câmera para capturar imagens.");
+      return;
+    }
+    if (!cameraRef.current) {
+      ___showErrorToastNotification({
+        message: "Erro ao acessar a câmera. Tente novamente.",
+      });
+      setError("Erro ao acessar a câmera. Tente novamente.");
+      return;
+    }
+    setError(null);
+    cameraRef.current.captureImage();
+
+    if (currentImage) {
+      setCapturedImages((prev) => [...prev, currentImage]);
+      setCurrentImage(null);
+    }
     setMessage("Posicione a próxima lâmina.");
     if (capturedImages.length + 1 === maxCaptures) setIsCapturing(false);
-  }, [capturedImages.length, maxCaptures]);
+  }, [capturedImages.length, maxCaptures, currentImage, devices.length]);
+
 
   const handleStopCapturing = () => {
     setIsCapturing(false);
     setMessage("Captura finalizada. Escolha como enviar as imagens.");
   };
+
   useEffect(() => {
     if (!devices.length) {
-
       setError("Nenhuma câmera detectada. Certifique-se de que a câmera está conectada.");
     } else {
       setError(null);
@@ -59,7 +79,7 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isCapturing, timer, capturedImages.length, handleCaptureImage]);
+  }, [isCapturing, timer, capturedImages.length, handleCaptureImage, maxCaptures]);
 
 
   return (
@@ -68,26 +88,57 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
         <div className="flex flex-col h-full ">
           <header className="bg-white shadow py-4 px-5 flex justify-between items-center rounded-md">
             <h1 className="text-lg font-semibold">Análise Automatizada</h1>
-            <select
-              onChange={(e) => {
-                const selectedDevice = devices.find(
-                  (device) => device.deviceId === e.target.value
-                );
-                if (selectedDevice) setDevices([selectedDevice]);
-              }}
-              value={devices[0]?.deviceId ? devices[0]?.deviceId : "Sem câmeras detectadas"}
-              className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              {devices.length > 0 ? (
-                devices.map((device) => (
-                  <option key={device.deviceId} value={device.deviceId}>
-                    {device.label || `Câmera ${device.deviceId}`}
-                  </option>
-                ))
-              ) : (
-                <option disabled>Sem câmeras detectadas</option>
-              )}
-            </select>
+
+            <div>
+              <h2 className="text-sm font-medium">Selecione</h2>
+              <select
+                onChange={(e) => {
+                  const selectedDevice = devices.find(
+                    (device) => device.deviceId === e.target.value
+                  );
+                  if (selectedDevice) setDevices([selectedDevice]);
+                }}
+                value={devices[0]?.deviceId ? devices[0]?.deviceId : "Sem câmeras detectadas"}
+                className="px-0 py-1.5 border mt-1 border-gray-200 rounded-sm shadow-sm text-sm"
+              >
+                {devices.length > 0 ? (
+                  devices.map((device) => (
+                    <option className="" key={device.deviceId} value={device.deviceId}>
+                      {device.label || `Câmera ${device.deviceId}`}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>Sem câmeras detectadas</option>
+                )}
+              </select>
+
+            </div>
+
+            <div>
+              <label htmlFor="maxCaptures" className="block text-sm font-medium">
+                Máximo de Imagens
+              </label>
+              <input
+                id="maxCaptures"
+                type="number"
+                value={maxCaptures}
+                onChange={(e) => setMaxCaptures(Number(e.target.value))}
+                className="mt-1 block w-full px-2 py-1 border rounded"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="timer" className="block text-sm font-medium">
+                Intervalo (s)
+              </label>
+              <input
+                id="timer"
+                type="number"
+                value={timer}
+                onChange={(e) => setTimer(Number(e.target.value))}
+                className="mt-1 block w-full px-2 py-1 border rounded"
+              />
+            </div>
             <Button onClick={handleStartCapturing} disabled={isCapturing}>
               Iniciar Captura
             </Button>
@@ -107,13 +158,6 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
             <h2 className="text-xl font-bold mb-2 mt-3">Imagens Capturadas ({capturedImages.length}/{maxCaptures})</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {capturedImages.map((image, index) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                // <img
-                //   key={index}
-                //   src={image}
-                //   alt={`Captura ${index}`}
-                //   className="w-full h-40 object-cover rounded-md border"
-                // />
                 <Image
                   width={500}
                   height={500}
