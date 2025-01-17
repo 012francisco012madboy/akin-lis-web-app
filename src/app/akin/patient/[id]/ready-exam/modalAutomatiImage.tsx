@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import CustomCamera from "@/app/akin/camera/camera";
 import { ___showErrorToastNotification } from "@/lib/sonner";
+import { CapturedImages } from "./components/listCaptureImages";
 
 export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen }: { isAutomatedAnalysisOpen: boolean, setIsAutomatedAnalysisOpen: (value: boolean) => void }) {
 
@@ -21,6 +22,12 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
   const [capturedImages, setCapturedImages] = useState<string[]>([]);
   const [message, setMessage] = useState("");
   const [maxCaptures, setMaxCaptures] = useState(20);
+
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const handleDeleteImage = (image: string) => {
+    setCapturedImages((prev) => prev.filter((img) => img !== image));
+  };
 
   const validateInputs = () => {
     if (maxCaptures <= 0) {
@@ -176,7 +183,15 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
               />
             </div>
 
-            <h2 className="text-xl font-bold mb-2 mt-3">
+            <CapturedImages
+              maxCapturedImage={String(capturedImages.length)}
+              maxCaptures={String(maxCaptures)}
+              capturedImages={capturedImages}
+              handleDeleteImage={handleDeleteImage}
+              setSelectedImage={setSelectedImage}
+            />
+
+            {/* <h2 className="text-xl font-bold mb-2 mt-3">
               Imagens Capturadas ({capturedImages.length}/{maxCaptures})
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -190,7 +205,7 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
                   alt={`Imagem ${index + 1}`}
                 />
               ))}
-            </div>
+            </div> */}
           </section>
           {isCapturing && (
             <div className="mt-4 p-4 bg-blue-100 rounded-lg">

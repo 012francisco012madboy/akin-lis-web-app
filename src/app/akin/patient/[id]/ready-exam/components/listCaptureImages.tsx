@@ -7,12 +7,23 @@ interface CapturedImagesProps {
     capturedImages: string[];
     setSelectedImage: (image: string | null) => void;
     handleDeleteImage: (image: string) => void;
+    maxCapturedImage?: string;
+    maxCaptures?: string;
 }
 
-export const CapturedImages: React.FC<CapturedImagesProps> = ({ capturedImages, setSelectedImage, handleDeleteImage }) => {
+export const CapturedImages: React.FC<CapturedImagesProps> = ({ capturedImages,
+    maxCapturedImage, maxCaptures, setSelectedImage, handleDeleteImage }) => {
     return (
         <section className="mt-6">
-            <h2 className="text-xl font-bold mb-4">Imagens Capturadas</h2>
+            {
+                maxCapturedImage && maxCaptures ? (
+                    <h2 className="text-xl font-bold mb-4">
+                        Imagens Capturadas ({maxCapturedImage} / {maxCaptures})
+                    </h2>
+                ) : (
+                    <h2 className="text-xl font-bold mb-4">Imagens Capturadas </h2>
+                )
+            }
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {capturedImages.map((image, idx) => (
                     <div key={idx} className="relative bg-gray-100 p-2 rounded-lg shadow-md">

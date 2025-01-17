@@ -44,7 +44,7 @@ export default function SampleVisualizationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 overflow-y-auto">
+    <div className="min-h-screen bg-gray-50  overflow-y-auto">
       {/* Header */}
       <header className="bg-white shadow py-2 px-5 flex gap-2 flex-col lg:flex-row justify-between items-start lg:items-center rounded-md">
         <h1 className="text-lg font-semibold">Paciente: Jorge Mateus</h1>
