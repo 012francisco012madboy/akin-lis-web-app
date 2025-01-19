@@ -14,8 +14,8 @@ const getStatusColor = (status: string) => {
       return "gray-500";
   }
 };
-
-export const ExamCard: React.FC<Exam> = ({ data }) => (
+// : React.FC<Exam[]>
+export const ExamCard = ({ data }:{ data:any[]}) => (
   data.map((exame) => (
     <div key={exame.id} className="border rounded-lg p-4 shadow-sm bg-gray-50 hover:bg-gray-100 transition">
       <h3 className="text-lg font-medium text-gray-800 mb-2">{exame.Tipo_Exame.nome}</h3>

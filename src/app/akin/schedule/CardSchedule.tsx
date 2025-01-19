@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
 import { Exam } from "../patient/[id]/exam-history/useExamHookData";
 import { EditScheduleFormModal } from "./editScheduleData";
+import { useAuthStore } from "@/utils/zustand-store/authStore";
 
 interface ICardSchedule {
   data: ScheduleType;
@@ -21,6 +22,14 @@ export default function CardSchedule({ data }: ICardSchedule) {
   const [groupedExams, setGroupedExams] = useState<Exam[]>([]);
   const [selectedExam, setSelectedExam] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user } = useAuthStore();
+
+  const userRole = useQuery({
+    queryKey: ["user-role"],
+    queryFn: async () => {
+      return await _axios.get(`/users/${user?.id}`);
+    },
+  });
 
   const handleEditClick = (exam: any) => {
     setSelectedExam(exam);
@@ -52,20 +61,20 @@ export default function CardSchedule({ data }: ICardSchedule) {
 
   const getTecnicoNome = (id: string | null) => {
     if (!id) return "Sem técnico alocado";
-  
+
     // Verifica se os dados estão sendo carregados ou se houve um erro
     if (tecnico.isLoading) return "Carregando técnicos...";
     if (tecnico.isError) return "Erro ao carregar técnicos";
-  
+
     // Verifica se os dados existem e têm o formato esperado
     const tecnicosData = tecnico.data?.data || [];
     if (tecnicosData.length === 0) return "Sem técnico alocado";
-  
+
     // Busca o técnico pelo ID
     const tecnicoEncontrado = tecnicosData.find((t) => t.id === id);
     return tecnicoEncontrado?.nome_completo || "Técnico não encontrado";
   };
-  
+
   const age =
     data?.Paciente?.data_nascimento &&
     new Date().getFullYear() - new Date(data.Paciente.data_nascimento).getFullYear();
@@ -84,34 +93,42 @@ export default function CardSchedule({ data }: ICardSchedule) {
                   {exame.Tipo_Exame.nome || "Nome não disponível"}
                   {/* <EditScheduleFormModal> */}
                   <div className="relative group">
-                    <Pencil size={18}
-                      className="cursor-pointer text-gray-500"
-                    // onClick={() => {
-                    //   window.location.href = `/akin/patient/${data.id_paciente}/next-exam`;
-                    // }}
-                    onClick={() => handleEditClick({
-                      id: exame.id,
-                      name: exame.Tipo_Exame?.nome,
-                      date: exame.data_agendamento,
-                      time: exame.hora_agendamento,
-                      technicianId: exame.id_tecnico_alocado,
-                    })}
-                    />
-                    <span className="absolute cursor-pointer -left-8 top-5 mt-0 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                    // onClick={() => {
-                    //   window.location.href = `/akin/patient/${data.id_paciente}/next-exam`;
-                    // }}
-                    onClick={() => handleEditClick({
-                      id: exame.id,
-                      name: exame.Tipo_Exame?.nome,
-                      date: exame.data_agendamento,
-                      time: exame.hora_agendamento,
-                      technicianId: exame.id_tecnico_alocado,
-                    })}
-                    >
-                      Editar
-                    </span>
 
+                    {
+                      userRole.data?.data.tipo !== "CHEFE" ? (
+                        <></>
+                      ) : (
+                        <>
+                          <Pencil size={18}
+                            className="cursor-pointer text-gray-500"
+                            // onClick={() => {
+                            //   window.location.href = `/akin/patient/${data.id_paciente}/next-exam`;
+                            // }}
+                            onClick={() => handleEditClick({
+                              id: exame.id,
+                              name: exame.Tipo_Exame?.nome,
+                              date: exame.data_agendamento,
+                              time: exame.hora_agendamento,
+                              technicianId: exame.id_tecnico_alocado,
+                            })}
+                          />
+                          <span className="absolute cursor-pointer -left-8 top-5 mt-0 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                            // onClick={() => {
+                            //   window.location.href = `/akin/patient/${data.id_paciente}/next-exam`;
+                            // }}
+                            onClick={() => handleEditClick({
+                              id: exame.id,
+                              name: exame.Tipo_Exame?.nome,
+                              date: exame.data_agendamento,
+                              time: exame.hora_agendamento,
+                              technicianId: exame.id_tecnico_alocado,
+                            })}
+                          >
+                            Editar
+                          </span>
+                        </>
+                      )
+                    }
                     <EditScheduleFormModal
                       open={isModalOpen}
                       exam={selectedExam}

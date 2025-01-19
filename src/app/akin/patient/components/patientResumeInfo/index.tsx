@@ -12,6 +12,8 @@ import { useState } from "react";
 import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { Combobox } from "@/components/combobox/combobox";
+import { useQuery } from "@tanstack/react-query";
+import { useAuthStore } from "@/utils/zustand-store/authStore";
 
 const genderOptions = ["Masculino", "Femenino"]
 // Componente principal
@@ -26,6 +28,14 @@ export function PatientResumeInfo({
 }) {
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  const { user } = useAuthStore();
+  const userRole = useQuery({
+    queryKey: ["userRole"],
+    queryFn: async () => {
+      return await _axios.get(`/users/${user?.id}`);
+    }
+  })
 
   const [formData, setFormData] = useState<{
     nome_completo: string;
@@ -96,13 +106,16 @@ export function PatientResumeInfo({
           </CardDescription>
         </CardHeader>
         <CardContent>
-
-          <Button
-            className="mt-4 bg-akin-turquoise hover:bg-akin-turquoise/80 text-white"
-            onClick={() => setIsEditing(true)}
-          >
-            Editar Informações
-          </Button>
+          {
+            userRole.data?.data.tipo === "RECEPCIONISTA" && (
+              <Button
+                className="mt-4 bg-akin-turquoise hover:bg-akin-turquoise/80 text-white"
+                onClick={() => setIsEditing(true)}
+              >
+                Editar Informações
+              </Button>
+            )
+          }
         </CardContent>
       </Card>
 

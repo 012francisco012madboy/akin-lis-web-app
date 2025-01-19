@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { ___showErrorToastNotification, ___showSuccessToastNotification } from "
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { MoreHorizontal } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+// import { DatePickerWithRange } from "@/components/ui/date-picker";
 
 interface Technician {
   id: string;
@@ -95,6 +96,20 @@ export default function TeamManagement() {
   const [editTechnician, setEditTechnician] = useState<Technician | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"" | "Ocupado" | "Livre">("");
+  const [dateRange, setDateRange] = useState<{ start: Date | null; end: Date | null }>({
+    start: null,
+    end: null,
+  });
+
+  // Atualiza o status com base nas atividades
+  // useEffect(() => {
+  //   setTechnicians((prev) =>
+  //     prev.map((tech) => ({
+  //       ...tech,
+  //       status: tech.activities?.length ? "Ocupado" : "Livre",
+  //     }))
+  //   );
+  // }, []);
 
   const handleDelete = (id: string) => {
     setTechnicians((prev) => prev.filter((tech) => tech.id !== id));
@@ -117,8 +132,12 @@ export default function TeamManagement() {
     return matchesSearch && matchesFilter;
   });
 
+  // const handleDateRangeChange = (start: Date | null, end: Date | null) => {
+  //   setDateRange({ start, end });
+  // };
+
   return (
-    <div className="">
+    <div>
       <CustomBreadcrumb items={breadcrumbItems} borderB />
 
       <div className="mt-3 flex flex-col md:flex-row md:items-center gap-4">
@@ -126,7 +145,7 @@ export default function TeamManagement() {
           placeholder="Pesquisar técnico..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full md:w-1/3"
+          className="w-full md:w-1/3 focus-visible:ring-akin-turquoise"
         />
         <select
           value={filterStatus}
@@ -137,8 +156,9 @@ export default function TeamManagement() {
           <option value="Ocupado">Ocupado</option>
           <option value="Livre">Livre</option>
         </select>
-        <Button className="bg-akin-turquoise hover:bg-akin-turquoise/80 " onClick={() => setFormModalOpen(true)}>Cadastrar Técnico</Button>
-        {/* <Button variant={"outline"} className=" border-akin-turquoise hover:bg-akin-turquoise hover:text-white "  onClick={() => setFormModalOpen(true)}>Criar Equipe</Button> */}
+        <Button className="bg-akin-turquoise hover:bg-akin-turquoise/80" onClick={() => setFormModalOpen(true)}>
+          Cadastrar Técnico
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
@@ -147,7 +167,7 @@ export default function TeamManagement() {
             <CardHeader className="flex justify-between relative">
               <div className="flex items-center gap-4">
                 <Avatar className="w-12 h-12">
-                  <AvatarImage src=""/>
+                  <AvatarImage src="" />
                   <AvatarFallback>{technician.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
@@ -161,10 +181,7 @@ export default function TeamManagement() {
                 </PopoverTrigger>
                 <PopoverContent>
                   <div className="flex flex-col gap-2">
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDelete(technician.id)}
-                    >
+                    <Button variant="destructive" onClick={() => handleDelete(technician.id)}>
                       Remover
                     </Button>
                     <Button
@@ -184,17 +201,32 @@ export default function TeamManagement() {
               <p>Email: {technician.email}</p>
               <p>Contato: {technician.phone}</p>
               <p>
-                Status: <span className={`font-bold ${technician.status === "Ocupado" ? "text-red-500" : "text-green-500"}`}>{technician.status}</span>
+                Status:{" "}
+                <span
+                  className={`font-bold ${
+                    technician.status === "Ocupado" ? "text-red-500" : "text-green-500"
+                  }`}
+                >
+                  {technician.status}
+                </span>
               </p>
             </CardContent>
             <CardFooter className="flex flex-col xl:flex-row justify-between gap-2">
-              <Button className="w-full" variant="outline">Mensagem</Button>
-              <Button className="w-full" variant="outline">Chamada</Button>
-              <Button className="w-full bg-akin-turquoise hover:bg-akin-turquoise/80" onClick={() => {
-                setSelectedTechnician(technician);
-                setModalOpen(true);
-              }}>Ver Mais</Button>
-
+              <Button className="w-full" variant="outline">
+                Mensagem
+              </Button>
+              <Button className="w-full" variant="outline">
+                Chamada
+              </Button>
+              <Button
+                className="w-full bg-akin-turquoise hover:bg-akin-turquoise/80"
+                onClick={() => {
+                  setSelectedTechnician(technician);
+                  setModalOpen(true);
+                }}
+              >
+                Ver Mais
+              </Button>
             </CardFooter>
           </Card>
         ))}
@@ -207,15 +239,19 @@ export default function TeamManagement() {
               <h2>{selectedTechnician.name}</h2>
             </DialogHeader>
             <div>
-              {selectedTechnician.status === "Ocupado" && (
-                <div>
-                  <p><strong>Paciente:</strong> {selectedTechnician.patient}</p>
-                  <p><strong>Exame:</strong> {selectedTechnician.exam}</p>
-                </div>
-              )}
-              <p><strong>Total de Exames:</strong> {selectedTechnician.totalExams}</p>
-              <p><strong>Tempo Médio:</strong> {selectedTechnician.avgTime}</p>
-              <p><strong>Materiais Usados:</strong> {selectedTechnician.materialsUsed.join(", ")}</p>
+              <div className="flex gap-4">
+                {/* <DatePickerWithRange onChange={handleDateRangeChange} /> */}
+                <Button>Filtrar</Button>
+              </div>
+              <p>
+                <strong>Total de Exames:</strong> {selectedTechnician.totalExams}
+              </p>
+              <p>
+                <strong>Tempo Médio:</strong> {selectedTechnician.avgTime} min
+              </p>
+              <p>
+                <strong>Materiais Usados:</strong> {selectedTechnician.materialsUsed.join(", ")}
+              </p>
             </div>
             <DialogFooter>
               <Button onClick={() => setModalOpen(false)}>Fechar</Button>
@@ -239,6 +275,7 @@ export default function TeamManagement() {
   );
 }
 
+
 function FormModal({ open, technician, onClose, onSave }: any) {
   const [formData, setFormData] = useState<Technician>(
     technician || { id: "", name: "", role: "", email: "", phone: "", status: "Livre", totalExams: 0, avgTime: "", materialsUsed: [] }
@@ -255,14 +292,14 @@ function FormModal({ open, technician, onClose, onSave }: any) {
           <h2>{technician ? "Editar Técnico" : "Cadastrar Técnico"}</h2>
         </DialogHeader>
         <div>
-          <Input name="name" placeholder="Nome" value={formData.name} onChange={handleChange} className="mb-4" />
-          <Input name="role" placeholder="Cargo" value={formData.role} onChange={handleChange} className="mb-4" />
-          <Input name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="mb-4" />
-          <Input name="phone" placeholder="Telefone" value={formData.phone} onChange={handleChange} className="mb-4" />
+          <Input name="name" placeholder="Nome" value={formData.name} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
+          <Input name="role" placeholder="Cargo" value={formData.role} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
+          <Input name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
+          <Input name="phone" placeholder="Telefone" value={formData.phone} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
         </div>
         <DialogFooter>
           <Button onClick={onClose} variant="ghost">Cancelar</Button>
-          <Button onClick={() => onSave(formData)}>{technician ? "Salvar" : "Cadastrar"}</Button>
+          <Button onClick={() => onSave(formData) } className="bg-akin-turquoise hover:bg-akin-turquoise/80">{technician ? "Salvar" : "Cadastrar"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

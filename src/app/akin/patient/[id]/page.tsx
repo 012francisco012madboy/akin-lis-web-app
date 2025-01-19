@@ -39,6 +39,8 @@ export default function PatientByIdProfile({ params }: IPatientById) {
     }
   })
 
+  console.log("getBasicExamHistory",getBasicExamHistory);
+
   const getPatientInfo = useQuery({
     queryKey:['patient-info',params.id],
     queryFn: async () => {
