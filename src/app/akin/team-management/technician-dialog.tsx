@@ -25,7 +25,7 @@ const TechnicianDialog: React.FC<TechnicianDialogProps> = ({ technician, isOpen,
           </div>
 
           {/* Estatísticas */}
-          <div className="bg-gray-100 p-4 rounded-lg shadow-sm space-y-2">
+          <div className=" border border-gray-300 p-4 rounded-lg shadow-sm space-y-2">
             <div className="flex justify-between">
               <span className="font-medium text-gray-700">Total de Exames:</span>
               {/* <span className="text-gray-800">{technician.totalExams}</span> */}
