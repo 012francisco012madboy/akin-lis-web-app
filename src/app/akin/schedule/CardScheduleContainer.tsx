@@ -3,6 +3,8 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useCallback, useEffect, useState } from "react";
 import CardSchedule from "./CardSchedule";
+import { isSameDay } from "date-fns";
+import { Button } from "@/components/ui/button";
 // import { Combobox } from "@/components/combobox/combobox";
 
 interface ICardScheduleContainer {
@@ -27,6 +29,8 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
   const [isSearching, setIsSearching] = useState(false);
   const [filterByTechnician, setFilterByTechnician] = useState<typeof all | typeof allocated | typeof notAllocated>(all);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isDateFilterEnabled, setIsDateFilterEnabled] = useState(true);
 
   const totalItems = filteredSchedule.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -40,6 +44,10 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
       );
       applyFilters(filtered);
     }
+  };
+
+  const handleDateChange = (date: string) => {
+    setSelectedDate(date ? new Date(date) : null);
   };
 
   const applyFilters = useCallback((baseSchedule: ScheduleType[]) => {
@@ -60,12 +68,18 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
       );
     }
 
+    if (isDateFilterEnabled && selectedDate) {
+      filtered = filtered.filter((s) =>
+        s.Exame?.some((exame) => isSameDay(new Date(exame.data_agendamento), selectedDate))
+      );
+    }
+
     setFilteredSchedule(filtered);
-  }, [filterByTechnician]);
+  }, [filterByTechnician, isDateFilterEnabled, selectedDate]);
 
   useEffect(() => {
     applyFilters(schedule);
-  }, [schedule, filterByTechnician, applyFilters]);
+  }, [schedule, filterByTechnician, isDateFilterEnabled, selectedDate, applyFilters]);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentItems = filteredSchedule.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -90,15 +104,16 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
             placeholder="Procurar por paciente"
             onChange={(e) => handleSearch(e.target.value)}
           />
-          {/* 
-          <Combobox
-            value={filterByTechnician}
-            onChange={(value) => setFilterByTechnician(value as typeof all | typeof allocated | typeof notAllocated)}
-            options={[all, allocated, notAllocated]}
-            placeholder="Filtrar por alocação"
-            
-          /> */}
-
+          <div className="flex flex-col md:flex-row items-center gap-2 w-full">
+            <Input
+              type="date"
+              className="w-full max-w-xs ring-0 focus:ring-0 focus-visible:ring-0"
+              onChange={(e) => handleDateChange(e.target.value)}
+            />
+            {/* <Button variant="outline" className="w-full focus-visible:ring-0" onClick={() => setIsDateFilterEnabled(!isDateFilterEnabled)}>
+              {isDateFilterEnabled ? "Desativar" : "Ativar"} Filtragem por Data
+            </Button> */}
+          </div>
           <select
             className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-nonefocus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
             value={filterByTechnician}
@@ -130,6 +145,9 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
               {currentItems.map((data, index) => {
                 // Filtrar exames no nível do card com base no filtro aplicado
                 const filteredExams = data.Exame?.filter((exame) => {
+                  if (selectedDate && !isSameDay(new Date(exame.data_agendamento), selectedDate)) {
+                    return false; // Excluir exames que não são da data selecionada
+                  }
                   if (filterByTechnician === allocated) {
                     return exame.id_tecnico_alocado !== null;
                   } else if (filterByTechnician === notAllocated) {
