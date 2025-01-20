@@ -9,7 +9,7 @@ const genderOptions = ["Masculino", "Femenino"]
 export function FormModal({ open, technician, onClose, onSave }: any) {
   const { user } = useAuthStore();
   const [formData, setFormData] = useState<ITeamManagement>(
-    technician || { nome_completo: "", cargo: "", email: "", contacto_telefonico: "", status: "ATIVO", id_unidade_saude: "1", id_chefe_lab: user?.id, data_nascimento: "", numero_identificacao: "", id_sexo: 0, senha: "", tipo: "TECNICO" }
+    technician || { nome_completo: "", nome: "", cargo: "", email: "", contacto_telefonico: "", status: "ATIVO", id_unidade_saude: "1", id_chefe_lab: user?.id, data_nascimento: "", numero_identificacao: "", id_sexo: 0, senha: "", tipo: "TECNICO" }
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -34,6 +34,7 @@ export function FormModal({ open, technician, onClose, onSave }: any) {
         </DialogHeader>
         <div>
           <Input name="nome_completo" placeholder="Nome" value={formData.nome_completo} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
+          <Input name="nome" placeholder="Nome" value={formData.nome} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
           <Input name="cargo" placeholder="Cargo" value={formData.cargo} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
           <Input name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
           <Input name="contacto_telefonico" placeholder="Telefone" value={formData.contacto_telefonico} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />

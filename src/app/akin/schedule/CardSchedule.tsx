@@ -95,7 +95,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
                   <div className="relative group">
 
                     {
-                      userRole.data?.data.tipo !== "CHEFE" ? (
+                      userRole.data?.data.tipo !== "RECEPCIONISTA" ? (
                         <></>
                       ) : (
                         <>

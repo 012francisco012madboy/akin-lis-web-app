@@ -27,15 +27,21 @@ const TechnicianDialog: React.FC<TechnicianDialogProps> = ({ technician, isOpen,
           {/* Estatísticas */}
           <div className=" border border-gray-300 p-4 rounded-lg shadow-sm space-y-2">
             <div className="flex justify-between">
-              <span className="font-medium text-gray-700">Total de Exames:</span>
+              <span className="font-medium text-gray-700">
+                Total de Exames:
+              </span>
               {/* <span className="text-gray-800">{technician.totalExams}</span> */}
             </div>
             <div className="flex justify-between">
-              <span className="font-medium text-gray-700">Tempo Médio:</span>
+              <span className="font-medium text-gray-700">
+                Tempo Médio:
+              </span>
               {/* <span className="text-gray-800">{technician.avgTime} min</span> */}
             </div>
             <div>
-              <span className="font-medium text-gray-700">Materiais Usados:</span>
+              <span className="font-medium text-gray-700">
+                Materiais Usados:
+              </span>
               {/* <ul className="list-disc list-inside text-gray-800 mt-1">
                 {technician.materialsUsed.map((material, index) => (
                   <li key={index}>{material}</li>
@@ -48,6 +54,7 @@ const TechnicianDialog: React.FC<TechnicianDialogProps> = ({ technician, isOpen,
         {/* Footer */}
         <DialogFooter className="mt-6">
           <Button
+            variant={"outline"}
             onClick={onClose}
             className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md"
           >

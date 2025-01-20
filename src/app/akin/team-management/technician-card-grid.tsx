@@ -23,7 +23,7 @@ const TechnicianCardGrid: React.FC<TechnicianCardGridProps> = ({
   setModalOpen,
 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6 min-w-max">
       {technicians && technicians.map((technician) => (
         <Card key={technician.id}>
           <CardHeader className="flex justify-between relative">

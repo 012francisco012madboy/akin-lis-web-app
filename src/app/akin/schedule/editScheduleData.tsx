@@ -12,7 +12,7 @@ import { ___showErrorToastNotification, ___showSuccessToastNotification } from "
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 
 //Precisa de ser atualizado o Typescript desse componente e aplicar refatoração
-export function EditScheduleFormModal({
+export function  EditScheduleFormModal({
   open,
   active,
   exam,
@@ -63,6 +63,7 @@ export function EditScheduleFormModal({
   const saveScheduleMutation = useMutation({
     mutationFn: async (data: any) => {
       setIsProcessing(true);
+      console.log("exams id", examId);
       const response = await _axios.patch(`/exams/${examId}`, data);
       return response.data;
     },

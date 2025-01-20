@@ -34,6 +34,7 @@ export default function TeamManagement() {
 
   const teamManagementCreate = useMutation({
     mutationFn: async (data: ITeamManagement) => {
+      
       return (await teamManagementRoutes.createLabTech(data));
     },
     onSuccess: () => {
@@ -78,6 +79,7 @@ export default function TeamManagement() {
     if (data.id) {
       teamManagementUpdate.mutate(data);
     } else {
+      console.log("Create Tecnico",data);
       teamManagementCreate.mutate(data);
     }
     setFormModalOpen(false);
@@ -137,7 +139,6 @@ export default function TeamManagement() {
           onClose={() => setModalOpen(false)}
         />
       )}
-
 
       {isFormModalOpen && (
         <FormModal
