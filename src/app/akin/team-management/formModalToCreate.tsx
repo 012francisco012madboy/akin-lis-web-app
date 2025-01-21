@@ -34,7 +34,7 @@ export function FormModal({ open, technician, onClose, onSave }: any) {
         </DialogHeader>
         <div>
           <Input name="nome_completo" placeholder="Nome" value={formData.nome_completo} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
-          <Input name="nome" placeholder="Nome" value={formData.nome} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
+          <Input name="nome" placeholder="Nome de Usuário" value={formData.nome} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
           <Input name="cargo" placeholder="Cargo" value={formData.cargo} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
           <Input name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
           <Input name="contacto_telefonico" placeholder="Telefone" value={formData.contacto_telefonico} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
