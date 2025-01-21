@@ -9,14 +9,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
 
 interface AlertDialogDemoProps {
-  children: React.ReactNode
+  children?: React.ReactNode,
+  isOpen: boolean,
+  onClose: () => void,
 }
-export function AlertSendEmail({ children }: AlertDialogDemoProps) {
+
+export function AlertSendEmail({ children, isOpen, onClose }: AlertDialogDemoProps) {
   return (
-    <AlertDialog>
+    <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogTrigger asChild>
         {children}
       </AlertDialogTrigger>
@@ -28,7 +30,10 @@ export function AlertSendEmail({ children }: AlertDialogDemoProps) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogAction className=" bg-akin-turquoise hover:bg-akin-turquoise/90">Continuar</AlertDialogAction>
+          <AlertDialogAction className=" bg-akin-turquoise hover:bg-akin-turquoise/90" onClick={()=>{
+            window.location.href = "https://mail.google.com/mail/u/0/#inbox"
+            onClose()
+          }}>Continuar</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

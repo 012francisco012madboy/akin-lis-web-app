@@ -3,22 +3,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertSendEmail } from "./alertDialog";
 import { _axios } from "@/lib/axios";
-
+import { ___showErrorToastNotification } from "@/lib/sonner";
+import React from "react";
 
 export default function ForgotPassword() {
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const email = e.currentTarget.email.value;
     try {
       if (!email) {
-        alert("Por favor, insira um email.");
+        ___showErrorToastNotification({ message: "Por favor, insira um email." });
         return;
       }
+      setIsLoading(true);
       const response = await _axios.post("/auth/forgot-password", { email });
       console.log(response.data);
+      setIsModalOpen(true); 
     } catch (error) {
-      console.error("Erro ao enviar email de recuperação de senha:", error);
+      setIsLoading(false);
+      ___showErrorToastNotification({ message: "Erro ao enviar email de recuperação de senha:" });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -32,13 +40,14 @@ export default function ForgotPassword() {
             type="email"
             placeholder="Informe seu email"
             className="focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0"
+            disabled={isLoading}
           />
-          <AlertSendEmail>
+          <AlertSendEmail isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
             <Button
               type="submit"
               className="w-full bg-akin-turquoise hover:bg-akin-turquoise/90"
             >
-              Enviar
+              {isLoading ? "Enviando..." : "Enviar"}
             </Button>
           </AlertSendEmail>
         </div>
