@@ -15,13 +15,12 @@ export default function ForgotPassword() {
     const email = e.currentTarget.email.value;
     try {
       if (!email) {
-        ___showErrorToastNotification({ message: "Por favor, insira um email." });
+        ___showErrorToastNotification({ message:"Por favor, insira um email."});
         return;
       }
       setIsLoading(true);
       const response = await _axios.post("/auth/forgot-password", { email });
-      console.log(response.data);
-      setIsModalOpen(true); 
+      setIsModalOpen(true);
     } catch (error) {
       setIsLoading(false);
       ___showErrorToastNotification({ message: "Erro ao enviar email de recuperação de senha:" });
@@ -42,7 +41,8 @@ export default function ForgotPassword() {
             className="focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0"
             disabled={isLoading}
           />
-          <AlertSendEmail isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          <AlertSendEmail isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}
+          >
             <Button
               type="submit"
               className="w-full bg-akin-turquoise hover:bg-akin-turquoise/90"
@@ -55,4 +55,3 @@ export default function ForgotPassword() {
     </div>
   )
 }
-
