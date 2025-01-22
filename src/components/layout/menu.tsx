@@ -39,6 +39,9 @@ export default function Menu() {
   });
 
   const routes = data ? filterRoutesByAccess(data.data.tipo) : [];
+  if(isPending===false && routes.length === 0) {
+    window.location.href="/logout"
+  }
 
   return (
     <>
