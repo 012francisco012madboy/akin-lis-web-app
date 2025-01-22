@@ -1,6 +1,7 @@
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -23,13 +24,15 @@ export function AlertSendEmail({ children, isOpen, onClose }: AlertDialogDemoPro
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Email enviado</AlertDialogTitle>
+          <AlertDialogTitle>Email </AlertDialogTitle>
           <AlertDialogDescription>
+            <span className="text-red-500">Se este usuário existe, receberá um email de recuperação</span>.
             Verifique a sua caixa de mensagem do email ou spam, clique no link de recuperação.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogAction className=" bg-akin-turquoise hover:bg-akin-turquoise/90" onClick={()=>{
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction className=" bg-akin-turquoise hover:bg-akin-turquoise/90" onClick={() => {
             window.location.href = "https://mail.google.com/mail/u/0/#inbox"
             onClose()
           }}>Continuar</AlertDialogAction>
