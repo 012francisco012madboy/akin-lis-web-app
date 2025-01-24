@@ -39,7 +39,12 @@ export const APP_CONFIG = {
         label: "Agendamentos", 
         icon: CalendarCheck, 
         path: "/akin/schedule/new", 
-        access: ["RECEPCIONISTA", "CHEFE"] 
+        access: ["RECEPCIONISTA", "CHEFE"],
+        subItems: [
+          { label: "Novo", icon: CalendarPlus2, path: "/akin/schedule/new", access: ["RECEPCIONISTA"] },
+          { label: "Solicitações", icon: CalendarSearch, path: "/akin/schedule/request", access: ["RECEPCIONISTA"] },
+          { label: "Confirmados", icon: CalendarCheck2, path: "/akin/schedule/confirmed", access: ["CHEFE"] }
+        ]
       },
       { 
         label: "Pacientes", 
@@ -84,6 +89,7 @@ export const APP_CONFIG = {
         access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] 
       },
     ],
+    
     SCHEDULE: [
       { 
         label: "Novo", 
