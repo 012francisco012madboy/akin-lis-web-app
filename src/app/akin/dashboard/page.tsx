@@ -5,11 +5,7 @@ import VerticalBarChart from "./chart-a";
 import DoughnutChart from "./chart-b";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
-import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
-import { UserData } from "../profile/page";
-import { redirect } from "next/navigation";
-
 
 const MOCK_RESUME = [
   { id: 58, label: "Solicitações Pendentes", value: 6, icon: UserRound },
@@ -26,17 +22,6 @@ const breadcrumbItems = [
 
 export default function Dashboard() {
   const { user } = useAuthStore();
-  const { data } = useQuery({
-    queryKey: ['user-data'],
-    queryFn: async () => {
-      return await _axios.get<UserData>(`/users/${user?.id}`);
-    },
-  });
-
-  if (data?.data.tipo === "RECEPCIONISTA" || data?.data.tipo === "TECNICO") {
-    return redirect("/akin/schedule/new");
-  }
-  
 
   return (
     <View.Vertical className="min-h-max  space-y-4 px-1 py-0">

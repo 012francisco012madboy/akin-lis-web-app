@@ -17,7 +17,17 @@ const config: Config = {
   			'akin-cosmic-latte': '##fffcf7',
   			'akin-turquoise': '#0080a7',
   			'akin-white-smoke': '#f5f5f5',
-  			'akin-yellow-light': '#f7ebd2'
+  			'akin-yellow-light': '#f7ebd2',
+  			sidebar: {
+  				DEFAULT: 'hsl(var(--sidebar-background))',
+  				foreground: 'hsl(var(--sidebar-foreground))',
+  				primary: 'hsl(var(--sidebar-primary))',
+  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+  				accent: 'hsl(var(--sidebar-accent))',
+  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+  				border: 'hsl(var(--sidebar-border))',
+  				ring: 'hsl(var(--sidebar-ring))'
+  			}
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import Image from "next/image";
 import { useSelectedLayoutSegment } from "next/navigation";
@@ -9,36 +8,20 @@ import {
   SheetContent,
   SheetHeader,
 } from "@/components/ui/sheet";
-import { Skeleton } from "@/components/ui/skeleton";
 import Item from "./item";
 import { APP_CONFIG } from "@/config/app";
 import { MenuIcon } from "lucide-react";
-import { useAuthStore } from "@/utils/zustand-store/authStore";
-import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
 import { filterRoutesByAccess } from "@/config/filteredAcessRoutes";
-
-interface UserData {
-  nome: string;
-  email: string;
-  senha: string;
-  tipo: string;
-  status: string;
-}
+import Cookies from 'js-cookie';
 
 export default function Menu() {
   const activeSegment = useSelectedLayoutSegment() as string;
   const [isSheetOpen, setSheetOpen] = useState(false);
-  const { user } = useAuthStore();
+  const cookie = Cookies;
+  const role = cookie.get("akin-role")
 
-  const { data, isPending } = useQuery({
-    queryKey: ["user-data"],
-    queryFn: async () => {
-      return await _axios.get<UserData>(`/users/${user?.id}`);
-    },
-  });
-
-  const routes = data ? filterRoutesByAccess(data.data.tipo) : [];
+  const routes = role ? filterRoutesByAccess(role) : [];
 
   return (
     <>
@@ -71,18 +54,13 @@ export default function Menu() {
                   priority
                 />
               </SheetHeader>
-              <nav>
+              <nav className={`transition-opacity duration-300 ${role ? "opacity-100" : "opacity-0"}`}>
                 <ul className="space-y-2 mt-4" role="menu">
-                  {isPending
-                    ? Array.from({ length: 5 }).map((_, index) => (
-                        <Skeleton
-                          key={index}
-                          className="h-6 w-full bg-akin-light-gray"
-                        />
-                      ))
-                    : routes.map((item, index) => (
-                        <Item item={item} key={index} activeSegment={activeSegment} />
-                      ))}
+                  {
+                    routes.map((item, index) => (
+                      <Item item={item} key={index} activeSegment={activeSegment} />
+                    ))
+                  }
                 </ul>
               </nav>
             </SheetContent>
@@ -107,21 +85,16 @@ export default function Menu() {
         </div>
 
         {/* Navegação */}
-        <nav className="">
+        <nav className={`transition-opacity duration-300 ${role ? "opacity-100" : "opacity-0"}`}>
           <ul
             className="space-y-1.5 mt-10 gap-2 flex flex-col items-start"
             role="menu"
           >
-            {isPending
-              ? Array.from({ length: 5 }).map((_, index) => (
-                  <Skeleton
-                    key={index}
-                    className="h-10 w-full bg-akin-light-gray"
-                  />
-                ))
-              : routes.map((item, index) => (
-                  <Item item={item} key={index} activeSegment={activeSegment} />
-                ))}
+            {
+              routes.map((item, index) => (
+                <Item item={item} key={index} activeSegment={activeSegment} />
+              ))
+            }
           </ul>
         </nav>
       </aside>

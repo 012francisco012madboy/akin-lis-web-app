@@ -17,8 +17,6 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
   const [isSearching, setIsSearching] = useState(false);
   const [displayMode, setDisplayMode] = useState<DisplayMode>("list");
 
-  const { user } = useAuthStore();
-  if(user === null) redirect("/");
 
   function handleSearch(searchText: string) {
     setIsSearching(searchText.length > 0);

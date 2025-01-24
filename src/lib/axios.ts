@@ -44,7 +44,6 @@ _axios.interceptors.response.use(
 
       if (user?.id) {
         try {
-
           // Faz a chamada para renovar o token
           const response = await axios.post(
             `${API_BASE_URL}/auth/refresh`,

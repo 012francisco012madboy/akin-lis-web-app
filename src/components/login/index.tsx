@@ -10,12 +10,14 @@ import { Input } from "../ui/input";
 import { APP_CONFIG } from "@/config/app";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { validateEmail, validatePassword } from "./validation/login-validation";
 import { Eye, EyeOff } from "lucide-react";
+import { UserData } from "@/app/akin/profile/page";
+import Cookies from "js-cookie";
 
 
 type User = {
@@ -31,16 +33,18 @@ export const Login = () => {
   const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const login = useAuthStore((state) => state.login);
-  const { isAuthenticated, user } = useAuthStore();
+  // const { isAuthenticated, user } = useAuthStore();
   const router = useRouter();
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
   const loginMutation = useMutation({
     mutationFn: async () => {
       const response = await _axios.post<User>("/auth/local/signin", { email, senha });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      const user = (await _axios.get<UserData>(`/users/${data.id}`)).data;
+      Cookies.set('akin-role', user.tipo, { secure: true, sameSite: 'Strict' });
       ___showSuccessToastNotification({ message: "Autenticação realizada!" });
       login(data.access_token, data);
       router.push("/akin/dashboard");
@@ -52,11 +56,6 @@ export const Login = () => {
       });
     },
   });
-
-  useEffect(() => {
-    if ((user === null) && (pathname.startsWith("/akin/"))) return;
-    if (user) router.push("/akin/dashboard");
-  }, [isAuthenticated, router, user, pathname]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
