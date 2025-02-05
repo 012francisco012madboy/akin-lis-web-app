@@ -162,8 +162,6 @@ export const Register = () => {
               </button>
               {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
             </div>
-
-
             <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
               {isLoading ? "Cadastrando..." : "Cadastrar"}
             </Button>
