@@ -9,7 +9,7 @@ const genderOptions = ["Masculino", "Femenino"]
 export function FormModal({ open, technician, onClose, onSave }: any) {
   const { user } = useAuthStore();
   const [formData, setFormData] = useState<ITeamManagement>(
-    technician || { nome_completo: "", nome: "", cargo: "", email: "", contacto_telefonico: "", status: "ATIVO", id_unidade_saude: "1", id_chefe_lab: user?.id, data_nascimento: "", numero_identificacao: "", id_sexo: 0, senha: "", tipo: "TECNICO" }
+    technician || { nome_completo: "", nome: "", cargo: "", email: "", contacto_telefonico: "", status: "ATIVO", id_unidade_saude: "OSA2025", id_chefe_lab: user?.id, data_nascimento: "", numero_identificacao: "", id_sexo: 0, senha: "", tipo: "TECNICO" }
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
