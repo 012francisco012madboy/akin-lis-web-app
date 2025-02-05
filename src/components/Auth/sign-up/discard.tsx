@@ -9,40 +9,22 @@ import { APP_CONFIG } from "@/config/app";
 import { useState } from "react";
 import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
-import { Eye, EyeOff } from "lucide-react";
 
 export const Register = () => {
-  const [passwordError, setPasswordError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
+    // nome_completo: "",
+    // data_nascimento: "",
+    // numero_identificacao: "",
+    // id_sexo: "",
     tipo: "",
-    nRef: "",
+    // cargo: "",
+    // contacto_telefonico: "",
     nome: "",
     email: "",
     senha: "",
     status: "ATIVO",
   });
-  const [errors, setErrors] = useState({
-    tipo: "",
-    nRef: "",
-    nome: "",
-    email: "",
-    senha: "",
-  });
-
-  const validate = () => {
-    let tempErrors = { tipo: "", nRef: "", nome: "", email: "", senha: "" };
-    if (!formData.nome) tempErrors.nome = "Nome é obrigatório.";
-    if (!formData.email) tempErrors.email = "Email é obrigatório.";
-    if (!/\S+@\S+\.\S+/.test(formData.email)) tempErrors.email = "Email inválido.";
-    if (!formData.senha) tempErrors.senha = "Senha é obrigatória.";
-    if (formData.senha.length < 6) tempErrors.senha = "Senha deve ter pelo menos 6 caracteres.";
-    if (!formData.tipo) tempErrors.tipo = "Cargo é obrigatório.";
-    if (!formData.nRef) tempErrors.nRef = "Referência é obrigatória.";
-    setErrors(tempErrors);
-    return Object.values(tempErrors).every(x => x === "");
-  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -51,7 +33,6 @@ export const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
     setIsLoading(true);
     try {
       const response = await _axios.post("auth/local/signup", formData);
@@ -95,7 +76,6 @@ export const Register = () => {
                 placeholder="Digite o nome completo"
                 disabled={isLoading}
               />
-              {errors.nome && <p className="text-red-500 text-sm">{errors.nome}</p>}
             </div>
             <div>
               <Label htmlFor="email">Email</Label>
@@ -108,64 +88,106 @@ export const Register = () => {
                 placeholder="Digite o email"
                 disabled={isLoading}
               />
-              {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
             </div>
+            {/* <div>
+              <Label htmlFor="data_nascimento">Data de Nascimento</Label>
+              <Input
+                id="data_nascimento"
+                name="data_nascimento"
+                type="date"
+                value={formData.data_nascimento}
+                onChange={handleInputChange}
+              />
+            </div> */}
+            {/* <div>
+              <Label htmlFor="numero_identificacao">Número de Identificação</Label>
+              <Input
+                id="numero_identificacao"
+                name="numero_identificacao"
+                type="text"
+                value={formData.numero_identificacao}
+                onChange={handleInputChange}
+                placeholder="Digite o número de identificação"
+              />
+            </div> */}
+            {/* <div>
+              <Label htmlFor="id_sexo">Sexo</Label>
+              <Select
+                onValueChange={(value) => setFormData({ ...formData, id_sexo: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o sexo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Masculino</SelectItem>
+                  <SelectItem value="2">Feminino</SelectItem>
+                </SelectContent>
+              </Select>
+            </div> */}
             <div>
               <Label htmlFor="id_cargo">Cargo</Label>
               <Select
                 onValueChange={(value) => setFormData({ ...formData, tipo: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione o cargo" />
+                  <SelectValue placeholder="Selecione o cargo"   />
                 </SelectTrigger>
                 <SelectContent >
-                  <SelectItem value="TECNICO">Técnico</SelectItem>
-                  <SelectItem value="CHEFE" disabled={isLoading}>Chefe de Laboratório</SelectItem>
+                  {/* <SelectItem value="TECNICO">Técnico</SelectItem> */}
+                  <SelectItem value="CHEFE"  disabled={isLoading}>Chefe de Laboratório</SelectItem>
                   <SelectItem value="RECEPCIONISTA" disabled={isLoading} >Recepcionista</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.tipo && <p className="text-red-500 text-sm">{errors.tipo}</p>}
+
             </div>
-            <div>
-              <Label htmlFor="email">Referência da unidade de saúde</Label>
+            {/* <div>
+              <Label htmlFor="cargo">Cargo</Label>
               <Input
-                id="nRef"
-                name="nRef"
+                id="cargo"
+                name="cargo"
                 type="text"
-                value={formData.nRef}
+                value={formData.cargo}
                 onChange={handleInputChange}
-                placeholder="Código de referência "
-                disabled={isLoading}
+                placeholder="Digite o cargo"
               />
-              {errors.nRef && <p className="text-red-500 text-sm">{errors.nRef}</p>}
-            </div>
-            <div className="relative">
-              <Label htmlFor="senha" className="text-gray-700">
-                Senha
-              </Label>
+            </div> */}
+            {/* <div>
+              <Label htmlFor="contacto_telefonico">Contato Telefônico</Label>
+              <Input
+                id="contacto_telefonico"
+                name="contacto_telefonico"
+                type="tel"
+                value={formData.contacto_telefonico}
+                onChange={handleInputChange}
+                placeholder="Digite o número de telefone"
+              />
+            </div> */}
+            {/* <div>
+              <Label htmlFor="nome">Nome de Usuário</Label>
+              <Input
+                id="nome"
+                name="nome"
+                type="text"
+                value={formData.nome}
+                onChange={handleInputChange}
+                placeholder="Digite o nome de usuário"
+              />
+            </div> */}
+
+            <div>
+              <Label htmlFor="senha">Senha</Label>
               <Input
                 id="senha"
                 name="senha"
-                type={showPassword ? "text" : "password"}
+                type="password"
                 value={formData.senha}
                 onChange={handleInputChange}
-                placeholder="Digite sua senha"
-                aria-label="Digite sua senha"
-                className="mt-2"
+                placeholder="Digite a senha"
+                disabled={isLoading}
               />
-              <button
-                type="button"
-                className="absolute right-4 top-[52px] transform text-gray-500 -translate-y-1/2"
-                onClick={() => setShowPassword((prev) => !prev)}
-              >
-                {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-              </button>
-              {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
             </div>
-
-
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
-              {isLoading ? "Cadastrando..." : "Cadastrar"}
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700"  disabled={isLoading}>
+             {isLoading ? "Cadastrando..." : "Cadastrar"}
             </Button>
           </form>
         </CardContent>
