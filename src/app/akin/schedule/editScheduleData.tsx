@@ -12,7 +12,7 @@ import { ___showErrorToastNotification, ___showSuccessToastNotification } from "
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 
 //Precisa de ser atualizado o Typescript desse componente e aplicar refatoração
-export function  EditScheduleFormModal({
+export function EditScheduleFormModal({
   open,
   active,
   exam,
@@ -120,7 +120,7 @@ export function  EditScheduleFormModal({
       id_tecnico_alocado: selectedTechnicians[exam?.id]?.[0]?.id === undefined ? formData.technicianId : String(selectedTechnicians[examId]?.map((tech) => tech.id)),
       status: formData.status === undefined ? "PENDENTE" : formData.status
     };
-    console.log(formattedValue);
+    // console.log(formattedValue);
     saveScheduleMutation.mutate(formattedValue);
   };
 
@@ -138,53 +138,61 @@ export function  EditScheduleFormModal({
         {
           userRole.data?.data.tipo !== "RECEPCIONISTA" ? (
             <>
-              <div className="card gap-3 w-full">
-                <label htmlFor="date" className="font-bold block mb-2">
-                  Data
-                </label>
-                <input
-                  id="date"
-                  name="date"
-                  type="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                  className="w-full h-10 px-4 bg-gray-50 text-black rounded-md shadow-sm border-gray-300"
-                />
-              </div>
-              <div className="card gap-3 w-full">
-                <label htmlFor="time" className="font-bold block mb-2">
-                  Hora
-                </label>
-                <input
-                  id="time"
-                  name="time"
-                  type="time"
-                  value={formData.time}
-                  onChange={handleChange}
-                  className="w-full h-10 px-4 bg-gray-50 text-black rounded-md shadow-sm border-gray-300"
-                />
-              </div>
               {
-                active ? (
-                  <div className="card gap-3 w-full">
-                    <label htmlFor="time" className="font-bold block mb-2">
-                      Estado do Exame
-                    </label>
-                    <select
-                      id="status"
-                      name="status"
-                      defaultValue={formData.status}
-                      value={formData.status}
-                      onChange={handleChange}
-                      className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-nonefocus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
-                    >
-                      <option value="PENDENTE">PENDENTE</option>
-                      <option value="CONCLUIDO">CONCLUIDO</option>
-                      <option value="CANCELADO">CANCELADO</option>
-                    </select>
-                  </div>
-                ) : (
+                userRole.data?.data.tipo === "CHEFE" ? (
                   <></>
+                ) : (
+                  <>
+                    <div className="card gap-3 w-full">
+                      <label htmlFor="date" className="font-bold block mb-2">
+                        Data
+                      </label>
+                      <input
+                        id="date"
+                        name="date"
+                        type="date"
+                        value={formData.date}
+                        onChange={handleChange}
+                        className="w-full h-10 px-4 bg-gray-50 text-black rounded-md shadow-sm border-gray-300"
+                      />
+                    </div>
+                    <div className="card gap-3 w-full">
+                      <label htmlFor="time" className="font-bold block mb-2">
+                        Hora
+                      </label>
+                      <input
+                        id="time"
+                        name="time"
+                        type="time"
+                        value={formData.time}
+                        onChange={handleChange}
+                        className="w-full h-10 px-4 bg-gray-50 text-black rounded-md shadow-sm border-gray-300"
+                      />
+                    </div>
+                    {
+                      active ? (
+                        <div className="card gap-3 w-full">
+                          <label htmlFor="time" className="font-bold block mb-2">
+                            Estado do Exame
+                          </label>
+                          <select
+                            id="status"
+                            name="status"
+                            defaultValue={formData.status}
+                            value={formData.status}
+                            onChange={handleChange}
+                            className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-nonefocus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
+                          >
+                            <option value="PENDENTE">PENDENTE</option>
+                            <option value="CONCLUIDO">CONCLUIDO</option>
+                            <option value="CANCELADO">CANCELADO</option>
+                          </select>
+                        </div>
+                      ) : (
+                        <></>
+                      )
+                    }
+                  </>
                 )
               }
             </>
