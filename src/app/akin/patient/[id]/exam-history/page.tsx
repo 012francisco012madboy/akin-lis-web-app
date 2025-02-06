@@ -109,13 +109,23 @@ export default function ExamsHistory() {
       <CustomBreadcrumb items={breadcrumbItems} borderB />
 
       <div className="bg-white shadow-md rounded-lg px-3  md:px-5 py-4 flex items-center">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between w-full flex-wrap
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between w-full 
         ">
           <p className="text-md text-gray-600">
             Nome do Paciente:{" "}
             <span className="font-medium text-gray-800">{namePatient}</span>
           </p>
           <Separator orientation="vertical" />
+          <div className="">
+            <DatePickerWithRange
+              enableRange={true}
+              enableDateFilter={true} // Sempre permitir a filtragem de data
+              //@ts-ignore
+              onDateChange={handleDateChange}
+              setEnableDateFilter={setIsDateFilterEnabled} // Passa a função de ativação de filtragem
+            />
+          </div>
+
           <Combobox
             data={[
               { label: "Todos", value: null },
@@ -129,16 +139,6 @@ export default function ExamsHistory() {
             clearLabel="Limpar"
             width="full"
           />
-
-          <div className="flex flex-col md:flex-row items-center gap-2 w-full">
-            <DatePickerWithRange
-              enableRange={true}
-              enableDateFilter={true} // Sempre permitir a filtragem de data
-              //@ts-ignore
-              onDateChange={handleDateChange}
-              setEnableDateFilter={setIsDateFilterEnabled} // Passa a função de ativação de filtragem
-            />
-          </div>
 
           <Combobox
             data={exams}
