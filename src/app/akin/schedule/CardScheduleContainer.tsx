@@ -3,9 +3,10 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useCallback, useEffect, useState } from "react";
 import CardSchedule from "./CardSchedule";
-import { isSameDay } from "date-fns";
+import { isSameDay, isWithinInterval } from "date-fns";
 import { Button } from "@/components/ui/button";
-// import { Combobox } from "@/components/combobox/combobox";
+import { DatePickerWithRange } from "@/components/ui/date-picker";
+import { DateRange } from "react-day-picker";
 
 interface ICardScheduleContainer {
   schedule: ScheduleType[];
@@ -29,7 +30,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
   const [isSearching, setIsSearching] = useState(false);
   const [filterByTechnician, setFilterByTechnician] = useState<typeof all | typeof allocated | typeof notAllocated>(all);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRange | undefined>(undefined);
   const [isDateFilterEnabled, setIsDateFilterEnabled] = useState(true);
 
   const totalItems = filteredSchedule.length;
@@ -46,8 +47,8 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
     }
   };
 
-  const handleDateChange = (date: string) => {
-    setSelectedDate(date ? new Date(date) : null);
+  const handleDateChange = (date: DateRange | Date | undefined) => {
+    setSelectedDateRange(date as DateRange);
   };
 
   const applyFilters = useCallback((baseSchedule: ScheduleType[]) => {
@@ -68,18 +69,23 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
       );
     }
 
-    if (isDateFilterEnabled && selectedDate) {
+    if (isDateFilterEnabled && selectedDateRange) {
       filtered = filtered.filter((s) =>
-        s.Exame?.some((exame) => isSameDay(new Date(exame.data_agendamento), selectedDate))
+        s.Exame?.some((exame) =>
+          isWithinInterval(new Date(exame.data_agendamento), {
+            start: selectedDateRange.from!,
+            end: selectedDateRange.to!,
+          })
+        )
       );
     }
 
     setFilteredSchedule(filtered);
-  }, [filterByTechnician, isDateFilterEnabled, selectedDate]);
+  }, [filterByTechnician, isDateFilterEnabled, selectedDateRange]);
 
   useEffect(() => {
     applyFilters(schedule);
-  }, [schedule, filterByTechnician, isDateFilterEnabled, selectedDate, applyFilters]);
+  }, [schedule, filterByTechnician, isDateFilterEnabled, selectedDateRange, applyFilters]);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentItems = filteredSchedule.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -105,14 +111,13 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
             onChange={(e) => handleSearch(e.target.value)}
           />
           <div className="flex flex-col md:flex-row items-center gap-2 w-full">
-            <Input
-              type="date"
-              className="w-full max-w-xs ring-0 focus:ring-0 focus-visible:ring-0"
-              onChange={(e) => handleDateChange(e.target.value)}
+            <DatePickerWithRange
+              enableRange={true}
+              enableDateFilter={true} // Sempre permitir a filtragem de data
+              //@ts-ignore
+              onDateChange={handleDateChange}
+              setEnableDateFilter={setIsDateFilterEnabled} // Passa a função de ativação de filtragem
             />
-            {/* <Button variant="outline" className="w-full focus-visible:ring-0" onClick={() => setIsDateFilterEnabled(!isDateFilterEnabled)}>
-              {isDateFilterEnabled ? "Desativar" : "Ativar"} Filtragem por Data
-            </Button> */}
           </div>
           <select
             className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-nonefocus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
@@ -145,7 +150,10 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
               {currentItems.map((data, index) => {
                 // Filtrar exames no nível do card com base no filtro aplicado
                 const filteredExams = data.Exame?.filter((exame) => {
-                  if (selectedDate && !isSameDay(new Date(exame.data_agendamento), selectedDate)) {
+                  if (selectedDateRange && !isWithinInterval(new Date(exame.data_agendamento), {
+                    start: selectedDateRange.from!,
+                    end: selectedDateRange.to!,
+                  })) {
                     return false; // Excluir exames que não são da data selecionada
                   }
                   if (filterByTechnician === allocated) {

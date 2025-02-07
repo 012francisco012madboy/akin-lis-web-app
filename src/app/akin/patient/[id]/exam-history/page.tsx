@@ -14,7 +14,6 @@ import { PatientByIdProfileSkeleton } from "../utils/exam-history/patientByIdPro
 import { useQuery } from "@tanstack/react-query";
 import { DatePickerWithRange } from "@/components/ui/date-picker";
 import { isWithinInterval } from "date-fns";
-import { Button } from "@/components/ui/button";
 import { DateRange } from "react-day-picker";
 
 export default function ExamsHistory() {
@@ -116,10 +115,10 @@ export default function ExamsHistory() {
             <span className="font-medium text-gray-800">{namePatient}</span>
           </p>
           <Separator orientation="vertical" />
-          <div className="">
+          <div>
             <DatePickerWithRange
               enableRange={true}
-              enableDateFilter={true} // Sempre permitir a filtragem de data
+              enableDateFilter={true} //Sempre permitir a filtragem de data
               //@ts-ignore
               onDateChange={handleDateChange}
               setEnableDateFilter={setIsDateFilterEnabled} // Passa a função de ativação de filtragem
