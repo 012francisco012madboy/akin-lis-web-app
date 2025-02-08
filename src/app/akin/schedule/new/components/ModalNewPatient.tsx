@@ -26,6 +26,8 @@ export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: 
       patient_birth_day: new Date(patientData.data_nascimento),
       patient_name: patientData.nome_completo,
       patient_gender: data.get("gender") as string,
+      patient_email: patientData.email
+      
     });
 
     if (!validatedData.success) {
@@ -38,7 +40,7 @@ export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: 
   };
 
   const savePatientData = async (patientData: object) => {
-    // console.log(patientData)
+    console.log(" patientData", patientData)
     setIsSaving(true);
     try {
       const res = await _axios.post("/pacients", patientData);
@@ -105,6 +107,13 @@ const PatientRegistrationModal = ({
       <Input.InputText
         placeholder="Nome do Paciente"
         name="name"
+        className="border-[1px] bg-white border-gray-300 rounded-lg 0 transition-all placeholder-gray-500 text-gray-800"
+      />
+       <Input.InputText
+        placeholder="Email do Paciente"
+        type="email"
+        required
+        name="email"
         className="border-[1px] bg-white border-gray-300 rounded-lg 0 transition-all placeholder-gray-500 text-gray-800"
       />
       <div className="flex flex-wrap gap-4">

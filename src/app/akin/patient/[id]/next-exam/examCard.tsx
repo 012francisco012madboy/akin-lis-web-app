@@ -93,7 +93,6 @@ export const ExamCard = ({ data }: ResponseData) => {
                 active
               />
             </div>
-
           </h3>
           <p className="text-gray-700"><span className="font-medium">Data:</span> {exam.data_agendamento} às {exam.hora_agendamento}</p>
           <p className="text-gray-700"><span className="font-medium">Status:</span> {exam.status}</p>
@@ -113,7 +112,6 @@ export const ExamCard = ({ data }: ResponseData) => {
           </p>
         </div>
         <div className="flex flex-col min-h-full">
-
           <span
             className={`px-4 py-2 rounded-full text-sm font-semibold ${exam.status === 'PENDENTE'
               ? 'bg-yellow-100 text-yellow-700'

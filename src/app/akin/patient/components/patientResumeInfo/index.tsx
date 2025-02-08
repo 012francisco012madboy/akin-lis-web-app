@@ -12,17 +12,23 @@ import { useState } from "react";
 import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { Combobox } from "@/components/combobox/combobox";
+import { QueryClient, useMutation } from "@tanstack/react-query";
 
 const genderOptions = ["Masculino", "Femenino"]
+const queryClient = new QueryClient()
 // Componente principal
 export function PatientResumeInfo({
   patient,
   basicExamHistory,
-  basicNextExam
+  basicNextExam,
+  userRole,
+  refetchPatientInfo
 }: {
   patient: PatientType,
   basicExamHistory?: Exam,
-  basicNextExam?: ResponseData
+  basicNextExam?: ResponseData,
+  userRole?: string,
+  refetchPatientInfo: () => void
 }) {
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -50,6 +56,25 @@ export function PatientResumeInfo({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const onUpdate = useMutation({
+    mutationFn: (data: any) => {
+      setIsSaving(true);
+      return _axios.patch(`/pacients/${patient.id}`, data)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+      setIsSaving(false);
+      setIsEditing(false);
+      ___showSuccessToastNotification({ message: "Dados atualizados com sucesso" });
+      refetchPatientInfo();
+    },
+    onError: () => {
+      setIsSaving(false);
+      setIsEditing(false);
+      ___showErrorToastNotification({ message: "Erro ao salvar dados" });
+    },
+  })
+
   const handleSave = async () => {
     const dataToSend = {
       nome_completo: formData.nome_completo,
@@ -58,18 +83,7 @@ export function PatientResumeInfo({
       data_nascimento: formData.data_nascimento,
       contacto_telefonico: formData.contacto_telefonico,
     };
-
-    try {
-      setIsSaving(true);
-      const response = await _axios.patch(`/pacients/${patient.id}`, dataToSend);
-      ___showSuccessToastNotification({ message: "Dados atualizados com sucesso" });
-    } catch (error) {
-      console.error(error);
-      ___showErrorToastNotification({ message: "Erro ao salvar dados" });
-    } finally {
-      setIsSaving(false);
-      setIsEditing(false);
-    }
+    onUpdate.mutate(dataToSend);
   };
 
   const personalInfo = [
@@ -80,7 +94,6 @@ export function PatientResumeInfo({
     { label: "Idade", value: `${2024 - Number(new Date(patient.data_nascimento).getFullYear())}` },
     { label: "Contacto", value: patient.contacto_telefonico },
   ];
-
 
   return (
     <div className=" w-full gap-x-5 gap-y-5 pb-5 flex flex-col md:justify-between lg:flex-row  overflow-auto  [&::-webkit-scrollbar]:hidden ">
@@ -96,13 +109,16 @@ export function PatientResumeInfo({
           </CardDescription>
         </CardHeader>
         <CardContent>
-
-          <Button
-            className="mt-4 bg-akin-turquoise hover:bg-akin-turquoise/80 text-white"
-            onClick={() => setIsEditing(true)}
-          >
-            Editar Informações
-          </Button>
+          {
+            userRole === "RECEPCIONISTA" && (
+              <Button
+                className="mt-4 bg-akin-turquoise hover:bg-akin-turquoise/80 text-white"
+                onClick={() => setIsEditing(true)}
+              >
+                Editar Informações
+              </Button>
+            )
+          }
         </CardContent>
       </Card>
 
@@ -145,7 +161,7 @@ export function PatientResumeInfo({
                 }
                 value={formData.sexo.nome}
                 options={genderOptions}
-                placeholder="Genero"
+                placeholder={formData.sexo.nome}
               />
             </div>
             <div className="space-y-2">

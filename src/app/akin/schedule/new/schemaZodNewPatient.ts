@@ -10,6 +10,10 @@ export const schemaSchedule = z.object({
     .string({ required_error: "Campo de 'nome' obrigatorio" })
     .min(5, "O nome deve ter pelo menos mais de 5 caracter")
     .regex(/^[a-zA-ZÀ-ú\s]+$/, "Apenas é permitido Letras no Nome"),
+    patient_email: z
+    .string({ required_error: "Campo de 'email' obrigatorio" })
+    .min(5, "O email deve ter pelo menos mais de 5 caracter")
+    .email("Email inválido"),
 
   patient_phone: z
     .string()
