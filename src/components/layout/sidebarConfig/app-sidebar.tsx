@@ -1,7 +1,6 @@
 "use client"
 
 import type * as React from "react"
-
 import { NavMain } from "./nav-main"
 import { NavUser } from "./nav-user"
 import { TeamSwitcher } from "./team-switcher"
@@ -42,4 +41,3 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   );
 }
-
