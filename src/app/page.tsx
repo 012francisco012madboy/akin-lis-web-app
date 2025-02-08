@@ -24,4 +24,4 @@ export default function Home() {
       </section>
     </QueryClientProvider>
   );
-}
+}0

@@ -221,6 +221,7 @@ const Sidebar = React.forwardRef<
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}
         data-side={side}
+        style={{ width: state === "expanded" ? SIDEBAR_WIDTH : SIDEBAR_WIDTH_ICON }}
       >
         {/* This is what handles the sidebar gap on desktop */}
         <div
