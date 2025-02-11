@@ -3,8 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useCallback, useEffect, useState } from "react";
 import CardSchedule from "./CardSchedule";
-import { isSameDay, isWithinInterval } from "date-fns";
-import { Button } from "@/components/ui/button";
+import { isWithinInterval } from "date-fns";
 import { DatePickerWithRange } from "@/components/ui/date-picker";
 import { DateRange } from "react-day-picker";
 
@@ -32,6 +31,8 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange | undefined>(undefined);
   const [isDateFilterEnabled, setIsDateFilterEnabled] = useState(true);
+
+  console.log("isDateFilterEnabled", isDateFilterEnabled);
 
   const totalItems = filteredSchedule.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -150,7 +151,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
               {currentItems.map((data, index) => {
                 // Filtrar exames no nível do card com base no filtro aplicado
                 const filteredExams = data.Exame?.filter((exame) => {
-                  if (selectedDateRange && !isWithinInterval(new Date(exame.data_agendamento), {
+                  if (isDateFilterEnabled && selectedDateRange && !isWithinInterval(new Date(exame.data_agendamento), {
                     start: selectedDateRange.from!,
                     end: selectedDateRange.to!,
                   })) {
@@ -165,7 +166,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
                 });
 
                 // Se não houver exames correspondentes ao filtro, não renderizar o card
-                if (!filteredExams || filteredExams.length === 0) {
+                if ((!filteredExams || filteredExams.length === 0) && isDateFilterEnabled) {
                   return null;
                 }
 

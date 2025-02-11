@@ -53,11 +53,13 @@ export default function ExamsHistory() {
     const filtered = historyExams.data?.data.filter((exam) => {
       const isWithinDateRange =
         !isDateFilterEnabled ||
-        (selectedDateRange &&
+        (
+          selectedDateRange &&
           isWithinInterval(new Date(exam.data_agendamento), {
             start: selectedDateRange.from!,
             end: selectedDateRange.to!,
-          }));
+          })
+        );
 
       const matchesType =
         !selectedExam || exam.Tipo_Exame.nome === selectedExam.nome;
