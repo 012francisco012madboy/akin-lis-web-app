@@ -51,6 +51,5 @@ export default function Akin({ children }: IDashboard) {
         </main>
       </div>
     </QueryClientProvider>
-
   );
 }

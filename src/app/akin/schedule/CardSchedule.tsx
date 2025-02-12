@@ -94,10 +94,10 @@ export default function CardSchedule({ data }: ICardSchedule) {
                   {/* <EditScheduleFormModal> */}
                   <div className="relative group">
 
-                    {
+                    {/* {
                       userRole.data?.data.tipo !== "RECEPCIONISTA" ? (
                         <></>
-                      ) : (
+                      ) : ( */}
                         <>
                           <Pencil size={18}
                             className="cursor-pointer text-gray-500"
@@ -123,8 +123,8 @@ export default function CardSchedule({ data }: ICardSchedule) {
                             Editar
                           </span>
                         </>
-                      )
-                    }
+                      {/* )
+                    } */}
                     <EditScheduleFormModal
                       active
                       open={isModalOpen}
