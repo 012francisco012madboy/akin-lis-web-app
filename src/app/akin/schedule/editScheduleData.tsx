@@ -73,7 +73,6 @@ export function EditScheduleFormModal({
   const saveScheduleMutation = useMutation({
     mutationFn: async (data: any) => {
       setIsProcessing(true);
-      console.log("exams id", examId);
       const response = await _axios.patch(`/exams/${examId}`, data);
       return response.data;
     },
@@ -139,12 +138,13 @@ export function EditScheduleFormModal({
     const formattedValue = {
       data_agendamento: formData.date,
       hora_agendamento: formData.time,
-      id_tecnico_alocado: selectedTechnicians[exam?.id]?.[0]?.id === undefined ? formData.technicianId : String(selectedTechnicians[examId]?.map((tech) => tech.id)),
-      status: formData.status === undefined ? "PENDENTE" : formData.status,
-      tipo_exame: formData.type, // Adicione o campo tipo_exame
+      id_tecnico_alocado: selectedTechnicians[examId]?.[0]?.id || formData.technicianId,
+      status: formData.status || "PENDENTE",
+      tipo_exame: formData.type || formData.name,
     };
-    // console.log(formattedValue);
-    saveScheduleMutation.mutate(formattedValue);
+    console.log("examId", examId);
+    console.log("formattedValue", formattedValue);
+    // saveScheduleMutation.mutate(formattedValue);
   };
 
   return (

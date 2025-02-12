@@ -32,8 +32,6 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange | undefined>(undefined);
   const [isDateFilterEnabled, setIsDateFilterEnabled] = useState(true);
 
-  console.log("isDateFilterEnabled", isDateFilterEnabled);
-
   const totalItems = filteredSchedule.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
