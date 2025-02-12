@@ -130,6 +130,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
                       )
                     }
                     <EditScheduleFormModal
+                      active
                       open={isModalOpen}
                       exam={selectedExam}
                       examId={exame.id}

@@ -59,7 +59,7 @@ export function Combobox<T>({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={`w-[${width}] flex justify-between`}
+          className={`w-[${width}] w-full flex justify-between`}
         >
           {selected
             ? String(selected[displayKey])
