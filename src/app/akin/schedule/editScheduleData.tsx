@@ -135,16 +135,27 @@ export function EditScheduleFormModal({
       return;
     }
 
-    const formattedValue = {
-      data_agendamento: formData.date,
-      hora_agendamento: formData.time,
-      id_tecnico_alocado: selectedTechnicians[examId]?.[0]?.id || formData.technicianId,
-      status: formData.status || "PENDENTE",
-      tipo_exame: formData.type || formData.name,
-    };
+    const formattedValue: Record<string, any> = {};
+
+    if (formData.date !== exam.date) {
+      formattedValue.data_agendamento = formData.date;
+    }
+    if (formData.time !== exam.time) {
+      formattedValue.hora_agendamento = formData.time;
+    }
+    if (selectedTechnicians[examId]?.[0]?.id !== formData.technicianId) {
+      formattedValue.id_tecnico_alocado = selectedTechnicians[examId]?.[0]?.id || formData.technicianId;
+    }
+    if (formData.status !== exam.status) {
+      formattedValue.status = formData.status || "PENDENTE";
+    }
+    if (formData.type !== exam.type) {
+      formattedValue.tipo_exame = formData.type || formData.name;
+    }
+
     console.log("examId", examId);
     console.log("formattedValue", formattedValue);
-    // saveScheduleMutation.mutate(formattedValue);
+    saveScheduleMutation.mutate(formattedValue);
   };
 
   return (

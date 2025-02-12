@@ -1,274 +1,290 @@
 // "use client";
-
-// import React, { useState } from "react";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogHeader,
-//   DialogFooter,
-//   DialogTitle,
-//   DialogTrigger,
-//   DialogDescription,
-// } from "@/components/ui/dialog";
+// import { Badge } from "@/components/ui/badge";
 // import { Button } from "@/components/ui/button";
+// import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 // import { Input } from "@/components/ui/input";
 // import { ScrollArea } from "@/components/ui/scroll-area";
-// import { Badge } from "@/components/ui/badge";
-// import { ChevronDown, ChevronUp, Loader } from "lucide-react";
-// import { Exam } from "../patient/[id]/exam-history/useExamHookData";
+// import { Combobox } from "@/components/combobox/comboboxExam";
+// import { useEffect, useState } from "react";
+// import { LabTechnician } from "./tecnico";
+// import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 // import { _axios } from "@/lib/axios";
 // import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
+// import { useAuthStore } from "@/utils/zustand-store/authStore";
 
-// export interface LabTechnician {
-//   id: string;
-//   nome_completo: string;
-//   numero_identificacao: string;
-//   data_nascimento: string;
-//   cargo: string;
-//   contacto_telefonico: string;
-//   criado_aos: string;
-//   atualizado_aos: string;
-//   id_sexo: number;
-//   id_usuario: string;
-// }
-
-// interface AllocateTechniciansModalProps {
-//   children?: React.ReactNode;
-//   technicians: LabTechnician[];
-//   exams: Exam[];
-//   onAllocate?: (allocations: { examId: number; id_tecnico_alocado: string[] }[]) => void;
-// }
-
-// export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> = ({
-//   technicians,
-//   exams,
-//   onAllocate,
+// //Precisa de ser atualizado o Typescript desse componente e aplicar refatoração
+// export function EditScheduleFormModal({
+//   open,
+//   active,
+//   exam,
+//   onClose,
+//   onSave,
 //   children,
-// }) => {
-//   const [selectedTechnicians, setSelectedTechnicians] = useState<{ [key: number]: LabTechnician[] }>({});
-//   const [searchTerm, setSearchTerm] = useState<string>("");
-//   const [isExpanded, setIsExpanded] = useState<boolean>(true);
-//   const [errors, setErrors] = useState<{ [key: number]: string }>({});
-//   const [isLoading, setIsLoading] = useState<boolean>(false);
-//   const [isSucess, setIsSucess] = useState<boolean>(false);
+//   techName,
+//   examId,
+// }: any): JSX.Element {
+//   const [formData, setFormData] = useState(
+//     exam || {
+//       id: "",
+//       date: "",
+//       time: "",
+//       technicianId: "",
+//       status: "",
+//       techName: "",
+//       examId: "",
+//       type: "", // Adicione o campo type
+//     }
+//   );
+//   const [isProcessing, setIsProcessing] = useState(false);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [selectedTechnicians, setSelectedTechnicians] = useState<
+//     Record<string, any[]>
+//   >({});
+
+//   const queryClient = useQueryClient();
+
+//   const { user } = useAuthStore();
+//   const userRole = useQuery({
+//     queryKey: ["userRole"],
+//     queryFn: async () => {
+//       return await _axios.get(`/users/${user?.id}`);
+//     },
+//   });
+
+//   // Fetch dos técnicos
+//   const technicians = useQuery({
+//     queryKey: ["lab-techs"],
+//     queryFn: async () => {
+//       const response = await _axios.get<LabTechnician[]>("lab-technicians");
+//       return response.data;
+//     },
+//   });
+
+//   // Fetch dos exames
+//   const exams = useQuery({
+//     queryKey: ["exams"],
+//     queryFn: async () => {
+//       const response = await _axios.get("/exam-types");
+//       return response;
+//     },
+//   });
+
+//   // Mutação para salvar os dados
+//   const saveScheduleMutation = useMutation({
+//     mutationFn: async (data: any) => {
+//       setIsProcessing(true);
+//       const response = await _axios.patch(`/exams/${examId}`, data);
+//       return response.data;
+//     },
+//     onSuccess: (data) => {
+//       setIsProcessing(false);
+//       ___showSuccessToastNotification({ message: "Dados atualizados com sucesso!" });
+//       queryClient.invalidateQueries();
+//       queryClient.invalidateQueries({ queryKey: ["schedules", "lab-techs"] }); // Atualizar lista de exames
+//       if (onSave) onSave(data); // Callback de sucesso
+//     },
+//     onError: () => {
+//       ___showErrorToastNotification({ message: "Erro ao atualizar dados" });
+//       setIsProcessing(false);
+//     },
+//   });
+
+//   useEffect(() => {
+//     if (exam) {
+//       setFormData(exam);
+//     }
+//   }, [exam]);
+
+//   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//   };
 
 //   const handleTechnicianSelection = (examId: number, technician: LabTechnician) => {
-//     console.log("See");
-//     console.log(examId);
-//     console.log(technician);
-//     setSelectedTechnicians((prev) => {
-//       const currentSelection = prev[examId] || [];
-//       const isAlreadySelected = currentSelection.some((tech) => tech.id === technician.id);
-
-//       const newSelection = isAlreadySelected
-//         ? currentSelection.filter((tech) => tech.id !== technician.id)
-//         : [...currentSelection, technician];
-
-//       if (newSelection.length > 1) {
-//         setErrors((prevErrors) => ({ ...prevErrors, [examId]: "Selecione apenas um técnico." }));
-//       } else {
-//         setErrors((prevErrors) => ({ ...prevErrors, [examId]: "" }));
-//       }
-
-//       return { ...prev, [examId]: newSelection };
-//     });
-//   };
-//   const allExamsAllocated = exams.every(
-//     //@ts-ignore
-//     (exam) => exam.id_tecnico_alocado != null || (selectedTechnicians[exam.id]?.length || 0) > 0
-//   );
-
-//   const handleConfirm = async () => {
-//     const allocations = Object.entries(selectedTechnicians).map(([examId, technicians]) => ({
-//       examId: Number(examId),
-//       id_tecnico_alocado: technicians.map((tech) => tech.id),
+//     setSelectedTechnicians((prev) => ({
+//       ...prev,
+//       [examId]: [technician], // Permita apenas um técnico por exame
 //     }));
+//   };
 
-//     if (allocations.length === 0) {
-//       ___showErrorToastNotification({
-//         message: "Nenhuma alocação foi realizada. Selecione técnicos para pelo menos um exame.",
-//       });
+//   const handleExamSelection = (selectedExam: any) => {
+//     setFormData({ ...formData, type: selectedExam?.nome || "" });
+//   };
+
+//   if (technicians.isLoading || exams.isLoading) return <></>;
+//   if (technicians.isError || exams.isError) {
+//     ___showErrorToastNotification({
+//       message: "Erro ao carregar dados"
+//     });
+//     return <></>;
+//   }
+
+//   const filteredTechnicians = Array.isArray(technicians.data)
+//     ? technicians.data.filter(
+//       (tech) =>
+//         tech.nome_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+//         tech.cargo.toLowerCase().includes(searchTerm.toLowerCase())
+//     )
+//     : [];
+
+//   const handleSave = () => {
+//     const currentDate = new Date();
+//     const selectedDate = new Date(formData.date);
+
+//     if (selectedDate < currentDate) {
+//       ___showErrorToastNotification({ message: "A data do exame não pode ser no passado." });
 //       return;
 //     }
-//     //Logica para alocar tecnicos de uma só vez para cada exame
-//     // const errors = exams.reduce((acc, exam) => {
-//     //   // @ts-ignore
-//     //   const selected = selectedTechnicians[exam.id] || [];
-//     //   // @ts-ignore
-//     //   if (selected.length === 0) acc[exam.id] = "Selecione pelo menos um técnico.";
-//     //   // @ts-ignore
-//     //   else if (selected.length > 1) acc[exam.id] = "Selecione apenas um técnico.";
-//     //   return acc;
-//     // }, {});
 
-//     // setErrors(errors);
+//     const formattedValue: Record<string, any> = {};
 
-//     // if (Object.keys(errors).length > 0) return;
-//     // const allocations = exams.map((exam) => ({
-//     //   // @ts-ignore
-//     //   examId: exam.id,
-//     //   // @ts-ignore
-//     //   id_tecnico_alocado: selectedTechnicians[exam.id]?.map((tech) => tech.id) || [],
-//     // }));
-
-//     // if (onAllocate) onAllocate(allocations);
-//     setIsLoading(true);
-//     try {
-//       const res = await Promise.all(
-//         allocations.map((e) =>
-//           _axios.post(`/exams/technician/set/${e.examId}`, {
-//             id_tecnico_alocado: e.id_tecnico_alocado.toString(),
-//           })
-//         )
-//       );
-//       ___showSuccessToastNotification({ message: "Alocação confirmada!" })
-//       setIsLoading(false);
-//       setIsSucess(false);
-//     } catch (error) {
-//       ___showErrorToastNotification({ message: "Erro ao confirmar Alocação!" })
+//     if (formData.date) formattedValue.data_agendamento = formData.date;
+//     if (formData.time) formattedValue.hora_agendamento = formData.time;
+//     if (selectedTechnicians[examId]?.[0]?.id || formData.technicianId) {
+//       formattedValue.id_tecnico_alocado = selectedTechnicians[examId]?.[0]?.id || formData.technicianId;
 //     }
+//     if (formData.status) formattedValue.status = formData.status || "PENDENTE";
+//     if (formData.type) formattedValue.tipo_exame = formData.type || formData.name;
+
+//     console.log("examId", examId);
+//     console.log("formattedValue", formattedValue);
+//     // saveScheduleMutation.mutate(formattedValue);
 //   };
 
-//   const filteredTechnicians = technicians.filter(
-//     (tech) =>
-//       tech.nome_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//       tech.cargo.toLowerCase().includes(searchTerm.toLowerCase())
-//   );
-
 //   return (
-//     <Dialog open={isSucess}>
-//       <DialogTrigger asChild onClick={() => setIsSucess(true)}>{children}</DialogTrigger>
-//       <DialogContent className="w-full h-full sm:h-[95%] lg:min-w-[700px] lg:h-[600px] overflow-auto [&::-webkit-scrollbar]:hidden">
-//         <DialogDescription></DialogDescription>
+//     <Dialog open={open} onOpenChange={onClose}>
+//       <DialogTrigger>{children}</DialogTrigger>
+//       <DialogContent className=" max-w-[600px] max-h-[90%] overflow-auto [&::-webkit-scrollbar]:hidden  ">
 //         <DialogHeader>
-//           <DialogTitle>Alocar Técnicos</DialogTitle>
+//           <h2>
+//             Editar Exame - <span className="text-zinc-600 font-semibold">{formData.name || "Exame"}</span>
+//           </h2>
 //         </DialogHeader>
-//         <div className="space-y-6">
-//           {
-//             allExamsAllocated ? (
-//               <div className="text-center text-lg font-medium text-gray-700">
-//                 Todos os exames já foram alocados com técnicos.
-//               </div>
-//             ) : (
-//               exams.map((exam) => (
-//                 // @ts-ignore
-//                 <div key={exam.id} className="border-b border-gray-200 pb-4">
-//                   <div className="flex items-start justify-between">
-//                     <div>
-//                       {/* @ts-ignore */}
-//                       <h3 className="text-lg font-semibold text-gray-900">{exam.name}</h3>
-//                       {/* @ts-ignore */}
-//                       <p className="text-sm text-gray-600">Data: {exam.scheduledAt}</p>
-//                       {/* @ts-ignore */}
-//                       <p className="text-sm text-gray-600">Hora: {exam.hourSchedule}</p>
-//                       {/* @ts-ignore */}
-//                       <p className="text-sm text-gray-600">Técnico Alocado: {exam.id_tecnico_alocado != null ? "1 alocado" : "0 alocado"}</p>
+//         {/* Formulário */}
 
-//                       {/* @ts-ignore */}
-//                       {errors[exam.id] && (
-//                         // @ts-ignore
-//                         <p className="text-sm text-red-500 mt-2">{errors[exam.id]}</p>
-//                       )}
-//                       {isExpanded && (
-//                         <div className="mt-4 space-y-2">
-//                           {/* @ts-ignore */}
-//                           {selectedTechnicians[exam.id]?.map((tech) => (
-//                             <Badge
-//                               key={tech.id}
-//                               variant="outline"
-//                               className="text-xs flex justify-between items-center"
-//                             >
-//                               {tech.nome_completo}
-//                             </Badge>
-//                           ))}
-//                         </div>
-//                       )}
-//                     </div>
+//         <div className="card gap-3 w-full">
+//           <label htmlFor="type" className="font-bold block mb-2">
+//             Tipo de Exame
+//           </label>
+//           <Combobox
+//             data={exams.data?.data.data || []}
+//             displayKey="nome"
+//             onSelect={handleExamSelection}
+//             placeholder="Selecione exame a editar"
+//             clearLabel="Limpar"
 
-//                     {isExpanded && (
-//                       <div className="w-1/2">
-//                         <label className="block text-sm font-medium text-gray-700 mb-2">
-//                           Selecionar Técnicos
-//                         </label>
-//                         <div className="space-y-2">
-//                           <Input
-//                             placeholder="Pesquise por nome ou cargo"
-//                             value={searchTerm}
-//                             onChange={(e) => setSearchTerm(e.target.value)}
-//                             className="mb-2"
-//                           />
-//                           <ScrollArea className="max-h-40 border rounded-md p-2 overflow-auto">
-//                             {filteredTechnicians.map((technician) => (
-//                               // @ts-ignore
-//                               <div
-//                                 key={technician.id}
-//                                 className={`flex flex-col items-start md:flex-row justify-between p-2  rounded-md my-1 cursor-pointer 
-//                                   ${
-//                                   // @ts-ignore
-//                                   selectedTechnicians[exam.id]?.some((tech) => tech.id === technician.id)
-//                                     ? "bg-blue-100"
-//                                     : "hover:bg-gray-100"
-//                                   }`}
-//                                 // @ts-ignore
-//                                 onClick={() => handleTechnicianSelection(exam.id, technician)}
-//                               >
-//                                 <div>
-//                                   <p className="text-sm font-medium">{technician.nome_completo}</p>
-//                                   <p className="text-xs text-gray-600">{technician.cargo}</p>
-//                                 </div>
-//                                 {
-//                                   // @ts-ignore
-//                                   selectedTechnicians[exam.id]?.some(
-//                                     (tech) => tech.id === technician.id
-//                                   ) && (
-//                                     <Badge variant="secondary" className="text-xs">
-//                                       Selecionado
-//                                     </Badge>
-//                                   )
-//                                 }
-//                               </div>
-//                             ))}
-//                           </ScrollArea>
-//                         </div>
-//                       </div>
-//                     )}
-//                   </div>
-//                   <div className="mt-4 flex items-center justify-between">
-//                     <Button
-//                       variant="ghost"
-//                       className="flex items-center gap-2"
-//                       onClick={() => setIsExpanded((prev) => !prev)}
-//                     >
-//                       {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-//                       {isExpanded ? "Ocultar Seleção" : "Exibir Seleção"}
-//                     </Button>
-//                     {!isExpanded && (
-//                       <Badge variant="secondary" className="text-xs">
-//                         {/* @ts-ignore */}
-//                         Total: {selectedTechnicians[exam.id]?.length || 0} técnico(s)
-//                       </Badge>
-//                     )}
-//                   </div>
-//                 </div>
-//               ))
-//             )
-//           }
+//           />
 //         </div>
-//         <DialogFooter className="mt-6 flex flex-col-reverse gap-3 lg:flex-row">
-//           <Button variant="outline"
-//             onClick={() => {
-//               setIsSucess(false)
-//               setSelectedTechnicians({})
-//             }
-//             }>
-//             Cancelar
-//           </Button>
 
-//           <Button variant="secondary" onClick={handleConfirm} disabled={isLoading}>
-//             {isLoading ? <Loader size={24} /> : "Confirmar Alocações"}
+//         <div className="card gap-3 w-full">
+//           <label htmlFor="date" className="font-bold block mb-2">
+//             Data
+//           </label>
+//           <input
+//             id="date"
+//             name="date"
+//             type="date"
+//             value={formData.date}
+//             onChange={handleChange}
+//             className="w-full h-10 px-4 bg-gray-50 text-black rounded-md shadow-sm border-gray-300"
+//           />
+//         </div>
+//         <div className="card gap-3 w-full">
+//           <label htmlFor="time" className="font-bold block mb-2">
+//             Hora
+//           </label>
+//           <input
+//             id="time"
+//             name="time"
+//             type="time"
+//             value={formData.time}
+//             onChange={handleChange}
+//             className="w-full h-10 px-4 bg-gray-50 text-black rounded-md shadow-sm border-gray-300"
+//           />
+//         </div>
+
+//         <div className="card gap-3 w-full">
+//           <label htmlFor="status" className="font-bold block mb-2">
+//             Estado do Exame
+//           </label>
+//           <select
+//             id="status"
+//             name="status"
+//             defaultValue={formData.status}
+//             value={formData.status}
+//             onChange={handleChange}
+//             className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-nonefocus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
+//           >
+//             <option value="PENDENTE">PENDENTE</option>
+//             <option value="CONCLUIDO">CONCLUIDO</option>
+//             <option value="CANCELADO">CANCELADO</option>
+//           </select>
+//         </div>
+
+//         <div className="card gap-3 w-full">
+//           <label htmlFor="technicianId" className="font-bold block mb-2">
+//             Técnico Alocado
+//           </label>
+//           <Input
+//             id="technicianId"
+//             name="technicianId"
+//             value={techName}
+//             placeholder="Nome do técnico"
+//             className="w-full h-12 px-4 bg-gray-50 text-black placeholder:text-black disabled:text-black  focus-visible:ring-0 ring-0 font-semibold text-xl "
+//             disabled
+//           />
+//         </div>
+
+//         {/* Alocação de Técnico */}
+//         <div className="w-full">
+//           <label className="block text-sm font-medium text-gray-700 mb-2">Alocar novo técnico</label>
+//           <Input
+//             placeholder="Pesquise por nome ou cargo"
+//             value={searchTerm}
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//             className="mb-2"
+//           />
+//           <ScrollArea className="max-h-40 border rounded-md p-2 overflow-auto">
+//             {filteredTechnicians.map((technician) => (
+//               <div
+//                 key={technician.id}
+//                 className={`flex flex-col items-start md:flex-row justify-between p-2 rounded-md my-1 cursor-pointer ${selectedTechnicians[exam?.id]?.some((tech) => tech.id === technician.id)
+//                   ? "bg-blue-100"
+//                   : "hover:bg-gray-100"
+//                   }`}
+//                 onClick={() => handleTechnicianSelection(exam.id, technician)}
+//               >
+//                 <div>
+//                   <p className="text-sm font-medium">{technician.nome_completo}</p>
+//                   <p className="text-xs text-gray-600">{technician.cargo}</p>
+//                 </div>
+//                 {selectedTechnicians[exam?.id]?.some((tech) => tech.id === technician.id) && (
+//                   <Badge variant="secondary" className="text-xs">
+//                     Selecionado
+//                   </Badge>
+//                 )}
+//               </div>
+//             ))}
+//           </ScrollArea>
+//         </div>
+//         {/* Botões */}
+//         <DialogFooter>
+//           <DialogClose asChild>
+//             <Button onClick={onClose} variant="ghost">
+//               Cancelar
+//             </Button>
+//           </DialogClose>
+//           <Button
+//             onClick={() => {
+//               // onSave(formData);
+//               handleSave();
+//             }}
+//             disabled={isProcessing}
+//             className="bg-akin-turquoise hover:bg-akin-turquoise/80"
+//           >
+//             {isProcessing ? "Salvando..." : "Salvar"}
 //           </Button>
 //         </DialogFooter>
 //       </DialogContent>
-//     </Dialog >
+//     </Dialog>
 //   );
-// };
+// }
