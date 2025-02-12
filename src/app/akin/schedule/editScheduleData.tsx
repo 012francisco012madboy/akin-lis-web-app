@@ -128,6 +128,14 @@ export function EditScheduleFormModal({
     : [];
 
   const handleSave = () => {
+    const currentDate = new Date();
+    const selectedDate = new Date(formData.date);
+
+    if (selectedDate < currentDate) {
+      ___showErrorToastNotification({ message: "A data do exame não pode ser no passado." });
+      return;
+    }
+
     const formattedValue = {
       data_agendamento: formData.date,
       hora_agendamento: formData.time,
@@ -160,7 +168,7 @@ export function EditScheduleFormModal({
             onSelect={handleExamSelection}
             placeholder="Selecione exame a editar"
             clearLabel="Limpar"
-          
+
           />
         </div>
 
