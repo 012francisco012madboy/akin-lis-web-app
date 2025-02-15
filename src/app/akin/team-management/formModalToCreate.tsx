@@ -9,12 +9,24 @@ const genderOptions = ["Masculino", "Femenino"]
 export function FormModal({ open, technician, onClose, onSave }: any) {
   const { user } = useAuthStore();
   const [formData, setFormData] = useState<ITeamManagement>(
-    technician || { nome_completo: "", nome: "", cargo: "Tecnico de Laboratório", email: "", contacto_telefonico: "", status: "ATIVO", id_unidade_saude: "CLI2527", id_chefe_lab: user?.id, data_nascimento: "", numero_identificacao: "", id_sexo: 0, senha: "", tipo: "TECNICO" }
+    technician || { nome_completo: "", usuario: { nome: "", email: "", hash: "", hashedRt: "", tipo: "", status: "", criado_aos: "", atualizado_aos: "" }, cargo: "Tecnico de Laboratório", email: "", contacto_telefonico: "", status: "ATIVO", id_unidade_saude: "CLI2527", id_chefe_lab: user?.id, data_nascimento: "", numero_identificacao: "", id_sexo: 0, senha: "", tipo: "TECNICO" }
   );
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (technician && (name === "nome" || name === "email")) {
+      setFormData({
+        ...formData,
+        //@ts-ignore
+        usuario: {
+          ...formData.usuario,
+          [name]: value,
+        },
+      });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSave = async () => {
@@ -25,8 +37,8 @@ export function FormModal({ open, technician, onClose, onSave }: any) {
         await onSave({ ...formData, id: technician.id });
         onClose();
       } else {
-        // Criar novo técnico
-        await onSave(formData);
+        const { usuario, ...newTechnicianData } = formData;
+        await onSave(newTechnicianData);
         onClose();
       }
     } catch (error) {
@@ -44,7 +56,7 @@ export function FormModal({ open, technician, onClose, onSave }: any) {
         </DialogHeader>
         <div>
           <Input name="nome_completo" placeholder="Nome" value={formData.nome_completo} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
-          <Input name="nome" placeholder="Nome de Usuário" value={formData.nome} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
+          <Input name="nome" placeholder="Nome de Usuário" value={technician ? formData.usuario?.nome : formData.nome} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
           {/* <div className="mb-4">
             <Select
               onValueChange={(value) => setFormData({ ...formData, tipo: value })}
@@ -60,7 +72,7 @@ export function FormModal({ open, technician, onClose, onSave }: any) {
               </SelectContent>
             </Select>
           </div> */}
-          <Input name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
+          <Input name="email" placeholder="Email" value={technician ? formData.usuario?.email : formData.email} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
           <Input name="contacto_telefonico" placeholder="Telefone" value={formData.contacto_telefonico} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
           <Input name="data_nascimento" type="date" placeholder="Data de Nascimento" value={formData.data_nascimento} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />
           <Input name="numero_identificacao" placeholder="Número de Identificação" value={formData.numero_identificacao} onChange={handleChange} className="mb-4 focus-visible:ring-akin-turquoise" />

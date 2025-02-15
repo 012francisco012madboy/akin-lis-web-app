@@ -77,6 +77,7 @@ export default function TeamManagement() {
 
   const handleSave = (data: ITeamManagement) => {
     if (data.id) {
+      console.log("Edite Tecnico",data);
       teamManagementUpdate.mutate(data);
     } else {
       console.log("Create Tecnico",data);

@@ -161,7 +161,7 @@ export function EditScheduleFormModal({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogTrigger>{children}</DialogTrigger>
-      <DialogContent className=" max-w-[600px] max-h-[90%] overflow-auto [&::-webkit-scrollbar]:hidden  ">
+      <DialogContent className=" max-w-[600px] max-h-[90%] overflow-auto [&::-webkit-scrollbar]:hidden" >
         <DialogHeader>
           <h2>
             Editar Exame - <span className="text-zinc-600 font-semibold">{formData.name || "Exame"}</span>
@@ -179,7 +179,6 @@ export function EditScheduleFormModal({
             onSelect={handleExamSelection}
             placeholder="Selecione exame a editar"
             clearLabel="Limpar"
-
           />
         </div>
 
