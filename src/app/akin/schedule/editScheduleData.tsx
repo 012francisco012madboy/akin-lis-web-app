@@ -137,12 +137,12 @@ export function EditScheduleFormModal({
 
     const formattedValue: Record<string, any> = {};
 
-    if (formData.date !== exam.date) {
+    // if (formData.date !== exam.date) {
       formattedValue.data_agendamento = formData.date;
-    }
-    if (formData.time !== exam.time) {
+    // }
+    // if (formData.time !== exam.time) {
       formattedValue.hora_agendamento = formData.time;
-    }
+    // }
     if (selectedTechnicians[examId]?.[0]?.id !== formData.technicianId) {
       formattedValue.id_tecnico_alocado = selectedTechnicians[examId]?.[0]?.id || formData.technicianId;
     }
