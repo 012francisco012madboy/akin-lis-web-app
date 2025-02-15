@@ -27,14 +27,14 @@ const userRole = "CHEFE"; // Simulação do papel do usuário (substitua pelo pa
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props} className="max-w-[200px]">
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+    <Sidebar collapsible="icon" {...props} className="max-w-[200px] bg-akin-turquoise border-r-akin-turquoise">
+      <SidebarHeader className="bg-akin-turquoise text-white">
+        <TeamSwitcher teams={data.teams } />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-akin-turquoise text-white" >
         <NavMain items={APP_CONFIG.ROUTES.MENU} userRole={userRole} />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="bg-akin-turquoise text-white">
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
