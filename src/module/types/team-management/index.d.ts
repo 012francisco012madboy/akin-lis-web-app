@@ -16,5 +16,17 @@ interface ITeamManagement {
   tipo?: string;
   status?: string;
   nome?: string;
+  usuario?: ITeamManagementToEdit;
 }
 
+interface ITeamManagementToEdit extends ITeamManagement {
+  id: string;
+  nome: string;
+  email: string;
+  hash: string;
+  hashedRt: string;
+  tipo: string;
+  status: string;
+  criado_aos: string;
+  atualizado_aos: string;
+}

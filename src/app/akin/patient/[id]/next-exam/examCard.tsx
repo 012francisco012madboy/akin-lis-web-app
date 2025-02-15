@@ -13,15 +13,16 @@ import { EditScheduleFormModal } from "@/app/akin/schedule/editScheduleData";
 
 export const ExamCard = ({ data }: ResponseData) => {
   const { user } = useAuthStore();
-  const [isNextExamOpen, setIsNextExamOpen] = useState<boolean>(false);
-  const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState<boolean>(false);
-  const [selectedExam, setSelectedExam] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNextExamOpen, setIsNextExamOpen] = useState<{ [key: string]: boolean }>({});
+  const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState<{ [key: string]: boolean }>({});
+  const [selectedExam, setSelectedExam] = useState<{ [key: string]: any }>({});
+  const [isModalOpen, setIsModalOpen] = useState<{ [key: string]: boolean }>({});
 
   const handleEditClick = (exam: any) => {
-    setSelectedExam(exam);
-    setIsModalOpen(true);
+    setSelectedExam((prev) => ({ ...prev, [exam.id]: exam }));
+    setIsModalOpen((prev) => ({ ...prev, [exam.id]: true }));
   };
+
   const { data: userData } = useQuery({
     queryKey: ['user-data'],
     queryFn: async () => {
@@ -42,9 +43,9 @@ export const ExamCard = ({ data }: ResponseData) => {
     return tech?.nome_completo;
   }
 
-  const handleIgnore = () => {
-    setIsNextExamOpen(false);
-    setIsMaterialsModalOpen(true);
+  const handleIgnore = (examId: string) => {
+    setIsNextExamOpen((prev) => ({ ...prev, [examId]: false }));
+    setIsMaterialsModalOpen((prev) => ({ ...prev, [examId]: true }));
   };
 
   return (
@@ -82,13 +83,13 @@ export const ExamCard = ({ data }: ResponseData) => {
               </span>
 
               <EditScheduleFormModal
-                open={isModalOpen}
-                exam={selectedExam}
+                open={isModalOpen[exam.id] || false}
+                exam={selectedExam[exam.id]}
                 examId={exam.id}
                 techName={getNameTech(exam.id_tecnico_alocado)}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => setIsModalOpen((prev) => ({ ...prev, [exam.id]: false }))}
                 onSave={() => {
-                  setIsModalOpen(false);
+                  setIsModalOpen((prev) => ({ ...prev, [exam.id]: false }));
                 }}
                 active
               />
@@ -126,7 +127,7 @@ export const ExamCard = ({ data }: ResponseData) => {
             ) : (
               <Button
                 className="mt-24 text-md font-medium"
-                onClick={() => setIsNextExamOpen(true)}
+                onClick={() => setIsNextExamOpen((prev) => ({ ...prev, [exam.id]: true }))}
               >
                 Começar
               </Button>
@@ -135,9 +136,9 @@ export const ExamCard = ({ data }: ResponseData) => {
         </div>
         <>
           <AlerDialogNextExam
-            isOpen={isNextExamOpen}
-            onClose={() => setIsNextExamOpen(false)}
-            onIgnore={handleIgnore}
+            isOpen={isNextExamOpen[exam.id] || false}
+            onClose={() => setIsNextExamOpen((prev) => ({ ...prev, [exam.id]: false }))}
+            onIgnore={() => handleIgnore(String(exam.id))}
           />
           <MedicalMaterialsModal
             isOpen={isMaterialsModalOpen}

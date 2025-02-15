@@ -34,7 +34,7 @@ export default function TeamManagement() {
 
   const teamManagementCreate = useMutation({
     mutationFn: async (data: ITeamManagement) => {
-      
+      console.log("Está a ser criado!",data);
       return (await teamManagementRoutes.createLabTech(data));
     },
     onSuccess: () => {
@@ -77,6 +77,7 @@ export default function TeamManagement() {
 
   const handleSave = (data: ITeamManagement) => {
     if (data.id) {
+      console.log("Edite Tecnico",data);
       teamManagementUpdate.mutate(data);
     } else {
       console.log("Create Tecnico",data);

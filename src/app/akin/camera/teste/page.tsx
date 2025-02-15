@@ -14,7 +14,6 @@ export default function Teste() {
       cameraRef.current.captureImage();
     }
   };
-
   return (
     <div>
       {/* <CustomCamera

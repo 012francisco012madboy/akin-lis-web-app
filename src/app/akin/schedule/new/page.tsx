@@ -94,7 +94,7 @@ export default function New() {
       isValid: true,
       data: {
         id_paciente: selectedPatient!.id,
-        id_unidade_de_saude: 1,
+        id_unidade_de_saude: "CLI2527",
         exames_paciente: schedules.map((schedule) => {
           const date = schedule.date instanceof Date ? schedule.date : new Date(schedule.date);
           return {
@@ -109,7 +109,7 @@ export default function New() {
   const handleSubmit = async () => {
     const validation = validateSchedule();
     if (!validation.isValid) return;
-
+console.log(" Validation",validation.data)
     setIsSaving(true);
     try {
       const response = await _axios.post("/schedulings/set-schedule", validation.data);

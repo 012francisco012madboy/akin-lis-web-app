@@ -20,7 +20,7 @@ interface ICardSchedule {
 export default function CardSchedule({ data }: ICardSchedule) {
   const [showExams, setShowExams] = useState(false);
   const [groupedExams, setGroupedExams] = useState<Exam[]>([]);
-  const [selectedExam, setSelectedExam] = useState(null);
+  const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useAuthStore();
 
@@ -31,7 +31,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
     },
   });
 
-  const handleEditClick = (exam: any) => {
+  const handleEditClick = (exam: Exam) => {
     setSelectedExam(exam);
     setIsModalOpen(true);
   };
@@ -60,7 +60,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
   };
 
   const getTecnicoNome = (id: string | null) => {
-    if (!id) return "Sem técnico alocado";
+    if (!id || id === "null") return "Sem técnico alocado";
 
     // Verifica se os dados estão sendo carregados ou se houve um erro
     if (tecnico.isLoading) return "Carregando técnicos...";
@@ -94,17 +94,15 @@ export default function CardSchedule({ data }: ICardSchedule) {
                   {/* <EditScheduleFormModal> */}
                   <div className="relative group">
 
-                    {
+                    {/* {
                       userRole.data?.data.tipo !== "RECEPCIONISTA" ? (
                         <></>
-                      ) : (
+                      ) : ( */}
                         <>
                           <Pencil size={18}
                             className="cursor-pointer text-gray-500"
-                            // onClick={() => {
-                            //   window.location.href = `/akin/patient/${data.id_paciente}/next-exam`;
-                            // }}
                             onClick={() => handleEditClick({
+                              // @ts-ignore
                               id: exame.id,
                               name: exame.Tipo_Exame?.nome,
                               date: exame.data_agendamento,
@@ -113,10 +111,8 @@ export default function CardSchedule({ data }: ICardSchedule) {
                             })}
                           />
                           <span className="absolute cursor-pointer -left-8 top-5 mt-0 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                            // onClick={() => {
-                            //   window.location.href = `/akin/patient/${data.id_paciente}/next-exam`;
-                            // }}
                             onClick={() => handleEditClick({
+                              // @ts-ignore
                               id: exame.id,
                               name: exame.Tipo_Exame?.nome,
                               date: exame.data_agendamento,
@@ -127,13 +123,16 @@ export default function CardSchedule({ data }: ICardSchedule) {
                             Editar
                           </span>
                         </>
-                      )
-                    }
+                      {/* )
+                    } */}
                     <EditScheduleFormModal
+                      active
                       open={isModalOpen}
                       exam={selectedExam}
-                      examId={exame.id}
-                      techName={getTecnicoNome(exame.id_tecnico_alocado)}
+                      // @ts-ignore
+                      examId={selectedExam?.id}
+                      //@ts-ignore
+                      techName={getTecnicoNome(selectedExam?.technicianId)}
                       onClose={() => setIsModalOpen(false)}
                       onSave={() => {
                         setIsModalOpen(false);
@@ -180,7 +179,6 @@ export default function CardSchedule({ data }: ICardSchedule) {
                     className={` text-xs font-medium  ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
                       }`}
                   >
-                    {/* {(exame.id_tecnico_alocado && exame.id_tecnico_alocado!.length > 0) ? `${exame.id_tecnico_alocado}` : "Sem técnico alocado"} */}
                     {
                       getTecnicoNome(exame.id_tecnico_alocado)
                     }

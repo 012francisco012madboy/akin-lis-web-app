@@ -53,13 +53,13 @@ export function Combobox<T>({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={`w-[${width}] flex justify-between`}
+          className={`w-[${width}] w-full flex justify-between`}
         >
           {selected
             ? String(selected[displayKey])

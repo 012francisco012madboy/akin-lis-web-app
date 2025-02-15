@@ -56,7 +56,7 @@ export const APP_CONFIG = {
         label: "Gestão Equipe", 
         icon: UserRoundCog, 
         path: "/akin/team-management", 
-        access: ["CHEFE", "TECNICO"] 
+        access: ["CHEFE"] 
       },
       { 
         label: "Pagamentos", 

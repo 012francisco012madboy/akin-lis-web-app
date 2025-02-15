@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Combobox } from "@/components/combobox/comboboxExam";
 import { useEffect, useState } from "react";
 import { LabTechnician } from "./tecnico";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -12,7 +13,7 @@ import { ___showErrorToastNotification, ___showSuccessToastNotification } from "
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 
 //Precisa de ser atualizado o Typescript desse componente e aplicar refatoração
-export function  EditScheduleFormModal({
+export function EditScheduleFormModal({
   open,
   active,
   exam,
@@ -31,6 +32,7 @@ export function  EditScheduleFormModal({
       status: "",
       techName: "",
       examId: "",
+      type: "", // Adicione o campo type
     }
   );
   const [isProcessing, setIsProcessing] = useState(false);
@@ -47,8 +49,7 @@ export function  EditScheduleFormModal({
     queryFn: async () => {
       return await _axios.get(`/users/${user?.id}`);
     },
-  })
-
+  });
 
   // Fetch dos técnicos
   const technicians = useQuery({
@@ -59,11 +60,19 @@ export function  EditScheduleFormModal({
     },
   });
 
+  // Fetch dos exames
+  const exams = useQuery({
+    queryKey: ["exams"],
+    queryFn: async () => {
+      const response = await _axios.get("/exam-types");
+      return response;
+    },
+  });
+
   // Mutação para salvar os dados
   const saveScheduleMutation = useMutation({
     mutationFn: async (data: any) => {
       setIsProcessing(true);
-      console.log("exams id", examId);
       const response = await _axios.patch(`/exams/${examId}`, data);
       return response.data;
     },
@@ -97,10 +106,14 @@ export function  EditScheduleFormModal({
     }));
   };
 
-  if (technicians.isLoading) return <></>;
-  if (technicians.isError) {
+  const handleExamSelection = (selectedExam: any) => {
+    setFormData({ ...formData, type: selectedExam?.nome || "" });
+  };
+
+  if (technicians.isLoading || exams.isLoading) return <></>;
+  if (technicians.isError || exams.isError) {
     ___showErrorToastNotification({
-      message: "Erro ao carregar técnicos"
+      message: "Erro ao carregar dados"
     });
     return <></>;
   }
@@ -114,20 +127,41 @@ export function  EditScheduleFormModal({
     : [];
 
   const handleSave = () => {
-    const formattedValue = {
-      data_agendamento: formData.date,
-      hora_agendamento: formData.time,
-      id_tecnico_alocado: selectedTechnicians[exam?.id]?.[0]?.id === undefined ? formData.technicianId : String(selectedTechnicians[examId]?.map((tech) => tech.id)),
-      status: formData.status === undefined ? "PENDENTE" : formData.status
-    };
-    console.log(formattedValue);
+    const currentDate = new Date();
+    const selectedDate = new Date(formData.date);
+
+    if (selectedDate < currentDate) {
+      ___showErrorToastNotification({ message: "A data do exame não pode ser no passado." });
+      return;
+    }
+
+    const formattedValue: Record<string, any> = {};
+
+    // if (formData.date !== exam.date) {
+      formattedValue.data_agendamento = formData.date;
+    // }
+    // if (formData.time !== exam.time) {
+      formattedValue.hora_agendamento = formData.time;
+    // }
+    if (selectedTechnicians[examId]?.[0]?.id !== formData.technicianId) {
+      formattedValue.id_tecnico_alocado = selectedTechnicians[examId]?.[0]?.id || formData.technicianId;
+    }
+    if (formData.status !== exam.status) {
+      formattedValue.status = formData.status || "PENDENTE";
+    }
+    if (formData.type !== exam.type) {
+      formattedValue.tipo_exame = formData.type || formData.name;
+    }
+
+    console.log("examId", examId);
+    console.log("formattedValue", formattedValue);
     saveScheduleMutation.mutate(formattedValue);
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogTrigger>{children}</DialogTrigger>
-      <DialogContent>
+      <DialogContent className=" max-w-[600px] max-h-[90%] overflow-auto [&::-webkit-scrollbar]:hidden" >
         <DialogHeader>
           <h2>
             Editar Exame - <span className="text-zinc-600 font-semibold">{formData.name || "Exame"}</span>
@@ -135,63 +169,63 @@ export function  EditScheduleFormModal({
         </DialogHeader>
         {/* Formulário */}
 
-        {
-          userRole.data?.data.tipo !== "RECEPCIONISTA" ? (
-            <>
-              <div className="card gap-3 w-full">
-                <label htmlFor="date" className="font-bold block mb-2">
-                  Data
-                </label>
-                <input
-                  id="date"
-                  name="date"
-                  type="date"
-                  value={formData.date}
-                  onChange={handleChange}
-                  className="w-full h-10 px-4 bg-gray-50 text-black rounded-md shadow-sm border-gray-300"
-                />
-              </div>
-              <div className="card gap-3 w-full">
-                <label htmlFor="time" className="font-bold block mb-2">
-                  Hora
-                </label>
-                <input
-                  id="time"
-                  name="time"
-                  type="time"
-                  value={formData.time}
-                  onChange={handleChange}
-                  className="w-full h-10 px-4 bg-gray-50 text-black rounded-md shadow-sm border-gray-300"
-                />
-              </div>
-              {
-                active ? (
-                  <div className="card gap-3 w-full">
-                    <label htmlFor="time" className="font-bold block mb-2">
-                      Estado do Exame
-                    </label>
-                    <select
-                      id="status"
-                      name="status"
-                      defaultValue={formData.status}
-                      value={formData.status}
-                      onChange={handleChange}
-                      className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-nonefocus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
-                    >
-                      <option value="PENDENTE">PENDENTE</option>
-                      <option value="CONCLUIDO">CONCLUIDO</option>
-                      <option value="CANCELADO">CANCELADO</option>
-                    </select>
-                  </div>
-                ) : (
-                  <></>
-                )
-              }
-            </>
-          ) : (
-            <></>
-          )
-        }
+        <div className="card gap-3 w-full">
+          <label htmlFor="type" className="font-bold block mb-2">
+            Tipo de Exame
+          </label>
+          <Combobox
+            data={exams.data?.data.data || []}
+            displayKey="nome"
+            onSelect={handleExamSelection}
+            placeholder="Selecione exame a editar"
+            clearLabel="Limpar"
+          />
+        </div>
+
+        <div className="card gap-3 w-full">
+          <label htmlFor="date" className="font-bold block mb-2">
+            Data
+          </label>
+          <input
+            id="date"
+            name="date"
+            type="date"
+            value={formData.date}
+            onChange={handleChange}
+            className="w-full h-10 px-4 bg-gray-50 text-black rounded-md shadow-sm border-gray-300"
+          />
+        </div>
+        <div className="card gap-3 w-full">
+          <label htmlFor="time" className="font-bold block mb-2">
+            Hora
+          </label>
+          <input
+            id="time"
+            name="time"
+            type="time"
+            value={formData.time}
+            onChange={handleChange}
+            className="w-full h-10 px-4 bg-gray-50 text-black rounded-md shadow-sm border-gray-300"
+          />
+        </div>
+
+        <div className="card gap-3 w-full">
+          <label htmlFor="status" className="font-bold block mb-2">
+            Estado do Exame
+          </label>
+          <select
+            id="status"
+            name="status"
+            defaultValue={formData.status}
+            value={formData.status}
+            onChange={handleChange}
+            className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-nonefocus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
+          >
+            <option value="PENDENTE">PENDENTE</option>
+            <option value="CONCLUIDO">CONCLUIDO</option>
+            <option value="CANCELADO">CANCELADO</option>
+          </select>
+        </div>
 
         <div className="card gap-3 w-full">
           <label htmlFor="technicianId" className="font-bold block mb-2">
@@ -206,6 +240,7 @@ export function  EditScheduleFormModal({
             disabled
           />
         </div>
+
         {/* Alocação de Técnico */}
         <div className="w-full">
           <label className="block text-sm font-medium text-gray-700 mb-2">Alocar novo técnico</label>

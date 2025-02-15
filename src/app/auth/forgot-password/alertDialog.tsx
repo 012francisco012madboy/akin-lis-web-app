@@ -31,11 +31,11 @@ export function AlertSendEmail({ children, isOpen, onClose }: AlertDialogDemoPro
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction className=" bg-akin-turquoise hover:bg-akin-turquoise/90" onClick={() => {
+          <AlertDialogCancel>Fechar</AlertDialogCancel>
+          {/* <AlertDialogAction className=" bg-akin-turquoise hover:bg-akin-turquoise/90" onClick={() => {
             window.location.href = "https://mail.google.com/mail/u/0/#inbox"
             onClose()
-          }}>Continuar</AlertDialogAction>
+          }}>Continuar</AlertDialogAction> */}
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

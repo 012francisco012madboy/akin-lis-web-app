@@ -22,6 +22,7 @@ interface DatePickerWithRangeProps
   enableRange?: boolean; // Novo controle para habilitar/desabilitar range
   onDateChange?: (date: DateRange | Date | undefined) => void;
   enableDateFilter?: boolean; // Novo controle para habilitar/desabilitar filtragem de data
+  setEnableDateFilter?: (enable: boolean) => void; // Adicione esta linha para passar a função de ativação de filtragem
 }
 
 export function DatePickerWithRange({
@@ -35,6 +36,7 @@ export function DatePickerWithRange({
   enableRange = true, // Ativo por padrão
   onDateChange,
   enableDateFilter = true, // Ativo por padrão
+  setEnableDateFilter, // Adicione esta linha para passar a função de ativação de filtragem
 }: DatePickerWithRangeProps) {
   const [date, setDate] = React.useState<DateRange | Date | undefined>(
     enableRange ? defaultDate : (defaultDate as DateRange)?.from
@@ -45,6 +47,17 @@ export function DatePickerWithRange({
   ) => {
     setDate(selectedDate);
     onDateChange?.(selectedDate);
+    if (selectedDate && setEnableDateFilter) {
+      setEnableDateFilter(true); // Ativa a filtragem de data ao selecionar uma data
+    }
+  };
+
+  const clearDates = () => {
+    setDate(enableRange ? { from: undefined, to: undefined } : undefined);
+    onDateChange?.(enableRange ? { from: undefined, to: undefined } : undefined);
+    if (setEnableDateFilter) {
+      setEnableDateFilter(false); // Desativa a filtragem de data ao limpar as datas
+    }
   };
 
   return (
@@ -112,6 +125,9 @@ export function DatePickerWithRange({
               />
             )
           )}
+          <Button variant="outline" className="w-full mt-2" onClick={clearDates}>
+            Limpar Datas
+          </Button>
         </PopoverContent>
       </Popover>
     </div>
