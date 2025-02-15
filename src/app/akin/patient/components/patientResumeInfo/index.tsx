@@ -269,24 +269,18 @@ export function PatientResumeInfo({
               <p className="text-gray-500 text-center">Sem exames registrados</p>
             )}
           </CardContent>
-          {basicExamHistory!.data.length > 2 ? (
+          {/* {basicNextExam!.data.length > 2 ? ( */}
             <CardFooter className="bg-gray-50 p-4 border-t w-full">
               <Link href={`${patient.id}/next-exam`} passHref>
                 <Button className="w-[295px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
-                  Ver mais históricos
+                  Ver próximos
                 </Button>
               </Link>
             </CardFooter>
-          ) : (
-            <CardFooter className="bg-gray-50 p-4 border-t">
-              <Link href={`${patient.id}/next-exam`} passHref>
-                <Button className="w-[300px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
-                  Ver todos
-                </Button>
-              </Link>
-            </CardFooter>
+          {/* ) : (
+            <></>
           )
-          }
+          } */}
         </Card>
       </div>
     </div>

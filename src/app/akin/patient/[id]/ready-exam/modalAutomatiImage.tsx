@@ -85,7 +85,7 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
       setCurrentImage(null);
     }
     setMessage("Posicione a próxima lâmina.");
-    if (capturedImages.length + 1 === maxCaptures) setIsCapturing(false);
+    if (capturedImages.length + 1 >= maxCaptures) setIsCapturing(false); // Adjusted condition
   }, [capturedImages.length, maxCaptures, currentImage, devices.length]);
 
   const handleStopCapturing = () => {
@@ -151,7 +151,10 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
                 id="maxCaptures"
                 type="number"
                 value={maxCaptures}
-                onChange={(e) => setMaxCaptures(Number(e.target.value))}
+                onChange={(e) =>{
+                  setMaxCaptures(Number(e.target.value))
+                  console.log("Max. Cap:",maxCaptures);
+                } }
                 className="mt-1 block w-full px-2 py-1 border rounded"
               />
             </div>

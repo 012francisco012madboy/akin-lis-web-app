@@ -19,14 +19,14 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
   }>(null);
 
   const [capturedImages, setCapturedImages] = useState<string[]>([]);
-  const [notes, setNotes] = useState<string>("");
+  const [notes, setNotes] = useState<{ [key: string]: string }>({});
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleCaptureImage = () => {
     if (!devices.length) {
-    ___showErrorToastNotification({ message: "Nenhuma câmera detectada. Conecte uma câmera para capturar imagens." });
+      ___showErrorToastNotification({ message: "Nenhuma câmera detectada. Conecte uma câmera para capturar imagens." });
       setError("Nenhuma câmera detectada. Conecte uma câmera para capturar imagens.");
       return;
     }
@@ -66,6 +66,16 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
     }
   }, [devices]);
 
+  // Update notes for the current image
+  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (currentImage) {
+      setNotes((prevNotes) => ({
+        ...prevNotes,
+        [currentImage]: e.target.value,
+      }));
+    }
+  };
+
   return (
     <div
       id="modal"
@@ -84,7 +94,7 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
               );
               if (selectedDevice) setDevices([selectedDevice]);
             }}
-            value={devices[0]?.deviceId ? devices[0]?.deviceId: "Sem câmeras detectadas"}
+            value={devices[0]?.deviceId ? devices[0]?.deviceId : "Sem câmeras detectadas"}
             className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             {devices.length > 0 ? (
@@ -121,15 +131,15 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
           {/* Notes Section */}
           <div className="w-full bg-white p-4 rounded-lg shadow">
             <Textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              value={currentImage ? notes[currentImage] || "" : ""}
+              onChange={handleNotesChange}
               placeholder="Escreva suas anotações aqui..."
               className="w-full h-72 max-h-[500px] min-h-[400px]"
             />
           </div>
         </div>
 
-  
+
         {/* Captured Images */}
         {capturedImages.length > 0 && (
           <div className="p-4">

@@ -142,6 +142,9 @@ export const ExamCard = ({ data }: ResponseData) => {
           <MedicalMaterialsModal
             isOpen={isMaterialsModalOpen}
             onClose={() => setIsMaterialsModalOpen(false)}
+            exam_id={String(exam.id_tipo_exame)}
+            patient_name={"Paulo"}
+            exam_name={exam.Tipo_Exame.nome}
           />
         </>
       </div>

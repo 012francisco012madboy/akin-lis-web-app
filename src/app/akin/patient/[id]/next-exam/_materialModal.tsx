@@ -21,7 +21,7 @@ type Material = {
   quantity: number;
 };
 
-export const MedicalMaterialsModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+export const MedicalMaterialsModal: React.FC<{ isOpen: boolean; onClose: () => void ; exam_id:string; patient_name:string; exam_name:string}> = ({ isOpen, onClose,exam_id,patient_name,exam_name }) => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [selectedMaterial, setSelectedMaterial] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("");
@@ -42,7 +42,7 @@ export const MedicalMaterialsModal: React.FC<{ isOpen: boolean; onClose: () => v
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Paulo Miguel</DialogTitle>
+          <DialogTitle>{patient_name} - {exam_name}</DialogTitle>
           <DialogDescription>Os materiais são de uso clínico, use com cuidado!</DialogDescription>
         </DialogHeader>
 
@@ -85,7 +85,7 @@ export const MedicalMaterialsModal: React.FC<{ isOpen: boolean; onClose: () => v
           <DialogClose asChild>
             <Button variant="outline">Cancelar</Button>
           </DialogClose>
-          <Link href={`/akin/patient/${id}/ready-exam`}>
+          <Link href={`/akin/patient/${id}/ready-exam/${exam_id}`}>
             <Button className="bg-akin-turquoise hover:bg-akin-turquoise/80">Seguinte</Button>
           </Link>
         </div>
