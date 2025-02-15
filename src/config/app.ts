@@ -43,7 +43,7 @@ export const APP_CONFIG = {
         subItems: [
           { label: "Novo", icon: CalendarPlus2, path: "/akin/schedule/new", access: ["RECEPCIONISTA"] },
           { label: "Solicitações", icon: CalendarSearch, path: "/akin/schedule/request", access: ["RECEPCIONISTA"] },
-          { label: "Confirmados", icon: CalendarCheck2, path: "/akin/schedule/completed", access: ["CHEFE"] }
+          { label: "Confirmados", icon: CalendarCheck2, path: "/akin/schedule/completed", access: ["CHEFE","RECEPCIONISTA"] }
         ]
       },
       {

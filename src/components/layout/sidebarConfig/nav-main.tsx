@@ -13,6 +13,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function NavMain({
   items,
@@ -27,54 +28,62 @@ export function NavMain({
   }[];
   userRole: string;
 }) {
+  const pathname = usePathname();
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel></SidebarGroupLabel>
       <SidebarMenu>
         {items
           .filter((item) => item.access.includes(userRole))
-          .map((item) => (
-            <Collapsible
-              key={item.label}
-              asChild
-              defaultOpen={false}
-              className="group/collapsible"
-            >
-              <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.label}>
-                    <Link href={item.path} className="flex items-center size-[20px] ">
-                      {item.icon && <item.icon />}
-                    </Link>
-                    <Link href={item.path} className="flex items-center ">
-                      <span>{item.label}</span>
-                    </Link>
+          .map((item) => {
+            const isActive = pathname.startsWith(item.path);
+            return (
+              <Collapsible
+                key={item.label}
+                asChild
+                defaultOpen={false}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem >
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton tooltip={item.label} className={isActive ? "bg-sidebar-accent text-black rounded-md" : ""}>
+                      <Link href={item.path} className="flex items-center size-[20px] ">
+                        {item.icon && <item.icon />}
+                      </Link>
+                      <Link href={item.path} className="flex items-center ">
+                        <span>{item.label}</span>
+                      </Link>
 
-                    {item.subItems && (
-                      <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 hover:bg-gray-200  hover:rounded-md hover:size-6" />
-                    )}
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
-                {item.subItems && (
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                      {item.subItems
-                        .filter((subItem) => subItem.access.includes(userRole))
-                        .map((subItem) => (
-                          <SidebarMenuSubItem key={subItem.label}>
-                            <SidebarMenuSubButton asChild>
-                              <Link href={subItem.path} className="text-white">
-                                <span>{subItem.label}</span>
-                              </Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                )}
-              </SidebarMenuItem>
-            </Collapsible>
-          ))}
+                      {item.subItems && (
+                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 hover:bg-gray-200  hover:rounded-md hover:size-6" />
+                      )}
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  {item.subItems && (
+                    <CollapsibleContent>
+                      <SidebarMenuSub>
+                        {item.subItems
+                          .filter((subItem) => subItem.access.includes(userRole))
+                          .map((subItem) => {
+                            const isSubActive = pathname.startsWith(subItem.path);
+                            return (
+                              <SidebarMenuSubItem key={subItem.label} className={isSubActive ? "bg-sidebar-accent text-black rounded-md": ""}>
+                                <SidebarMenuSubButton asChild>
+                                  <Link href={subItem.path} className={isSubActive ? "text-black": "text-white"}>
+                                    <span>{subItem.label}</span>
+                                  </Link>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            );
+                          })}
+                      </SidebarMenuSub>
+                    </CollapsibleContent>
+                  )}
+                </SidebarMenuItem>
+              </Collapsible>
+            );
+          })}
       </SidebarMenu>
     </SidebarGroup>
   );
