@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { MoveDiagonalIcon, Trash } from "lucide-react";
 import Image from "next/image";
@@ -32,7 +31,7 @@ export const CapturedImages: React.FC<CapturedImagesProps> = ({ capturedImages,
                             height={300}
                             src={image}
                             alt={`Captured ${idx}`}
-                            className="w-full h-40 object-cover rounded-lg"
+                            className="w-full object-cover rounded-lg"
                             onClick={() => setSelectedImage(image)}
                         />
 

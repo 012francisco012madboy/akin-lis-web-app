@@ -39,9 +39,12 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
     cameraRef.current.captureImage();
   };
 
-  const handleCloseModal = () => {
-    cameraRef.current?.stopCamera();
-    setIsModalOpen(false);
+  const handleCloseModal =  () => {
+    if (cameraRef.current) {
+      setIsModalOpen(false);
+       cameraRef.current.stopCamera()
+       console.log("Camera fechou!")
+    }
   };
 
   // Atualiza a lista de imagens capturadas
@@ -119,6 +122,7 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
               getAllVideoDevices={setDevices}
               className="h-full w-full"
               videoClassName="h-full w-full"
+              showDevices={false}
             />
             <Button
               onClick={handleCaptureImage}

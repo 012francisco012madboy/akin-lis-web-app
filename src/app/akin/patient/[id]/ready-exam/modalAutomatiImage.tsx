@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import CustomCamera from "@/app/akin/camera/camera";
 import { ___showErrorToastNotification } from "@/lib/sonner";
 import { CapturedImages } from "./components/listCaptureImages";
+import { ImageModal } from "./components/selectedCaptureImages";
 
 export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen }: { isAutomatedAnalysisOpen: boolean, setIsAutomatedAnalysisOpen: (value: boolean) => void }) {
 
@@ -13,6 +14,7 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
     captureImage: () => void;
     stopCamera: () => void;
   }>(null);
+
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -93,6 +95,13 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
     setMessage("Captura finalizada. Escolha como enviar as imagens.");
   };
 
+  const handleCloseModal = () => {
+    if (cameraRef.current) {
+      cameraRef.current.stopCamera()
+      console.log(" camera fechou");
+    }
+  };
+
   useEffect(() => {
     if (!devices.length) {
       setError("Nenhuma câmera detectada. Certifique-se de que a câmera está conectada.");
@@ -151,10 +160,10 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
                 id="maxCaptures"
                 type="number"
                 value={maxCaptures}
-                onChange={(e) =>{
+                onChange={(e) => {
                   setMaxCaptures(Number(e.target.value))
-                  console.log("Max. Cap:",maxCaptures);
-                } }
+                  console.log("Max. Cap:", maxCaptures);
+                }}
                 className="mt-1 block w-full px-2 py-1 border rounded"
               />
             </div>
@@ -183,6 +192,7 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
                 getAllVideoDevices={setDevices}
                 className="h-full w-full"
                 videoClassName="h-full w-full"
+                showDevices={false}
               />
             </div>
 
@@ -193,6 +203,18 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
               handleDeleteImage={handleDeleteImage}
               setSelectedImage={setSelectedImage}
             />
+            
+            <ImageModal
+              selectedImage={selectedImage}
+              moreFuncIsShow={false}
+            /> 
+
+            {/* <ImageModal 
+              selectedImage={selectedImage}
+              notes={notes}
+              handleNoteChange={handleNoteChange}
+              setSelectedImage={setSelectedImage}
+            /> */}
 
             {/* <h2 className="text-xl font-bold mb-2 mt-3">
               Imagens Capturadas ({capturedImages.length}/{maxCaptures})
@@ -227,7 +249,10 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
               Finalizar e Enviar
             </Button>
           </div>
-          <Button variant={"outline"} onClick={() => setIsAutomatedAnalysisOpen(false)}>
+          <Button variant={"outline"} onClick={() => {
+            handleCloseModal();
+            setIsAutomatedAnalysisOpen(false)
+          }}>
             Fechar
           </Button>
         </footer>
