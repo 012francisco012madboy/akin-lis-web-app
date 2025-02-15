@@ -203,11 +203,12 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
               handleDeleteImage={handleDeleteImage}
               setSelectedImage={setSelectedImage}
             />
-            
+
             <ImageModal
+              setSelectedImage={setSelectedImage}
               selectedImage={selectedImage}
               moreFuncIsShow={false}
-            /> 
+            />
 
             {/* <ImageModal 
               selectedImage={selectedImage}

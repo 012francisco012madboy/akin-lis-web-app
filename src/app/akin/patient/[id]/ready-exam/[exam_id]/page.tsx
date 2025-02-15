@@ -129,9 +129,9 @@ export default function SampleVisualizationPage() {
 
       <ImageModal
         selectedImage={selectedImage}
+        setSelectedImage={setSelectedImage}
         notes={notes}
         handleNoteChange={handleNoteChange}
-        setSelectedImage={setSelectedImage}
         moreFuncIsShow={false}
       />
 

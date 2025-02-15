@@ -132,8 +132,8 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                     {
                         moreFuncIsShow && (
                             <Textarea
-                                value={notes[selectedImage] || ""}
-                                onChange={(e) => handleNoteChange(selectedImage, e.target.value)}
+                                value={notes?.[selectedImage] || ""}
+                                onChange={(e) => handleNoteChange && handleNoteChange(selectedImage, e.target.value)}
                                 placeholder="Anotações para esta imagem..."
                                 className="w-full h-32"
                             />
