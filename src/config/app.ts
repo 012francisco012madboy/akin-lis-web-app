@@ -1,23 +1,23 @@
 import osapiLogo from "@/assets/images/osapi-logo.png";
 import osapiLogoWhite from "@/assets/images/osapi-logo-white.png";
-import { 
-  Home, 
-  CalendarCheck, 
-  LayoutDashboard, 
-  UserRound, 
-  CreditCard, 
-  MessageSquareMore, 
-  Send, 
-  Mail, 
-  LogOut, 
-  Settings2, 
-  Settings, 
-  Cog, 
-  Wrench, 
-  UsersRound, 
-  CalendarPlus2, 
-  CalendarSearch, 
-  CalendarCheck2, 
+import {
+  Home,
+  CalendarCheck,
+  LayoutDashboard,
+  UserRound,
+  CreditCard,
+  MessageSquareMore,
+  Send,
+  Mail,
+  LogOut,
+  Settings2,
+  Settings,
+  Cog,
+  Wrench,
+  UsersRound,
+  CalendarPlus2,
+  CalendarSearch,
+  CalendarCheck2,
   UserRoundCog
 } from "lucide-react";
 
@@ -29,85 +29,90 @@ export const APP_CONFIG = {
   LOGO_WHITE: osapiLogoWhite,
   ROUTES: {
     MENU: [
-      { 
-        label: "Dashboard", 
-        icon: LayoutDashboard, 
-        path: "/akin/dashboard", 
-        access: [ "CHEFE", "TECNICO"] 
+      {
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/akin/dashboard",
+        access: ["CHEFE", "TECNICO"]
       },
-      { 
-        label: "Agendamentos", 
-        icon: CalendarCheck, 
-        path: "/akin/schedule/new", 
+      {
+        label: "Agendamentos",
+        icon: CalendarCheck,
+        path: "/akin/schedule/new",
         access: ["RECEPCIONISTA", "CHEFE"],
         subItems: [
           { label: "Novo", icon: CalendarPlus2, path: "/akin/schedule/new", access: ["RECEPCIONISTA"] },
           { label: "Solicitações", icon: CalendarSearch, path: "/akin/schedule/request", access: ["RECEPCIONISTA"] },
-          { label: "Confirmados", icon: CalendarCheck2, path: "/akin/schedule/confirmed", access: ["CHEFE"] }
+          { label: "Confirmados", icon: CalendarCheck2, path: "/akin/schedule/completed", access: ["CHEFE"] }
         ]
       },
-      { 
-        label: "Pacientes", 
-        icon: UsersRound, 
-        path: "/akin/patient", 
-        access: ["RECEPCIONISTA","CHEFE", "TECNICO"] 
+      {
+        label: "Pacientes",
+        icon: UsersRound,
+        path: "/akin/patient",
+        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"]
       },
-      { 
-        label: "Gestão Equipe", 
-        icon: UserRoundCog, 
-        path: "/akin/team-management", 
-        access: ["CHEFE"] 
+      {
+        label: "Gestão Equipe",
+        icon: UserRoundCog,
+        path: "/akin/team-management",
+        access: ["CHEFE"]
       },
-      { 
-        label: "Pagamentos", 
-        icon: CreditCard, 
-        path: "/akin/payment", 
-        access: ["RECEPCIONISTA"] 
+      {
+        label: "Pagamentos",
+        icon: CreditCard,
+        path: "/akin/payment",
+        access: ["RECEPCIONISTA"]
       },
-      { 
-        label: "Mensagens", 
-        icon: MessageSquareMore, 
-        path: "/akin/message", 
-        access: ["RECEPCIONISTA","TECNICO", "CHEFE"] 
+      {
+        label: "Mensagens",
+        icon: MessageSquareMore,
+        path: "/akin/message",
+        access: ["RECEPCIONISTA", "TECNICO", "CHEFE"]
       },
-      { 
-        label: "Definições", 
-        icon: Settings, 
-        path: "/akin/setting", 
-        access: ["CHEFE"] 
+      {
+        label: "Definições",
+        icon: Settings,
+        path: "/akin/setting",
+        access: ["CHEFE"]
       },
-      { 
-        label: "Perfil", 
-        icon: UserRound, 
-        path: "/akin/profile", 
-        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] 
+      {
+        label: "Perfil",
+        icon: UserRound,
+        path: "/akin/profile",
+        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"]
       },
-      { 
-        label: "Sair", 
-        icon: LogOut, 
-        path: "/logout", 
-        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] 
+      {
+        label: "Sair",
+        icon: LogOut,
+        path: "/logout",
+        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"]
       },
     ],
-    
+
     SCHEDULE: [
-      { 
-        label: "Novo", 
-        icon: CalendarPlus2, 
-        path: "/akin/schedule/new", 
-        access: ["RECEPCIONISTA"] 
+      {
+        label: "Novo",
+        icon: CalendarPlus2,
+        path: "/akin/schedule/new",
+        access: ["RECEPCIONISTA"],
+        subItems: [
+          { label: "Novo", path: "/akin/schedule/new", access: ["RECEPCIONISTA"] },
+          { label: "Solicitações", path: "/akin/schedule/request", access: ["RECEPCIONISTA"] },
+          { label: "Concluídos", path: "/akin/schedule/completed", access: ["RECEPCIONISTA", "CHEFE"] }
+        ]
       },
-      { 
-        label: "Solicitações", 
-        icon: CalendarSearch, 
-        path: "/akin/schedule/request", 
-        access: ["RECEPCIONISTA"] 
+      {
+        label: "Solicitações",
+        icon: CalendarSearch,
+        path: "/akin/schedule/request",
+        access: ["RECEPCIONISTA"]
       },
-      { 
-        label: "Concluídos", 
-        icon: CalendarCheck2, 
-        path: "/akin/schedule/completed", 
-        access: ["RECEPCIONISTA","CHEFE"] 
+      {
+        label: "Concluídos",
+        icon: CalendarCheck2,
+        path: "/akin/schedule/completed",
+        access: ["RECEPCIONISTA", "CHEFE"]
       },
     ],
     PATIENT: {
@@ -116,11 +121,11 @@ export const APP_CONFIG = {
       },
     },
     ALTERNATIVE: {
-      PROFILE: { 
-        label: "Perfil", 
-        icon: null, 
-        path: "/akin/...", 
-        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] 
+      PROFILE: {
+        label: "Perfil",
+        icon: null,
+        path: "/akin/...",
+        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"]
       },
     },
   },

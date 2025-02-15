@@ -23,7 +23,7 @@ export function NavMain({
     icon?: LucideIcon;
     path: string;
     access: string[];
-    subItems?: { label: string; path: string }[];
+    subItems?: { label: string; path: string; access: string[] }[];
   }[];
   userRole: string;
 }) {
@@ -58,15 +58,17 @@ export function NavMain({
                 {item.subItems && (
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {item.subItems.map((subItem) => (
-                        <SidebarMenuSubItem key={subItem.label}>
-                          <SidebarMenuSubButton asChild>
-                            <Link href={subItem.path} className="text-white">
-                              <span>{subItem.label}</span>
-                            </Link>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
+                      {item.subItems
+                        .filter((subItem) => subItem.access.includes(userRole))
+                        .map((subItem) => (
+                          <SidebarMenuSubItem key={subItem.label}>
+                            <SidebarMenuSubButton asChild>
+                              <Link href={subItem.path} className="text-white">
+                                <span>{subItem.label}</span>
+                              </Link>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        ))}
                     </SidebarMenuSub>
                   </CollapsibleContent>
                 )}
