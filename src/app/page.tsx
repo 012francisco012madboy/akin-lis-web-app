@@ -5,7 +5,6 @@ import { Login } from "@/components/login";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient()
-
 export default function Home() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -24,4 +23,4 @@ export default function Home() {
       </section>
     </QueryClientProvider>
   );
-}0
+}
