@@ -28,7 +28,6 @@ interface Shape {
     width?: number;
     height?: number;
     radius?: number;
-    note?: string;
 }
 
 export const ImageModal: React.FC<ImageModalProps> = ({
@@ -37,6 +36,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
     handleNoteChange,
     setSelectedImage,
     moreFuncIsShow
+
 }) => {
     const [selectedShape, setSelectedShape] = useState<"rect" | "circle" | null>(null);
     const [shapes, setShapes] = useState<Shape[]>([]);
@@ -71,7 +71,6 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                 y: pointer.y,
                 width: 100,
                 height: 50,
-                note: "",
             }
             : {
                 id: `${Date.now()}`,
@@ -79,12 +78,10 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                 x: pointer.x,
                 y: pointer.y,
                 radius: 30,
-                note: "",
             };
 
         setShapes((prevShapes) => [...prevShapes, newShape]);
         setSelectedShape(null);
-        setSelectedShapeId(newShape.id); 
     };
 
     const handleShapeSelect = (id: string) => {
@@ -99,12 +96,6 @@ export const ImageModal: React.FC<ImageModalProps> = ({
     const handleTransform = (id: string, newAttrs: Partial<Shape>) => {
         setShapes((prevShapes) =>
             prevShapes.map((shape) => (shape.id === id ? { ...shape, ...newAttrs } : shape))
-        );
-    };
-
-    const handleNoteChangeForShape = (id: string, value: string) => {
-        setShapes((prevShapes) =>
-            prevShapes.map((shape) => (shape.id === id ? { ...shape, note: value } : shape))
         );
     };
 
@@ -139,11 +130,11 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                         stageRef={stageRef}
                     />
                     {
-                        moreFuncIsShow && selectedShapeId && (
+                        moreFuncIsShow && (
                             <Textarea
-                                value={shapes.find(shape => shape.id === selectedShapeId)?.note || ""}
-                                onChange={(e) => handleNoteChangeForShape(selectedShapeId, e.target.value)}
-                                placeholder="Anotações para esta forma..."
+                                value={notes?.[selectedImage] || ""}
+                                onChange={(e) => handleNoteChange && handleNoteChange(selectedImage, e.target.value)}
+                                placeholder="Anotações para esta imagem..."
                                 className="w-full h-32"
                             />
                         )
@@ -163,7 +154,7 @@ const ShapeControls: React.FC<{
     isShapeSelected: boolean;
 }> = ({ setSelectedShape, handleDeleteShape, isShapeSelected }) => (
     <div className="flex gap-5 justify-between">
-        <Button onClick={() => { setSelectedShape("rect"); console.log("Adicionar Retângulo") }}>Adicionar Retângulo</Button>
+        <Button onClick={() => setSelectedShape("rect")}>Adicionar Retângulo</Button>
         <Button onClick={() => setSelectedShape("circle")}>Adicionar Círculo</Button>
         <Button onClick={handleDeleteShape} disabled={!isShapeSelected}>
             Excluir Forma Selecionada
@@ -195,11 +186,11 @@ const CanvasArea: React.FC<{
 }) => (
         <div className="relative w-[400px] h-[400px] bg-black rounded-md">
             <Image
-                width={400}
-                height={400}
+                width={300}
+                height={300}
                 src={selectedImage}
                 alt="Selected"
-                className="absolute w-full h-full rounded-lg object-cover"
+                className="absolute w-full h-full object-cover rounded-lg"
             />
             {
                 moreFuncIsShow && (
