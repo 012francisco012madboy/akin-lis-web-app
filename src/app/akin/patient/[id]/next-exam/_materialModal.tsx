@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/combobox/combobox";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-
 
 const availableMaterials = [
   "Siringa",
@@ -21,11 +20,17 @@ type Material = {
   quantity: number;
 };
 
-export const MedicalMaterialsModal: React.FC<{ isOpen: boolean; onClose: () => void ; exam_id:string; patient_name:string; exam_name:string}> = ({ isOpen, onClose,exam_id,patient_name,exam_name }) => {
+export const MedicalMaterialsModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  exam_id: string;
+  patient_name: string;
+  exam_name: string;
+}> = ({ isOpen, onClose, exam_id, patient_name, exam_name }) => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [selectedMaterial, setSelectedMaterial] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("");
-  const {id} = useParams()
+  const { id } = useParams();
 
   const addMaterial = () => {
     if (selectedMaterial && quantity && !isNaN(Number(quantity))) {
@@ -39,12 +44,12 @@ export const MedicalMaterialsModal: React.FC<{ isOpen: boolean; onClose: () => v
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{patient_name} - {exam_name}</DialogTitle>
-          <DialogDescription>Os materiais são de uso clínico, use com cuidado!</DialogDescription>
-        </DialogHeader>
+    <AlertDialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <AlertDialogContent className="max-w-lg">
+        <AlertDialogHeader>
+          <AlertDialogTitle>{patient_name} - {exam_name}</AlertDialogTitle>
+          <AlertDialogDescription>Os materiais são de uso clínico, use com cuidado!</AlertDialogDescription>
+        </AlertDialogHeader>
 
         <div className="space-y-4">
           <div>
@@ -53,7 +58,7 @@ export const MedicalMaterialsModal: React.FC<{ isOpen: boolean; onClose: () => v
               options={availableMaterials}
               value={selectedMaterial}
               onChange={setSelectedMaterial}
-              placeholder="Choose a material"
+              placeholder="Escolha um material"
             />
           </div>
 
@@ -82,14 +87,17 @@ export const MedicalMaterialsModal: React.FC<{ isOpen: boolean; onClose: () => v
         </div>
 
         <div className="mt-4 flex justify-end space-x-2">
-          <DialogClose asChild>
-            <Button variant="outline">Cancelar</Button>
-          </DialogClose>
-          <Link href={`/akin/patient/${id}/ready-exam/${exam_id}`}>
-            <Button className="bg-akin-turquoise hover:bg-akin-turquoise/80">Seguinte</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+
+          <Link href={`/akin/patient/${id}/ready-exam/${exam_id}`} passHref>
+            <Button className="bg-akin-turquoise hover:bg-akin-turquoise/80" onClick={onClose}>
+              Seguinte
+            </Button>
           </Link>
         </div>
-      </DialogContent>
-    </Dialog>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
