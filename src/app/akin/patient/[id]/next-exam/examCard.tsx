@@ -145,7 +145,6 @@ export const ExamCard = ({ data }: ResponseData) => {
             // isOpen={isMaterialsModalOpen}
             // //@ts-ignore
             // onClose={() => setIsMaterialsModalOpen(false)}
-
             isOpen={isMaterialsModalOpen[exam.id] || false}
             onClose={() => setIsMaterialsModalOpen((prev) => ({ ...prev, [exam.id]: false }))}
             exam_id={String(exam.id_tipo_exame)}
