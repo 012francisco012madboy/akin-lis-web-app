@@ -84,7 +84,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
 
         setShapes((prevShapes) => [...prevShapes, newShape]);
         setSelectedShape(null);
-        setSelectedShapeId(newShape.id); // Ensure the new shape is selected
+        setSelectedShapeId(newShape.id); 
     };
 
     const handleShapeSelect = (id: string) => {
