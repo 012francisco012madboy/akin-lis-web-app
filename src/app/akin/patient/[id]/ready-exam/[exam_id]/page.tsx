@@ -132,7 +132,7 @@ export default function SampleVisualizationPage() {
         setSelectedImage={setSelectedImage}
         notes={notes}
         handleNoteChange={handleNoteChange}
-        moreFuncIsShow={false}
+        moreFuncIsShow={true}
       />
 
       {/* Generate Report Button */}

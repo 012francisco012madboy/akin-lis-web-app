@@ -190,7 +190,7 @@ const CanvasArea: React.FC<{
                 height={300}
                 src={selectedImage}
                 alt="Selected"
-                className="absolute w-full h-full rounded-lg"
+                className="absolute w-full h-full object-cover rounded-lg"
             />
             {
                 moreFuncIsShow && (
