@@ -33,16 +33,34 @@ interface Shape {
 export const ImageModal: React.FC<ImageModalProps> = ({
     selectedImage,
     notes,
-    // handleNoteChange,
     setSelectedImage,
     moreFuncIsShow
 }) => {
     const [selectedShape, setSelectedShape] = useState<"rect" | "circle" | null>(null);
-    const [shapes, setShapes] = useState<Shape[]>([]);
     const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null);
-    const [shapeNotes, setShapeNotes] = useState<Record<string, string>>({});
+    const [shapesByImage, setShapesByImage] = useState<Record<string, Shape[]>>({});
+    const [shapeNotesByImage, setShapeNotesByImage] = useState<Record<string, Record<string, string>>>({});
     const transformerRef = useRef<Konva.Transformer>(null);
     const stageRef = useRef<Konva.Stage>(null);
+
+    // Quando uma nova imagem é aberta, inicializa os dados dela se ainda não existirem
+    useEffect(() => {
+        if (selectedImage) {
+            setShapesByImage((prev) => ({
+                ...prev,
+                [selectedImage]: prev[selectedImage] || [],
+            }));
+
+            setShapeNotesByImage((prev) => ({
+                ...prev,
+                [selectedImage]: prev[selectedImage] || {},
+            }));
+        }
+    }, [selectedImage]);
+
+    // Obtém os dados específicos da imagem atual
+    const shapes = shapesByImage[selectedImage || ""] || [];
+    const shapeNotes = shapeNotesByImage[selectedImage || ""] || {};
 
     useEffect(() => {
         if (transformerRef.current && selectedShapeId) {
@@ -56,32 +74,29 @@ export const ImageModal: React.FC<ImageModalProps> = ({
         }
     }, [selectedShapeId]);
 
+    // Adiciona uma nova forma à imagem atual
     const handleCanvasClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
         if (!selectedShape) return;
+        if (!selectedImage) return;
 
         const stage = e.target.getStage();
         const pointer = stage?.getPointerPosition();
         if (!pointer || e.target !== stage) return;
 
         const newShape: Shape = selectedShape === "rect"
-            ? {
-                id: `${Date.now()}`,
-                type: "rect",
-                x: pointer.x,
-                y: pointer.y,
-                width: 100,
-                height: 50,
-            }
-            : {
-                id: `${Date.now()}`,
-                type: "circle",
-                x: pointer.x,
-                y: pointer.y,
-                radius: 30,
-            };
+            ? { id: `${Date.now()}`, type: "rect", x: pointer.x, y: pointer.y, width: 100, height: 50 }
+            : { id: `${Date.now()}`, type: "circle", x: pointer.x, y: pointer.y, radius: 30 };
 
-        setShapes((prevShapes) => [...prevShapes, newShape]);
-        setShapeNotes((prevNotes) => ({ ...prevNotes, [newShape.id]: "" }));
+        setShapesByImage((prev) => ({
+            ...prev,
+            [selectedImage]: [...(prev[selectedImage] || []), newShape],
+        }));
+
+        setShapeNotesByImage((prev) => ({
+            ...prev,
+            [selectedImage]: { ...(prev[selectedImage] || {}), [newShape.id]: "" },
+        }));
+
         setSelectedShape(null);
     };
 
@@ -90,23 +105,40 @@ export const ImageModal: React.FC<ImageModalProps> = ({
     };
 
     const handleDeleteShape = () => {
-        setShapes((prevShapes) => prevShapes.filter((shape) => shape.id !== selectedShapeId));
-        setShapeNotes((prevNotes) => {
-            const updatedNotes = { ...prevNotes };
-            delete updatedNotes[selectedShapeId as string];
-            return updatedNotes;
+        if (!selectedImage || !selectedShapeId) return;
+
+        setShapesByImage((prev) => ({
+            ...prev,
+            [selectedImage]: prev[selectedImage].filter((shape) => shape.id !== selectedShapeId),
+        }));
+
+        setShapeNotesByImage((prev) => {
+            const updatedNotes = { ...prev[selectedImage] };
+            delete updatedNotes[selectedShapeId];
+            return { ...prev, [selectedImage]: updatedNotes };
         });
+
         setSelectedShapeId(null);
     };
 
     const handleTransform = (id: string, newAttrs: Partial<Shape>) => {
-        setShapes((prevShapes) =>
-            prevShapes.map((shape) => (shape.id === id ? { ...shape, ...newAttrs } : shape))
-        );
+        if (!selectedImage) return;
+
+        setShapesByImage((prev) => ({
+            ...prev,
+            [selectedImage]: prev[selectedImage].map((shape) =>
+                shape.id === id ? { ...shape, ...newAttrs } : shape
+            ),
+        }));
     };
 
     const handleNoteChange = (id: string, value: string) => {
-        setShapeNotes((prevNotes) => ({ ...prevNotes, [id]: value }));
+        if (!selectedImage) return;
+
+        setShapeNotesByImage((prev) => ({
+            ...prev,
+            [selectedImage]: { ...prev[selectedImage], [id]: value },
+        }));
     };
 
     if (!selectedImage) return null;
