@@ -162,7 +162,6 @@ const ShapeControls: React.FC<{
         <Button onClick={() => setSelectedShape(null)}>Desativar Seleção</Button>
     </div>
 );
-
 const CanvasArea: React.FC<{
     selectedImage: string;
     moreFuncIsShow?: boolean;
@@ -183,7 +182,35 @@ const CanvasArea: React.FC<{
     selectedShapeId,
     transformerRef,
     stageRef,
-}) => (
+}) => {
+
+    const handleTransformEnd = (e: Konva.KonvaEventObject<Event>, shape: Shape) => {
+        const node = e.target;
+
+        // Resetando a escala após a transformação
+        const scaleX = node.scaleX();
+        const scaleY = node.scaleY();
+        node.scaleX(1);
+        node.scaleY(1);
+
+        // Calculando novos atributos com escala aplicada
+        const newAttrs = shape.type === "rect"
+            ? {
+                x: node.x(),
+                y: node.y(),
+                width: Math.max(10, node.width() * scaleX),
+                height: Math.max(10, node.height() * scaleY),
+            }
+            : {
+                x: node.x(),
+                y: node.y(),
+                radius: Math.max(5, (node as Konva.Circle).radius() * scaleX),
+            };
+
+        handleTransform(shape.id, newAttrs);
+    };
+
+    return (
         <div className="relative w-[400px] h-[400px] bg-black rounded-md">
             <Image
                 width={300}
@@ -192,78 +219,65 @@ const CanvasArea: React.FC<{
                 alt="Selected"
                 className="absolute w-full h-full object-cover rounded-lg"
             />
-            {
-                moreFuncIsShow && (
-                    <Stage
-                        width={window.innerWidth * 0.9}
-                        height={400}
-                        className="absolute top-0 left-0"
-                        onClick={handleCanvasClick}
-                        ref={stageRef}
-                    >
-                        <Layer>
-                            {shapes.map((shape) => {
-                                const isSelected = shape.id === selectedShapeId;
-                                return shape.type === "rect" ? (
-                                    <Rect
-                                        key={shape.id}
-                                        id={shape.id}
-                                        x={shape.x}
-                                        y={shape.y}
-                                        width={shape.width}
-                                        height={shape.height}
-                                        fill={isSelected ? "rgba(0, 123, 255, 0.7)" : "rgba(0, 123, 255, 0.5)"}
-                                        draggable
-                                        onClick={() => handleShapeSelect(shape.id)}
-                                        onDragEnd={(e) =>
-                                            handleTransform(shape.id, {
-                                                x: e.target.x(),
-                                                y: e.target.y(),
-                                            })
-                                        }
-                                        onTransformEnd={(e) => {
-                                            const node = e.target;
-                                            const newAttrs = {
-                                                x: node.x(),
-                                                y: node.y(),
-                                                width: node.width() * node.scaleX(),
-                                                height: node.height() * node.scaleY(),
-                                            };
-                                            handleTransform(shape.id, newAttrs);
-                                        }}
-                                    />
-                                ) : (
-                                    <Circle
-                                        key={shape.id}
-                                        id={shape.id}
-                                        x={shape.x}
-                                        y={shape.y}
-                                        radius={shape.radius}
-                                        fill={isSelected ? "rgba(220, 53, 69, 0.7)" : "rgba(220, 53, 69, 0.5)"}
-                                        draggable
-                                        onClick={() => handleShapeSelect(shape.id)}
-                                        onDragEnd={(e) =>
-                                            handleTransform(shape.id, {
-                                                x: e.target.x(),
-                                                y: e.target.y(),
-                                            })
-                                        }
-                                        onTransformEnd={(e) => {
-                                            const node = e.target;
-                                            const newAttrs = {
-                                                x: node.x(),
-                                                y: node.y(),
-                                                radius: (node as Konva.Circle).radius() * node.scaleX(),
-                                            };
-                                            handleTransform(shape.id, newAttrs);
-                                        }}
-                                    />
-                                );
-                            })}
-                            <Transformer ref={transformerRef} />
-                        </Layer>
-                    </Stage>
-                )
-            }
+            {moreFuncIsShow && (
+                <Stage
+                    width={window.innerWidth * 0.9}
+                    height={400}
+                    className="absolute top-0 left-0"
+                    onClick={handleCanvasClick}
+                    ref={stageRef}
+                >
+                    <Layer>
+                        {shapes.map((shape) => {
+                            const isSelected = shape.id === selectedShapeId;
+                            const shapeProps = {
+                                key: shape.id,
+                                id: shape.id,
+                                x: shape.x,
+                                y: shape.y,
+                                draggable: true,
+                                onClick: (e: Konva.KonvaEventObject<MouseEvent>) => {
+                                    e.cancelBubble = true;
+                                    handleShapeSelect(shape.id);
+                                },
+                                onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) =>
+                                    handleTransform(shape.id, {
+                                        x: e.target.x(),
+                                        y: e.target.y(),
+                                    }),
+                                onTransformEnd: (e: Konva.KonvaEventObject<Event>) =>
+                                    handleTransformEnd(e, shape),
+                                fill: isSelected
+                                    ? "rgba(0, 123, 255, 0.7)"
+                                    : "rgba(0, 123, 255, 0.5)",
+                            };
+
+                            return shape.type === "rect" ? (
+                                <Rect
+                                    {...shapeProps}
+                                    width={shape.width}
+                                    height={shape.height}
+                                />
+                            ) : (
+                                <Circle
+                                    {...shapeProps}
+                                    radius={shape.radius}
+                                />
+                            );
+                        })}
+                        <Transformer
+                            ref={transformerRef}
+                            boundBoxFunc={(oldBox, newBox) => {
+                                // Limita o tamanho mínimo da forma para evitar que desapareça
+                                if (newBox.width < 10 || newBox.height < 10) {
+                                    return oldBox;
+                                }
+                                return newBox;
+                            }}
+                        />
+                    </Layer>
+                </Stage>
+            )}
         </div>
     );
+};
