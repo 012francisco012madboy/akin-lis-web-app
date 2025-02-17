@@ -33,13 +33,14 @@ interface Shape {
 export const ImageModal: React.FC<ImageModalProps> = ({
     selectedImage,
     notes,
-    handleNoteChange,
+    // handleNoteChange,
     setSelectedImage,
     moreFuncIsShow
 }) => {
     const [selectedShape, setSelectedShape] = useState<"rect" | "circle" | null>(null);
     const [shapes, setShapes] = useState<Shape[]>([]);
     const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null);
+    const [shapeNotes, setShapeNotes] = useState<Record<string, string>>({});
     const transformerRef = useRef<Konva.Transformer>(null);
     const stageRef = useRef<Konva.Stage>(null);
 
@@ -80,6 +81,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
             };
 
         setShapes((prevShapes) => [...prevShapes, newShape]);
+        setShapeNotes((prevNotes) => ({ ...prevNotes, [newShape.id]: "" }));
         setSelectedShape(null);
     };
 
@@ -89,6 +91,11 @@ export const ImageModal: React.FC<ImageModalProps> = ({
 
     const handleDeleteShape = () => {
         setShapes((prevShapes) => prevShapes.filter((shape) => shape.id !== selectedShapeId));
+        setShapeNotes((prevNotes) => {
+            const updatedNotes = { ...prevNotes };
+            delete updatedNotes[selectedShapeId as string];
+            return updatedNotes;
+        });
         setSelectedShapeId(null);
     };
 
@@ -96,6 +103,10 @@ export const ImageModal: React.FC<ImageModalProps> = ({
         setShapes((prevShapes) =>
             prevShapes.map((shape) => (shape.id === id ? { ...shape, ...newAttrs } : shape))
         );
+    };
+
+    const handleNoteChange = (id: string, value: string) => {
+        setShapeNotes((prevNotes) => ({ ...prevNotes, [id]: value }));
     };
 
     if (!selectedImage) return null;
@@ -108,15 +119,13 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                 </DialogHeader>
 
                 <div className="w-full h-full flex flex-col gap-5">
-                    {
-                        moreFuncIsShow && (
-                            <ShapeControls
-                                setSelectedShape={setSelectedShape}
-                                handleDeleteShape={handleDeleteShape}
-                                isShapeSelected={!!selectedShapeId}
-                            />
-                        )
-                    }
+                    {moreFuncIsShow && (
+                        <ShapeControls
+                            setSelectedShape={setSelectedShape}
+                            handleDeleteShape={handleDeleteShape}
+                            isShapeSelected={!!selectedShapeId}
+                        />
+                    )}
 
                     <CanvasArea
                         moreFuncIsShow
@@ -127,18 +136,12 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                         handleTransform={handleTransform}
                         selectedShapeId={selectedShapeId}
                         transformerRef={transformerRef}
+                        setSelectedShapeId={setSelectedShapeId}
                         stageRef={stageRef}
+                        shapeNotes={shapeNotes}
+                        handleNoteChange={handleNoteChange}
                     />
-                    {
-                        moreFuncIsShow && (
-                            <Textarea
-                                value={notes?.[selectedImage] || ""}
-                                onChange={(e) => handleNoteChange && handleNoteChange(selectedImage, e.target.value)}
-                                placeholder="Anotações para esta imagem..."
-                                className="w-full h-32"
-                            />
-                        )
-                    }
+
                     <DialogFooter>
                         <Button onClick={() => setSelectedImage(null)}>Fechar</Button>
                     </DialogFooter>
@@ -156,12 +159,10 @@ const ShapeControls: React.FC<{
     <div className="flex gap-5 justify-between">
         <Button onClick={() => setSelectedShape("rect")}>Adicionar Retângulo</Button>
         <Button onClick={() => setSelectedShape("circle")}>Adicionar Círculo</Button>
-        <Button onClick={handleDeleteShape} disabled={!isShapeSelected}>
-            Excluir Forma Selecionada
-        </Button>
-        <Button onClick={() => setSelectedShape(null)}>Desativar Seleção</Button>
+        <Button onClick={handleDeleteShape} disabled={!isShapeSelected}>Excluir Forma Selecionada</Button>
     </div>
 );
+
 const CanvasArea: React.FC<{
     selectedImage: string;
     moreFuncIsShow?: boolean;
@@ -172,6 +173,9 @@ const CanvasArea: React.FC<{
     selectedShapeId: string | null;
     transformerRef: React.RefObject<Konva.Transformer>;
     stageRef: React.RefObject<Konva.Stage>;
+    setSelectedShapeId: React.Dispatch<React.SetStateAction<string | null>>;
+    shapeNotes: Record<string, string>;
+    handleNoteChange: (id: string, value: string) => void;
 }> = ({
     selectedImage,
     moreFuncIsShow,
@@ -182,101 +186,112 @@ const CanvasArea: React.FC<{
     selectedShapeId,
     transformerRef,
     stageRef,
+    setSelectedShapeId,
+    shapeNotes,
+    handleNoteChange,
 }) => {
+    const [notePosition, setNotePosition] = useState({ x: 20, y: 20 });
+    const noteRef = useRef<HTMLDivElement>(null);
+    const dragging = useRef(false);
+    const offset = useRef({ x: 0, y: 0 });
 
-    const handleTransformEnd = (e: Konva.KonvaEventObject<Event>, shape: Shape) => {
-        const node = e.target;
-
-        // Resetando a escala após a transformação
-        const scaleX = node.scaleX();
-        const scaleY = node.scaleY();
-        node.scaleX(1);
-        node.scaleY(1);
-
-        // Calculando novos atributos com escala aplicada
-        const newAttrs = shape.type === "rect"
-            ? {
-                x: node.x(),
-                y: node.y(),
-                width: Math.max(10, node.width() * scaleX),
-                height: Math.max(10, node.height() * scaleY),
-            }
-            : {
-                x: node.x(),
-                y: node.y(),
-                radius: Math.max(5, (node as Konva.Circle).radius() * scaleX),
-            };
-
-        handleTransform(shape.id, newAttrs);
+    const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
+        if (selectedShapeId) return;
+        handleCanvasClick(e);
     };
+
+    // Início do arraste do bloco de notas
+    const handleDragStart = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (!noteRef.current) return;
+        dragging.current = true;
+        offset.current = {
+            x: e.clientX - notePosition.x,
+            y: e.clientY - notePosition.y,
+        };
+    };
+
+    // Movimento do bloco de notas
+    const handleDragMove = (e: MouseEvent) => {
+        if (!dragging.current) return;
+        setNotePosition({
+            x: e.clientX - offset.current.x,
+            y: e.clientY - offset.current.y,
+        });
+    };
+
+    // Fim do arraste
+    const handleDragEnd = () => {
+        dragging.current = false;
+    };
+
+    useEffect(() => {
+        window.addEventListener("mousemove", handleDragMove);
+        window.addEventListener("mouseup", handleDragEnd);
+        return () => {
+            window.removeEventListener("mousemove", handleDragMove);
+            window.removeEventListener("mouseup", handleDragEnd);
+        };
+    }, []);
 
     return (
         <div className="relative w-[400px] h-[400px] bg-black rounded-md">
-            <Image
-                width={300}
-                height={300}
-                src={selectedImage}
-                alt="Selected"
-                className="absolute w-full h-full object-cover rounded-lg"
-            />
-            {moreFuncIsShow && (
-                <Stage
-                    width={window.innerWidth * 0.9}
-                    height={400}
-                    className="absolute top-0 left-0"
-                    onClick={handleCanvasClick}
-                    ref={stageRef}
-                >
-                    <Layer>
-                        {shapes.map((shape) => {
-                            const isSelected = shape.id === selectedShapeId;
-                            const shapeProps = {
-                                key: shape.id,
-                                id: shape.id,
-                                x: shape.x,
-                                y: shape.y,
-                                draggable: true,
-                                onClick: (e: Konva.KonvaEventObject<MouseEvent>) => {
+            <Image width={400} height={400} src={selectedImage} alt="Selected" className="absolute w-full h-full object-cover rounded-lg" />
+
+            <Stage width={400} height={400} className="absolute top-0 left-0" onClick={handleStageClick} ref={stageRef}>
+                <Layer>
+                    {shapes.map((shape) =>
+                        shape.type === "rect" ? (
+                            <Rect
+                                key={shape.id}
+                                id={shape.id}
+                                x={shape.x}
+                                y={shape.y}
+                                width={shape.width}
+                                height={shape.height}
+                                draggable
+                                fill={shape.id === selectedShapeId ? "rgba(0, 123, 255, 0.7)" : "rgba(0, 123, 255, 0.5)"}
+                                onClick={(e) => {
                                     e.cancelBubble = true;
                                     handleShapeSelect(shape.id);
-                                },
-                                onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) =>
-                                    handleTransform(shape.id, {
-                                        x: e.target.x(),
-                                        y: e.target.y(),
-                                    }),
-                                onTransformEnd: (e: Konva.KonvaEventObject<Event>) =>
-                                    handleTransformEnd(e, shape),
-                                fill: isSelected
-                                    ? "rgba(0, 123, 255, 0.7)"
-                                    : "rgba(0, 123, 255, 0.5)",
-                            };
+                                }}
+                            />
+                        ) : (
+                            <Circle
+                                key={shape.id}
+                                id={shape.id}
+                                x={shape.x}
+                                y={shape.y}
+                                radius={shape.radius}
+                                draggable
+                                fill={shape.id === selectedShapeId ? "rgba(220, 53, 69, 0.7)" : "rgba(220, 53, 69, 0.5)"}
+                                onClick={(e) => {
+                                    e.cancelBubble = true;
+                                    handleShapeSelect(shape.id);
+                                }}
+                            />
+                        )
+                    )}
+                    <Transformer ref={transformerRef} />
+                </Layer>
+            </Stage>
 
-                            return shape.type === "rect" ? (
-                                <Rect
-                                    {...shapeProps}
-                                    width={shape.width}
-                                    height={shape.height}
-                                />
-                            ) : (
-                                <Circle
-                                    {...shapeProps}
-                                    radius={shape.radius}
-                                />
-                            );
-                        })}
-                        <Transformer
-                            ref={transformerRef}
-                            boundBoxFunc={(oldBox, newBox) => {
-                                // Limita o tamanho mínimo da forma para evitar que desapareça
-                                if (newBox.width < 10 || newBox.height < 10) {
-                                    return oldBox;
-                                }
-                                return newBox;
-                            }}
-                        />
-                    </Layer>
-                </Stage>
+            {selectedShapeId && (
+                <div
+                    ref={noteRef}
+                    className="absolute bg-white p-3 rounded shadow-md w-48 cursor-move"
+                    style={{ left: notePosition.x, top: notePosition.y }}
+                    onMouseDown={handleDragStart}
+                    onClick={(e) => e.stopPropagation()} // Evita que o clique feche o bloco de notas
+                >
+                    <h3 className="text-sm font-bold mb-2">Bloco de Notas</h3>
+                    <Textarea
+                        value={shapeNotes[selectedShapeId] || ""}
+                        onChange={(e) => handleNoteChange(selectedShapeId, e.target.value)}
+                        placeholder="Escreva algo sobre esta forma..."
+                        className="w-full h-24"
+                    />
+                    <Button className="mt-2 w-full" onClick={() => setSelectedShapeId(null)}>Fechar</Button>
+                </div>
             )}
         </div>
     );
