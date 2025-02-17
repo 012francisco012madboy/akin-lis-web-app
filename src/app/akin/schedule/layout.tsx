@@ -7,9 +7,8 @@ import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
-import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
-import { Skeleton } from "@/components/ui/skeleton";
+import Cookies from "js-cookie";
 
 interface ISchedule {
   children: React.ReactNode;
@@ -29,31 +28,30 @@ const filterScheduleByAccess = (schedule: string) => {
 
 export default function Schedule({ children }: ISchedule) {
   const pathname = usePathname();
-  const { user } = useAuthStore();
+  const userRole = Cookies.get("akin-role") || "";
+  // const { data, isLoading } = useQuery({
+  //   queryKey: ["user-data"],
+  //   queryFn: async () => {
+  //     return await _axios.get(`/users/${user?.id}`);
+  //   },
+  // });
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["user-data"],
-    queryFn: async () => {
-      return await _axios.get(`/users/${user?.id}`);
-    },
-  });
+  // if (isLoading) {
+  //   return (
+  //     <div className="h-full flex-col space-y-5 ">
+  //       <div className=" flex w-full justify-between">
+  //         <CustomBreadcrumb items={breadcumbItem} />
+  //         <Skeleton className="h-[50px] w-[400px]" />
+  //       </div>
 
-  if (isLoading) {
-    return (
-      <div className="h-full flex-col space-y-5 ">
-        <div className=" flex w-full justify-between">
-          <CustomBreadcrumb items={breadcumbItem} />
-          <Skeleton className="h-[50px] w-[400px]" />
-        </div>
+  //       <hr />
+  //       <View.Scroll>{children}</View.Scroll>
+  //       {/* <Skeleton className="h-[500px] " />  */}
+  //     </div>
+  //   );
+  // }
 
-        <hr />
-        <View.Scroll>{children}</View.Scroll>
-        {/* <Skeleton className="h-[500px] " />  */}
-      </div>
-    );
-  }
-
-  const routes = filterScheduleByAccess(data!.data.tipo);
+  const routes = filterScheduleByAccess(userRole);
 
   // Encontra o item que corresponde ao pathname atual
   const activeTab = routes.find((item) => pathname === item.path)?.path || routes[0].path;

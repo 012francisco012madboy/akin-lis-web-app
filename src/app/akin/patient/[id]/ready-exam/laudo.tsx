@@ -70,6 +70,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 //@ts-ignore
 import html2pdf from 'html2pdf.js';
+// react pdf renderer
 
 interface LaudoModalProps {
   laudoModalOpen: boolean;
