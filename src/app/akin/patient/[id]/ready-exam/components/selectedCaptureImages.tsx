@@ -36,7 +36,6 @@ export const ImageModal: React.FC<ImageModalProps> = ({
     handleNoteChange,
     setSelectedImage,
     moreFuncIsShow
-
 }) => {
     const [selectedShape, setSelectedShape] = useState<"rect" | "circle" | null>(null);
     const [shapes, setShapes] = useState<Shape[]>([]);
@@ -120,6 +119,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                     }
 
                     <CanvasArea
+                        moreFuncIsShow
                         selectedImage={selectedImage}
                         shapes={shapes}
                         handleCanvasClick={handleCanvasClick}
