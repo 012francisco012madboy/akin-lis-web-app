@@ -247,7 +247,7 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
               Parar Captura
             </Button>
             <Button disabled={capturedImages.length === 0} className="bg-green-500 hover:bg-green-600">
-              Finalizar e Enviar
+              Finalizar e Enviar à IA
             </Button>
           </div>
           <Button variant={"outline"} onClick={() => {

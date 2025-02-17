@@ -8,7 +8,7 @@ import { useParams } from "next/navigation";
 import { _axios } from "@/lib/axios";
 import AutomatedAnalysis from "../modalAutomatiImage";
 import { ManualExam } from "../manualExam";
-import { ImageModal } from "../components/selectedCaptureImages";
+import { ImageModal, Shape } from "../components/selectedCaptureImages";
 import { CapturedImages } from "../components/listCaptureImages";
 import { LaudoModal } from "../laudo";
 
@@ -19,6 +19,7 @@ export default function SampleVisualizationPage() {
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen] = useState(false);
+  const [imageAnnotations, setImageAnnotations] = useState<Record<string, Shape[]>>({}); // 🔹 Armazena anotações de todas as imagens
   const { id, exam_id } = useParams();
 
   const getPatientInfo = useQuery({
@@ -56,10 +57,21 @@ export default function SampleVisualizationPage() {
 
   // Laudo Modal
   const [laudoModalOpen, setLaudoModalOpen] = useState(false);
+
+  const handleClickOnGenerateLaudo = () => {
+    setLaudoModalOpen(true);
+  }
   const handleGenerateReport = () => {
-    // Lógica de geração de relatório (simulada)
-    console.log("Gerando relatório com notas:", notes);
-    setLaudoModalOpen(true); // Abre o modal do laudo
+    const reportData = capturedImages.map((image) => ({
+      image,
+      notes: notes[image] || "",
+      annotations: imageAnnotations[image]?.shapes.map((shape) => ({
+        ...shape,
+        note: imageAnnotations[image]?.shapeNotes[shape.id] || "",
+      })) || [],
+    }));
+
+    console.log("📌 Relatório de Anotações:", reportData);
   };
 
   const handleSendToAI = () => {
@@ -131,16 +143,20 @@ export default function SampleVisualizationPage() {
         selectedImage={selectedImage}
         setSelectedImage={setSelectedImage}
         notes={notes}
-        handleNoteChange={handleNoteChange}
+        handleNoteChange={(image, value) => setNotes((prev) => ({ ...prev, [image]: value }))}
+        setImageAnnotations={setImageAnnotations} // Passa para armazenar formas e notas das formas
         moreFuncIsShow={true}
       />
 
       {/* Generate Report Button */}
       {capturedImages.length > 0 && (
         <div className="mt-6 flex justify-end gap-2">
-          <Button onClick={handleSendToAI} className="bg-green-500 hover:bg-green-600">
+         {/* <Button onClick={handleSendToAI} className="bg-green-500 hover:bg-green-600">
             Enviar à IA
-          </Button>
+          </Button>  */}
+            <Button onClick={handleClickOnGenerateLaudo} className="bg-green-500 hover:bg-green-600">
+            Gerar laudo
+          </Button> 
           <Button onClick={handleGenerateReport} className="bg-green-500 hover:bg-green-600">
             Concluir
           </Button>

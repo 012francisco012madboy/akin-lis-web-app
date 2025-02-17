@@ -18,9 +18,10 @@ interface ImageModalProps {
     handleNoteChange?: (image: string, value: string) => void;
     setSelectedImage: (image: string | null) => void;
     moreFuncIsShow?: boolean;
+    setImageAnnotations?: (annotations: Record<string, Shape[]>) => void; // 🔹 Nova prop
 }
 
-interface Shape {
+export interface Shape {
     id: string;
     type: "rect" | "circle";
     x: number;
@@ -34,6 +35,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
     selectedImage,
     notes,
     setSelectedImage,
+    setImageAnnotations,
     moreFuncIsShow
 }) => {
     const [selectedShape, setSelectedShape] = useState<"rect" | "circle" | null>(null);
@@ -42,6 +44,24 @@ export const ImageModal: React.FC<ImageModalProps> = ({
     const [shapeNotesByImage, setShapeNotesByImage] = useState<Record<string, Record<string, string>>>({});
     const transformerRef = useRef<Konva.Transformer>(null);
     const stageRef = useRef<Konva.Stage>(null);
+
+    const handleSaveAnnotations = () => {
+        if (!selectedImage) return;
+
+        setImageAnnotations((prev) => ({
+            ...prev,
+            [selectedImage]: {
+                shapes: shapesByImage[selectedImage] || [],
+                shapeNotes: shapeNotesByImage[selectedImage] || {},
+            },
+        }));
+
+        console.log(`✅ Anotações salvas para ${selectedImage}:`, {
+            shapes: shapesByImage[selectedImage] || [],
+            shapeNotes: shapeNotesByImage[selectedImage] || {},
+        });
+    };
+
 
     // Quando uma nova imagem é aberta, inicializa os dados dela se ainda não existirem
     useEffect(() => {
@@ -141,6 +161,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
         }));
     };
 
+
     if (!selectedImage) return null;
 
     return (
@@ -173,6 +194,10 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                         shapeNotes={shapeNotes}
                         handleNoteChange={handleNoteChange}
                     />
+
+                    <Button onClick={handleSaveAnnotations} className="bg-blue-500 hover:bg-blue-600">
+                        Salvar Alterações
+                    </Button>
 
                     <DialogFooter>
                         <Button onClick={() => setSelectedImage(null)}>Fechar</Button>
@@ -222,93 +247,117 @@ const CanvasArea: React.FC<{
     shapeNotes,
     handleNoteChange,
 }) => {
-    const [notePosition, setNotePosition] = useState({ x: 20, y: 20 });
-    const noteRef = useRef<HTMLDivElement>(null);
-    const dragging = useRef(false);
-    const offset = useRef({ x: 0, y: 0 });
+        const [notePosition, setNotePosition] = useState({ x: 20, y: 20 });
+        const noteRef = useRef<HTMLDivElement>(null);
+        const dragging = useRef(false);
+        const offset = useRef({ x: 0, y: 0 });
 
-    const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
-        if (selectedShapeId) return;
-        handleCanvasClick(e);
-    };
-
-    // Início do arraste do bloco de notas
-    const handleDragStart = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (!noteRef.current) return;
-        dragging.current = true;
-        offset.current = {
-            x: e.clientX - notePosition.x,
-            y: e.clientY - notePosition.y,
+        const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
+            if (selectedShapeId) return;
+            handleCanvasClick(e);
         };
-    };
 
-    // Movimento do bloco de notas
-    const handleDragMove = (e: MouseEvent) => {
-        if (!dragging.current) return;
-        setNotePosition({
-            x: e.clientX - offset.current.x,
-            y: e.clientY - offset.current.y,
-        });
-    };
-
-    // Fim do arraste
-    const handleDragEnd = () => {
-        dragging.current = false;
-    };
-
-    useEffect(() => {
-        window.addEventListener("mousemove", handleDragMove);
-        window.addEventListener("mouseup", handleDragEnd);
-        return () => {
-            window.removeEventListener("mousemove", handleDragMove);
-            window.removeEventListener("mouseup", handleDragEnd);
+        // Início do arraste do bloco de notas
+        const handleDragStart = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+            if (!noteRef.current) return;
+            dragging.current = true;
+            offset.current = {
+                x: e.clientX - notePosition.x,
+                y: e.clientY - notePosition.y,
+            };
         };
-    }, []);
 
-    return (
-        <div className="relative w-[400px] h-[400px] bg-black rounded-md">
-            <Image width={400} height={400} src={selectedImage} alt="Selected" className="absolute w-full h-full object-cover rounded-lg" />
+        // Movimento do bloco de notas
+        const handleDragMove = (e: MouseEvent) => {
+            if (!dragging.current) return;
+            setNotePosition({
+                x: e.clientX - offset.current.x,
+                y: e.clientY - offset.current.y,
+            });
+        };
 
-            <Stage width={400} height={400} className="absolute top-0 left-0" onClick={handleStageClick} ref={stageRef}>
-                <Layer>
-                    {shapes.map((shape) =>
-                        shape.type === "rect" ? (
-                            <Rect
-                                key={shape.id}
-                                id={shape.id}
-                                x={shape.x}
-                                y={shape.y}
-                                width={shape.width}
-                                height={shape.height}
-                                draggable
-                                fill={shape.id === selectedShapeId ? "rgba(0, 123, 255, 0.7)" : "rgba(0, 123, 255, 0.5)"}
-                                onClick={(e) => {
-                                    e.cancelBubble = true;
-                                    handleShapeSelect(shape.id);
-                                }}
-                            />
-                        ) : (
-                            <Circle
-                                key={shape.id}
-                                id={shape.id}
-                                x={shape.x}
-                                y={shape.y}
-                                radius={shape.radius}
-                                draggable
-                                fill={shape.id === selectedShapeId ? "rgba(220, 53, 69, 0.7)" : "rgba(220, 53, 69, 0.5)"}
-                                onClick={(e) => {
-                                    e.cancelBubble = true;
-                                    handleShapeSelect(shape.id);
-                                }}
-                            />
-                        )
-                    )}
-                    <Transformer ref={transformerRef} />
-                </Layer>
-            </Stage>
+        // Fim do arraste
+        const handleDragEnd = () => {
+            dragging.current = false;
+        };
 
-            {selectedShapeId && (
+        useEffect(() => {
+            window.addEventListener("mousemove", handleDragMove);
+            window.addEventListener("mouseup", handleDragEnd);
+            return () => {
+                window.removeEventListener("mousemove", handleDragMove);
+                window.removeEventListener("mouseup", handleDragEnd);
+            };
+        }, []);
+
+        return (
+            <div className="relative w-[400px] h-[400px] bg-black rounded-md">
+                <Image width={400} height={400} src={selectedImage} alt="Selected" className="absolute w-full h-full object-cover rounded-lg" />
+
+                <Stage width={400} height={400} className="absolute top-0 left-0" onClick={handleStageClick} ref={stageRef}>
+                    <Layer>
+                        {shapes.map((shape) =>
+                            shape.type === "rect" ? (
+                                <Rect
+                                    key={shape.id}
+                                    id={shape.id}
+                                    x={shape.x}
+                                    y={shape.y}
+                                    width={shape.width}
+                                    height={shape.height}
+                                    draggable
+                                    fill={shape.id === selectedShapeId ? "rgba(0, 123, 255, 0.7)" : "rgba(0, 123, 255, 0.5)"}
+                                    onClick={(e) => {
+                                        e.cancelBubble = true;
+                                        handleShapeSelect(shape.id);
+                                    }}
+                                />
+                            ) : (
+                                <Circle
+                                    key={shape.id}
+                                    id={shape.id}
+                                    x={shape.x}
+                                    y={shape.y}
+                                    radius={shape.radius}
+                                    draggable
+                                    fill={shape.id === selectedShapeId ? "rgba(220, 53, 69, 0.7)" : "rgba(220, 53, 69, 0.5)"}
+                                    onClick={(e) => {
+                                        e.cancelBubble = true;
+                                        handleShapeSelect(shape.id);
+                                    }}
+                                />
+                            )
+                        )}
+                        <Transformer ref={transformerRef} />
+                    </Layer>
+                </Stage>
+
+                {selectedShapeId && (
+                    <div
+                        ref={noteRef}
+                        className="absolute bg-white p-3 rounded shadow-md w-48 cursor-move"
+                        style={{ left: notePosition.x, top: notePosition.y }}
+                        onMouseDown={handleDragStart}
+                        onClick={(e) => e.stopPropagation()} // Evita que o clique feche o bloco de notas
+                    >
+                        <h3 className="text-sm font-bold mb-2">Bloco de Notas</h3>
+                        <Textarea
+                            value={shapeNotes[selectedShapeId] || ""}
+                            onChange={(e) => handleNoteChange(selectedShapeId, e.target.value)}
+                            placeholder="Escreva algo..."
+                            className="w-full h-16"
+                        />
+                        <Button className="mt-2 w-full" onClick={() => setSelectedShapeId(null)}>Fechar</Button>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+/*
+ {shapes.map((shape) => (
                 <div
+                    key={shape.id}
                     ref={noteRef}
                     className="absolute bg-white p-3 rounded shadow-md w-48 cursor-move"
                     style={{ left: notePosition.x, top: notePosition.y }}
@@ -317,14 +366,14 @@ const CanvasArea: React.FC<{
                 >
                     <h3 className="text-sm font-bold mb-2">Bloco de Notas</h3>
                     <Textarea
-                        value={shapeNotes[selectedShapeId] || ""}
-                        onChange={(e) => handleNoteChange(selectedShapeId, e.target.value)}
-                        placeholder="Escreva algo sobre esta forma..."
-                        className="w-full h-24"
+                        value={shapeNotes[shape.id] || ""}
+                        onChange={(e) => handleNoteChange(shape.id, e.target.value)}
+                        placeholder="Escreva algo..."
+                        className="w-full h-16"
                     />
                     <Button className="mt-2 w-full" onClick={() => setSelectedShapeId(null)}>Fechar</Button>
                 </div>
-            )}
-        </div>
-    );
-};
+            ))}
+ 
+ 
+*/
