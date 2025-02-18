@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,7 +29,8 @@ const styles = StyleSheet.create({
   image: { width: 150, height: 150, margin: 5 },
   imgDiv:{
         display:'flex',
-        justifyContent:'between',
+        flexDirection:"row",
+        justifyContent:'space-between',
         gap:5
   }
 });
