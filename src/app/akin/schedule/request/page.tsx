@@ -8,7 +8,6 @@ export const dynamic = "force-dynamic";
 export default function Request() {
   const [requestSchedule, setRequestSchedule] = useState<ScheduleType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
   useEffect(() => {
     const fetchScheduleData = async () => {
       try {
