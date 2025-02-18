@@ -10,9 +10,6 @@ import { IExamProps, Patient } from "../types";
 import { PatientDetails } from "./components/PatientDetails";
 import { ScheduleDetails } from "./components/ScheduleDetails";
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/utils/zustand-store/authStore";
-import { useQuery } from "@tanstack/react-query";
-import { UserData } from "../../profile/page";
 import { resetInputs } from "./utils/reset-inputs-func";
 
 export type SchemaScheduleType = z.infer<typeof schemaSchedule>;
@@ -29,8 +26,6 @@ export default function New() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | undefined>();
   const [schedules, setSchedules] = useState([{ exam: "", date: new Date(), time: "" }]);
   const [resetPatient, setResetPatient] = useState(false);
-
-  const { user } = useAuthStore();
 
   useEffect(() => {
     fetchPatientsAndExams();
