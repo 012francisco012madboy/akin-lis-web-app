@@ -5,7 +5,7 @@ import { z } from "zod";
 import { ModalNewPatient } from "./components/ModalNewPatient";
 import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
-import { schemaSchedule } from "./schemaZodNewPatient";
+import { schemaSchedule } from "./utils/schemaZodNewPatient";
 import { IExamProps, Patient } from "../types";
 import { PatientDetails } from "./components/PatientDetails";
 import { ScheduleDetails } from "./components/ScheduleDetails";
@@ -104,7 +104,7 @@ export default function New() {
   const handleSubmit = async () => {
     const validation = validateSchedule();
     if (!validation.isValid) return;
-console.log(" Validation",validation.data)
+    console.log(" Validation", validation.data)
     setIsSaving(true);
     try {
       const response = await _axios.post("/schedulings/set-schedule", validation.data);

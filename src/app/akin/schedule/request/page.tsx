@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import CardScheduleContainer from "../CardScheduleContainer";
 import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification } from "@/lib/sonner";
-export const dynamic = "force-dynamic"; 
 export default function Request() {
   const [requestSchedule, setRequestSchedule] = useState<ScheduleType[]>([]);
   const [isLoading, setIsLoading] = useState(true);

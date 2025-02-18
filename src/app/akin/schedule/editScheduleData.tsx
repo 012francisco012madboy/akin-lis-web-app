@@ -44,12 +44,6 @@ export function EditScheduleFormModal({
   const queryClient = useQueryClient();
 
   const { user } = useAuthStore();
-  const userRole = useQuery({
-    queryKey: ["userRole"],
-    queryFn: async () => {
-      return await _axios.get(`/users/${user?.id}`);
-    },
-  });
 
   // Fetch dos técnicos
   const technicians = useQuery({

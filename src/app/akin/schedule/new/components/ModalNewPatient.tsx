@@ -4,7 +4,7 @@ import { DialogWindow } from "@/components/dialog";
 import { Input } from "@/components/input";
 import { Save, UserRoundPlus } from "lucide-react";
 import { useState } from "react";
-import { schemaSchedule } from "../schemaZodNewPatient";
+import { schemaSchedule } from "../utils/schemaZodNewPatient";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { _axios } from "@/lib/axios";
 import { genders, mapFormDataToPatient } from "../utils/mapFormDataToPatient";
@@ -27,7 +27,7 @@ export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: 
       patient_name: patientData.nome_completo,
       patient_gender: data.get("gender") as string,
       patient_email: patientData.email
-      
+
     });
 
     if (!validatedData.success) {
@@ -109,7 +109,7 @@ const PatientRegistrationModal = ({
         name="name"
         className="border-[1px] bg-white border-gray-300 rounded-lg 0 transition-all placeholder-gray-500 text-gray-800"
       />
-       <Input.InputText
+      <Input.InputText
         placeholder="Email do Paciente"
         type="email"
         required
