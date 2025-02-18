@@ -47,7 +47,7 @@ export default function SampleVisualizationPage() {
 
   const handleNoteChange = (image: string, value: string) => {
     setNotes((prev) => ({ ...prev, [image]: value }));
-};
+  };
 
   const handleAutomatedAnalysisOpen = () => {
     setIsAutomatedAnalysisOpen(true);
@@ -66,7 +66,7 @@ export default function SampleVisualizationPage() {
       //@ts-ignore
       annotations: imageAnnotations[image]?.shapes.map((shape) => ({
         ...shape,
-      //@ts-ignore
+        //@ts-ignore
         note: imageAnnotations[image]?.shapeNotes[shape.id] || "",
       })) || [],
     }));
@@ -162,14 +162,16 @@ export default function SampleVisualizationPage() {
           {/* <Button onClick={handleSendToAI} className="bg-green-500 hover:bg-green-600">
             Enviar à IA
           </Button>  */}
-          <Button onClick={handleClickOnGenerateLaudo} className="bg-green-500 hover:bg-green-600">
-            Gerar laudo
-          </Button>
+
           <Button onClick={handleGenerateReport} className="bg-green-500 hover:bg-green-600">
             Concluir
           </Button>
         </div>
       )}
+
+      <Button onClick={handleClickOnGenerateLaudo} className="bg-green-500 hover:bg-green-600">
+        Gerar laudo
+      </Button>
 
       <LaudoModal
         laudoModalOpen={laudoModalOpen}

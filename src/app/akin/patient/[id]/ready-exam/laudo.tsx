@@ -1,81 +1,68 @@
-// /* eslint-disable @next/next/no-img-element */
-// import React from "react";
-
-// export default function LaudoMicroscopio (){
-//   return (
-//     <div className="bg-gray-100 min-h-screen p-6">
-//       <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg">
-//         {/* Cabeçalho */}
-//         <header className="bg-blue-600 text-white rounded-t-lg p-4">
-//           <h1 className="text-2xl font-bold">Laudo de Análise Microscópica</h1>
-//           <p className="text-sm mt-1">Emitido em: 25/12/2024</p>
-//         </header>
-
-//         {/* Informações do Paciente */}
-//         <section className="p-4 border-b">
-//           <h2 className="text-lg font-semibold">Informações do Paciente</h2>
-//           <p><strong>Nome:</strong> João da Silva</p>
-//           <p><strong>Idade:</strong> 45 anos</p>
-//           <p><strong>Identificação:</strong> #12345</p>
-//         </section>
-
-//         {/* Detalhes da Análise */}
-//         <section className="p-4 border-b">
-//           <h2 className="text-lg font-semibold">Detalhes da Análise</h2>
-//           <p className="mt-2">
-//             Durante a análise microscópica, foi possível observar estruturas celulares compatíveis com um tecido saudável. Não foram identificados sinais de anormalidades significativas. A análise incluiu coloração por hematoxilina-eosina e aumento de até 1000x.
-//           </p>
-//         </section>
-
-//         {/* Imagens Capturadas */}
-//         <section className="p-4 border-b">
-//           <h2 className="text-lg font-semibold">Imagens Capturadas</h2>
-//           <div className="grid grid-cols-2 gap-4 mt-2">
-//             <img
-//               src="https://via.placeholder.com/150"
-//               alt="Imagem 1"
-//               className="rounded shadow"
-//             />
-//             <img
-//               src="https://via.placeholder.com/150"
-//               alt="Imagem 2"
-//               className="rounded shadow"
-//             />
-//           </div>
-//         </section>
-
-//         {/* Conclusão e Assinatura */}
-//         <section className="p-4">
-//           <h2 className="text-lg font-semibold">Conclusão</h2>
-//           <p className="mt-2">
-//             Baseado nos resultados, não foram detectadas alterações relevantes. Recomenda-se acompanhamento regular e realização de exames complementares se necessário.
-//           </p>
-
-//           <div className="mt-6">
-//             <p><strong>Assinatura do Profissional:</strong></p>
-//             <p>Dr. Ana Clara Mendes</p>
-//             <p>CRM: 123456</p>
-//           </div>
-//         </section>
-//       </div>
-//     </div>
-//   );
-// };
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import React, { useState } from 'react';
-import Image from 'next/image';
-//@ts-ignore
-import html2pdf from 'html2pdf.js';
-// react pdf renderer
+import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, Image } from '@react-pdf/renderer';
 
 interface LaudoModalProps {
   laudoModalOpen: boolean;
   setLaudoModalOpen: (isOpen: boolean) => void;
 }
+
+interface InfoPatient {
+  nomePaciente: string;
+  idadePaciente: number;
+  identificacaoPaciente: string;
+  detalhesAnalise: string;
+  assinaturaDoutor: string;
+  crmDoutor: string;
+  conclusao: string;
+}
+
+const styles = StyleSheet.create({
+  page: { padding: 20, fontSize: 12 },
+  section: { marginBottom: 10, borderBottom: '1px solid #ccc', paddingBottom: 10 },
+  title: { fontSize: 16, fontWeight: 'bold', marginBottom: 5 },
+  text: { marginBottom: 5 },
+  image: { width: 150, height: 150, margin: 5 }
+});
+
+const getDate = new Date();
+const LaudoPDF: React.FC<InfoPatient> = ({ nomePaciente, idadePaciente, identificacaoPaciente, detalhesAnalise, conclusao, assinaturaDoutor, crmDoutor }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <View style={styles.section}>
+        <Text style={styles.title}>Laudo de Análise Microscópica</Text>
+        <Text>Emitido em: {getDate.toLocaleDateString()}</Text>
+      </View>
+      <View style={styles.section}>
+        <Text style={styles.title}>Informações do Paciente</Text>
+        <Text>Nome: {nomePaciente}</Text>
+        <Text>Idade: {idadePaciente}</Text>
+        <Text>Identificação: {identificacaoPaciente}</Text>
+      </View>
+      <View style={styles.section}>
+        <Text style={styles.title}>Detalhes da Análise</Text>
+        <Text>{detalhesAnalise}</Text>
+      </View>
+      <View style={styles.section}>
+        <Text style={styles.title}>Imagens Capturadas</Text>
+        <Image src="https://github.com/mariosalvador.png" style={styles.image} />
+        <Image src="https://github.com/mariosalvador.png" style={styles.image} />
+      </View>
+      <View style={styles.section}>
+        <Text style={styles.title}>Conclusão</Text>
+        <Text>{conclusao}</Text>
+      </View>
+      <View>
+        <Text style={styles.title}>Assinatura do Profissional</Text>
+        <Text>{assinaturaDoutor}</Text>
+        <Text>CRM: {crmDoutor}</Text>
+      </View>
+    </Page>
+  </Document>
+);
 
 export const LaudoModal = ({ laudoModalOpen, setLaudoModalOpen }: LaudoModalProps) => {
   const [nomePaciente, setNomePaciente] = useState('João da Silva');
@@ -87,20 +74,8 @@ export const LaudoModal = ({ laudoModalOpen, setLaudoModalOpen }: LaudoModalProp
   const [conclusao, setConclusao] = useState(
     'Baseado nos resultados, não foram detectadas alterações relevantes. Recomenda-se acompanhamento regular e realização de exames complementares se necessário.'
   );
-
-  const generatePDF = () => {
-    const content = document.getElementById('laudo-content');
-    if (content) {
-      const options = {
-        margin: 0,
-        filename: `laudo_${nomePaciente.replace(' ', '_')}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
-      };
-      html2pdf().set(options).from(content).save();
-    }
-  };
+  const [assinaturaDoutor, setAssinaturaDoutor] = useState('Assinatura do Profissional');
+  const [crmDoutor, setCrmDoutor] = useState('CRM');
 
   return (
     <Dialog open={laudoModalOpen} onOpenChange={() => setLaudoModalOpen(false)}>
@@ -108,89 +83,50 @@ export const LaudoModal = ({ laudoModalOpen, setLaudoModalOpen }: LaudoModalProp
         <DialogHeader>
           <DialogTitle>Laudo de Análise Microscópica</DialogTitle>
         </DialogHeader>
-        <div id="laudo-content" className="max-w-4xl bg-white shadow-lg rounded-lg overflow-y-auto [&::-webkit-scrollbar]:hidden">
-          <header className="bg-blue-600 text-white rounded-t-lg p-4">
-            <p className="text-sm mt-1">Emitido em: 25/12/2024</p>
-          </header>
-          <section className="p-4 border-b">
-            <h2 className="text-lg font-semibold">Informações do Paciente</h2>
-            <div className="space-y-2">
-              <div>
-                <strong>Nome:</strong>{' '}
-                <Input
-                  type="text"
-                  value={nomePaciente}
-                  onChange={(e) => setNomePaciente(e.target.value)}
-                  className="ml-2 focus-visible:ring-0 ring-0 focus:ring-0"
-                />
-              </div>
-              <div>
-                <strong>Idade:</strong>{' '}
-                <Input
-                  type="number"
-                  value={idadePaciente}
-                  onChange={(e) => setIdadePaciente(Number(e.target.value))}
-                  className="ml-2 focus-visible:ring-0 ring-0 focus:ring-0"
-                />
-              </div>
-              <div>
-                <strong>Identificação:</strong>{' '}
-                <Input
-                  type="text"
-                  value={identificacaoPaciente}
-                  onChange={(e) => setIdentificacaoPaciente(e.target.value)}
-                  className="ml-2 focus-visible:ring-0 ring-0 focus:ring-0"
-                />
-              </div>
+        <section className="p-4 border-b">
+          <h2 className="text-lg font-semibold">Informações do Paciente</h2>
+          <div className="space-y-2">
+            <div>
+              <strong>Nome:</strong>
+              <Input type="text" value={nomePaciente} onChange={(e) => setNomePaciente(e.target.value)} />
             </div>
-          </section>
-          <section className="p-4 border-b">
-            <h2 className="text-lg font-semibold">Detalhes da Análise</h2>
-            <p>
-              <Textarea
-                className="w-full mt-2 min-h-[100px] text-start"
-                value={detalhesAnalise}
-                onChange={(e) => setDetalhesAnalise(e.target.value)}
-              />
-            </p>
-          </section>
-          <section className="p-4 border-b">
-            <h2 className="text-lg font-semibold">Imagens Capturadas</h2>
-            <div className="grid grid-cols-2 gap-4 mt-2">
-              <Image
-                width={300}
-                height={300}
-                src="https://github.com/marypaul21.png"
-                alt="Imagem 1"
-                className="rounded shadow"
-              />
-              <Image
-                width={300}
-                height={300}
-                src="https://github.com/marypaul21.png"
-                alt="Imagem 2"
-                className="rounded shadow"
-              />
+            <div>
+              <strong>Idade:</strong>
+              <Input type="number" value={idadePaciente} onChange={(e) => setIdadePaciente(Number(e.target.value))} />
             </div>
-          </section>
-          <section className="p-4">
-            <h2 className="text-lg font-semibold">Conclusão</h2>
-            <Textarea
-              className="w-full mt-2 min-h-[100px] text-wrap"
-              value={conclusao}
-              onChange={(e) => setConclusao(e.target.value)}
-            />
-            <div className="mt-6">
-              <p><strong>Assinatura do Profissional:</strong></p>
-              <p>Dr. Ana Clara Mendes</p>
-              <p>CRM: 123456</p>
+            <div>
+              <strong>Identificação:</strong>
+              <Input type="text" value={identificacaoPaciente} onChange={(e) => setIdentificacaoPaciente(e.target.value)} />
             </div>
+          </div>
+        </section>
+        <section className="p-4 border-b">
+          <h2 className="text-lg font-semibold">Detalhes da Análise</h2>
+          <Textarea value={detalhesAnalise} onChange={(e) => setDetalhesAnalise(e.target.value)} />
+        </section>
+        <section className="p-4 border-b">
+          <h2 className="text-lg font-semibold">Conclusão</h2>
+          <Textarea value={conclusao} onChange={(e) => setConclusao(e.target.value)} />
+        </section>
+        <div className='flex flex-col gap-4'>
+          <section>
+            <h2 className="text-lg font-semibold">Assinatura do Profissional</h2>
+            <Input value={assinaturaDoutor} onChange={(e) => setAssinaturaDoutor(e.target.value)} />
+          </section>
+
+          <section>
+            <h2 className="text-lg font-semibold">CRM</h2>
+            <Input value={crmDoutor} onChange={(e) => setCrmDoutor(e.target.value)} />
           </section>
         </div>
+
         <DialogFooter>
-          <Button variant="outline" className="bg-akin-turquoise text-white" onClick={generatePDF}>
-            Gerar PDF
-          </Button>
+          <PDFDownloadLink
+            document={<LaudoPDF nomePaciente={nomePaciente} idadePaciente={idadePaciente} identificacaoPaciente={identificacaoPaciente} detalhesAnalise={detalhesAnalise} conclusao={conclusao} assinaturaDoutor={assinaturaDoutor} crmDoutor={crmDoutor} />}
+            fileName={`laudo_${nomePaciente.replace(' ', '_')}.pdf`}
+          >
+            {({ loading }) => (loading ? 'Gerando PDF...' : 'Baixar PDF')}
+          </PDFDownloadLink>
           <Button variant="outline" onClick={() => setLaudoModalOpen(false)}>
             Fechar
           </Button>
