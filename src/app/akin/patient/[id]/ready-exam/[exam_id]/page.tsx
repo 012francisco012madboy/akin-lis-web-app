@@ -36,8 +36,6 @@ export default function SampleVisualizationPage() {
     }
   })
 
-  console.log("Get ", getExamById.data?.data.data.Tipo_Exame.nome)
-
   const handleDeleteImage = (image: string) => {
     setCapturedImages((prev) => prev.filter((img) => img !== image));
     setNotes((prev) => {
@@ -49,7 +47,7 @@ export default function SampleVisualizationPage() {
 
   const handleNoteChange = (image: string, value: string) => {
     setNotes((prev) => ({ ...prev, [image]: value }));
-  };
+};
 
   const handleAutomatedAnalysisOpen = () => {
     setIsAutomatedAnalysisOpen(true);
@@ -65,8 +63,10 @@ export default function SampleVisualizationPage() {
     const reportData = capturedImages.map((image) => ({
       image,
       notes: notes[image] || "",
+      //@ts-ignore
       annotations: imageAnnotations[image]?.shapes.map((shape) => ({
         ...shape,
+      //@ts-ignore
         note: imageAnnotations[image]?.shapeNotes[shape.id] || "",
       })) || [],
     }));
@@ -143,20 +143,28 @@ export default function SampleVisualizationPage() {
         selectedImage={selectedImage}
         setSelectedImage={setSelectedImage}
         notes={notes}
+        handleNoteChanged={handleNoteChange} // ✅ Passando corretamente
+        setImageAnnotations={setImageAnnotations} // ✅ Passando anotações
+        moreFuncIsShow={true}
+      />
+      {/* <ImageModal
+        selectedImage={selectedImage}
+        setSelectedImage={setSelectedImage}
+        notes={notes}
         handleNoteChange={(image, value) => setNotes((prev) => ({ ...prev, [image]: value }))}
         setImageAnnotations={setImageAnnotations} // Passa para armazenar formas e notas das formas
         moreFuncIsShow={true}
-      />
+      /> */}
 
       {/* Generate Report Button */}
       {capturedImages.length > 0 && (
         <div className="mt-6 flex justify-end gap-2">
-         {/* <Button onClick={handleSendToAI} className="bg-green-500 hover:bg-green-600">
+          {/* <Button onClick={handleSendToAI} className="bg-green-500 hover:bg-green-600">
             Enviar à IA
           </Button>  */}
-            <Button onClick={handleClickOnGenerateLaudo} className="bg-green-500 hover:bg-green-600">
+          <Button onClick={handleClickOnGenerateLaudo} className="bg-green-500 hover:bg-green-600">
             Gerar laudo
-          </Button> 
+          </Button>
           <Button onClick={handleGenerateReport} className="bg-green-500 hover:bg-green-600">
             Concluir
           </Button>

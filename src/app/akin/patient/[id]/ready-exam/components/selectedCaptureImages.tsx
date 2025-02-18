@@ -11,11 +11,12 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Stage, Layer, Rect, Circle, Transformer } from "react-konva";
 import Konva from "konva";
+import { ___showSuccessToastNotification } from "@/lib/sonner";
 
 interface ImageModalProps {
     selectedImage: string | null;
     notes?: Record<string, string>;
-    handleNoteChange?: (image: string, value: string) => void;
+    handleNoteChanged?: (image: string, value: string) => void;
     setSelectedImage: (image: string | null) => void;
     moreFuncIsShow?: boolean;
     setImageAnnotations?: (annotations: Record<string, Shape[]>) => void; // 🔹 Nova prop
@@ -36,7 +37,8 @@ export const ImageModal: React.FC<ImageModalProps> = ({
     notes,
     setSelectedImage,
     setImageAnnotations,
-    moreFuncIsShow
+    moreFuncIsShow,
+    handleNoteChanged
 }) => {
     const [selectedShape, setSelectedShape] = useState<"rect" | "circle" | null>(null);
     const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null);
@@ -47,7 +49,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
 
     const handleSaveAnnotations = () => {
         if (!selectedImage) return;
-
+        //@ts-ignore
         setImageAnnotations((prev) => ({
             ...prev,
             [selectedImage]: {
@@ -56,6 +58,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
             },
         }));
 
+        ___showSuccessToastNotification({ message: "Anotações salvas com sucesso!" });
         console.log(`✅ Anotações salvas para ${selectedImage}:`, {
             shapes: shapesByImage[selectedImage] || [],
             shapeNotes: shapeNotesByImage[selectedImage] || {},
@@ -179,21 +182,33 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                             isShapeSelected={!!selectedShapeId}
                         />
                     )}
+                    <div className="flex flex-col md:flex-row gap-5 w-full h-full justify-between">
+                        <CanvasArea
+                            moreFuncIsShow
+                            selectedImage={selectedImage}
+                            shapes={shapes}
+                            handleCanvasClick={handleCanvasClick}
+                            handleShapeSelect={handleShapeSelect}
+                            handleTransform={handleTransform}
+                            selectedShapeId={selectedShapeId}
+                            transformerRef={transformerRef}
+                            setSelectedShapeId={setSelectedShapeId}
+                            stageRef={stageRef}
+                            shapeNotes={shapeNotes}
+                            handleNoteChange={handleNoteChange}
+                        />
 
-                    <CanvasArea
-                        moreFuncIsShow
-                        selectedImage={selectedImage}
-                        shapes={shapes}
-                        handleCanvasClick={handleCanvasClick}
-                        handleShapeSelect={handleShapeSelect}
-                        handleTransform={handleTransform}
-                        selectedShapeId={selectedShapeId}
-                        transformerRef={transformerRef}
-                        setSelectedShapeId={setSelectedShapeId}
-                        stageRef={stageRef}
-                        shapeNotes={shapeNotes}
-                        handleNoteChange={handleNoteChange}
-                    />
+                        {
+                            moreFuncIsShow && (
+                                <Textarea
+                                    value={notes?.[selectedImage] || ""}
+                                    onChange={(e) => handleNoteChanged?.(selectedImage!, e.target.value)}
+                                    placeholder="Anotações para esta imagem..."
+                                    className=" w-full md:w-1/2 h-full"
+                                />
+                            )
+                        }
+                    </div>
 
                     <Button onClick={handleSaveAnnotations} className="bg-blue-500 hover:bg-blue-600">
                         Salvar Alterações
