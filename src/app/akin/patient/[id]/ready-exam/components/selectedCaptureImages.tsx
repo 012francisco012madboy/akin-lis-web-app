@@ -326,6 +326,9 @@ const CanvasArea: React.FC<{
                                         e.cancelBubble = true;
                                         handleShapeSelect(shape.id);
                                     }}
+                                    onDragEnd={(e) => {
+                                        handleTransform(shape.id, { x: e.target.x(), y: e.target.y() });
+                                    }}
                                 />
                             ) : (
                                 <Circle
@@ -339,6 +342,9 @@ const CanvasArea: React.FC<{
                                     onClick={(e) => {
                                         e.cancelBubble = true;
                                         handleShapeSelect(shape.id);
+                                    }}
+                                    onDragEnd={(e) => {
+                                        handleTransform(shape.id, { x: e.target.x(), y: e.target.y() });
                                     }}
                                 />
                             )
