@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { groupSchedulesByPatient } from "./_groupSchedulesByPatient";
 import { sortExamsByDate } from "./_sortExamsByDate";
 
+export const dynamic = "force-dynamic"; 
 export default function Completed() {
   const { data, isPending } = useQuery({
     queryKey: ['schedules'],

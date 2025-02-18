@@ -15,7 +15,7 @@ import { resetInputs } from "./utils/reset-inputs-func";
 export type SchemaScheduleType = z.infer<typeof schemaSchedule>;
 
 const DEFAULT_USER = { id: "cm27g9oa00001lg20jnnzb0wr", name: "João Silva", id_unidade_de_saude: 1 };
-
+export const dynamic = "force-dynamic"; 
 export default function New() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);

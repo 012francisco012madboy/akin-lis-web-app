@@ -19,7 +19,7 @@ const breadcumbItem = [
     label: "Agendamento",
   },
 ];
-
+export const dynamic = "force-dynamic"; 
 const filterScheduleByAccess = (schedule: string) => {
   return APP_CONFIG.ROUTES.SCHEDULE.filter((route) =>
     route.access?.includes(schedule)
