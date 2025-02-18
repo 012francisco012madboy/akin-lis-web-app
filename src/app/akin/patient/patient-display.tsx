@@ -5,8 +5,6 @@ import { ListMode } from "./components/listModePatients";
 import { BlockMode } from "./components/blockModePatients";
 import { GridOrBlockDisplayButton } from "./components/gridOrBlockButtonMode";
 import { Input } from "@/components/ui/input";
-import { useAuthStore } from "@/utils/zustand-store/authStore";
-import { redirect } from "next/navigation";
 
 interface PatientDisplay {
   patients: PatientType[];
