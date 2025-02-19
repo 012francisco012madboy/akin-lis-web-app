@@ -25,20 +25,23 @@ const filterScheduleByAccess = (schedule: string) => {
   );
 };
 
+
+
+
 export default function Schedule({ children }: ISchedule) {
-  // const pathname = usePathname();
-  // const userRole = Cookies.get("akin-role") || "";
-  // const routes = filterScheduleByAccess(userRole);
+  const pathname = usePathname();
+  const userRole = Cookies.get("akin-role") || "";
+  const routes = filterScheduleByAccess(userRole);
 
   // Encontra o item que corresponde ao pathname atual
-  // const activeTab = routes.find((item) => pathname === item.path)?.path || routes[0].path;
+  const activeTab = routes.find((item) => pathname === item.path)?.path || routes[0].path;
 
   return (
     <View.Vertical className="gap-4 h-screen">
       <div className="flex flex-col md:flex-row justify-start w-full md:justify-between md:items-center">
         <CustomBreadcrumb items={breadcumbItem} />
 
-        {/* <Tabs defaultValue={activeTab} className="w-[400px] flex md:justify-end">
+        <Tabs defaultValue={activeTab} className="w-[400px] flex md:justify-end">
           <TabsList>
             {routes.map((item) => (
               <Link href={item.path} key={item.path}>
@@ -51,7 +54,7 @@ export default function Schedule({ children }: ISchedule) {
               </Link>
             ))}
           </TabsList>
-        </Tabs> */}
+        </Tabs>
       </div>
       <hr />
       <View.Scroll>{children}</View.Scroll>
