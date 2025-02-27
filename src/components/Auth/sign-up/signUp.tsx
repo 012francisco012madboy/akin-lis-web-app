@@ -10,6 +10,7 @@ import { useState } from "react";
 import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 
 export const Register = () => {
   const [passwordError, setPasswordError] = useState("");
@@ -68,9 +69,9 @@ export const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-5">
+    <div className="min-h-screen flex flex-col w-full items-center justify-center p-6 gap-5">
       <Image src={APP_CONFIG.LOGO} alt="Akin logo" />
-      <Card className="w-full max-w-md shadow-lg rounded-md bg-white">
+      <Card className="w-full max-w-lg shadow-lg rounded-md bg-white">
         {/* Header */}
         <CardHeader>
           <CardTitle className="text-center text-2xl font-semibold text-gray-800">
@@ -166,6 +167,13 @@ export const Register = () => {
               {isLoading ? "Cadastrando..." : "Cadastrar"}
             </Button>
           </form>
+
+          <div className="text-center text-sm text-gray-600 mt-4">
+          Já possui uma conta?{" "}
+          <Link href="/" className="text-blue-500 hover:underline">
+            Entrar
+          </Link>
+        </div>
         </CardContent>
       </Card>
     </div>
