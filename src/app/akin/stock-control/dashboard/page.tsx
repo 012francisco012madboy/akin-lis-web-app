@@ -3,6 +3,10 @@
 import { useState } from "react";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import StockControlDashboardGeneral from "./pages-on-tabs/general/page";
+import StockControlDashboardNotifications from "./pages-on-tabs/notifications/page";
+import StockControlDashboardReports from "./pages-on-tabs/reports/page";
+import StockControlDashboardConsumption from "./pages-on-tabs/consumption/page";
 
 const breadcrumbItems = [{ label: "Painel " }];
 
@@ -44,10 +48,10 @@ export default function StockControlDashboard() {
       </div>
       <div className="w-full h-[0.5px] bg-black/20 my-1"></div>
       <div className="w-full h-full bg-slate-400 p-4 text-white font-semibold text-lg ">
-        {activeTab === "general" && <p>Exibindo: Geral</p>}
-        {activeTab === "notifications" && <p>Exibindo: Notificações</p>}
-        {activeTab === "reports" && <p>Exibindo: Relatórios</p>}
-        {activeTab === "consumption" && <p>Exibindo: Consumo</p>}
+        {activeTab === "general" && <StockControlDashboardGeneral />}
+        {activeTab === "notifications" && <StockControlDashboardNotifications/>}
+        {activeTab === "reports" && <StockControlDashboardReports/>}
+        {activeTab === "consumption" && <StockControlDashboardConsumption/>}
       </div>
     </main>
   );
