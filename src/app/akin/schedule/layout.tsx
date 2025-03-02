@@ -13,7 +13,7 @@ interface ISchedule {
   children: React.ReactNode;
 }
 
-const breadcumbItem = [
+const breadcrumbItems = [
   {
     label: "Agendamento",
   },
@@ -36,7 +36,7 @@ console.log("activeTab", activeTab);
   return (
     <View.Vertical className="gap-4 h-screen">
       <div className="flex flex-col md:flex-row justify-start w-full md:justify-between md:items-center">
-        <CustomBreadcrumb items={breadcumbItem} />
+        <CustomBreadcrumb items={breadcrumbItems} />
 
         <Tabs defaultValue={activeTab} className="w-[400px] flex md:justify-end">
           <TabsList>
