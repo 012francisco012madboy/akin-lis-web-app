@@ -56,7 +56,7 @@ export function NavMain({
                       </Link>
 
                       {item.subItems && (
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 hover:bg-gray-200  hover:rounded-md hover:size-6" />
+                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 hover:bg-gray-200  hover:rounded-md hover:size-5" />
                       )}
                     </SidebarMenuButton>
                   </CollapsibleTrigger>

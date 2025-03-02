@@ -18,7 +18,10 @@ import {
   CalendarPlus2,
   CalendarSearch,
   CalendarCheck2,
-  UserRoundCog
+  UserRoundCog,
+  Package,
+  PackageOpen,
+  PackageSearch
 } from "lucide-react";
 
 export const APP_CONFIG = {
@@ -57,6 +60,17 @@ export const APP_CONFIG = {
         icon: UserRoundCog,
         path: "/akin/team-management",
         access: ["CHEFE"]
+      },
+      {
+        label: "Gestão de stock",
+        icon: PackageOpen,
+        path: "/akin/stock-control/dashboard",
+        access: ["CHEFE", "TECNICO", "RECEPCIONISTA"],
+        subItems: [
+          { label: "Painel", icon: Package, path: "/akin/stock-control/dashboard", access: ["CHEFE", "TECNICO", "RECEPCIONISTA"] },
+          { label: "Productos", icon: PackageSearch, path: "/akin/stock-control/product", access: ["CHEFE", "TECNICO"] },
+          // { label: "Saídas", icon: Mail, path: "/akin/stock-control/exit", access: ["CHEFE", "TECNICO"] }
+        ]
       },
       {
         label: "Pagamentos",
