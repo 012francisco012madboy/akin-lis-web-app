@@ -82,9 +82,9 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-5">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center p-6 gap-5">
       <Image src={APP_CONFIG.LOGO} alt="Akin logo" />
-      <Card className="w-full max-w-md shadow-lg rounded-md bg-white">
+      <Card className="w-full max-w-lg pb-3 shadow-lg rounded-md bg-white">
         {/* Header */}
         <CardHeader>
           <CardTitle className="text-center text-2xl font-semibold text-gray-800">
