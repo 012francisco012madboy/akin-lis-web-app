@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { GridOrBlockDisplayButton } from "../../patient/components/gridOrBlockButtonMode";
 import { ListMode } from "./list-mode";
 import { Combobox } from "@/components/combobox/comboboxExam";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ProductDisplay {
 
@@ -65,6 +67,8 @@ export default function ProductDisplay() {
                 : "Nenhum paciente encontrado"}
             </p>
           )} */}
+
+          <Button> <Plus/> Cadastrar</Button>
         </div>
       </div>
       {/* {
