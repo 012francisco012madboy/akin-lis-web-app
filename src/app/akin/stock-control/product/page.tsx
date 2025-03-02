@@ -1,12 +1,23 @@
+import CustomBreadcrumb from "@/components/custom-breadcrumb";
+import { View } from "@/components/view";
+import ProductDisplay from "./product-display";
 
 
+const breadcrumbItems = [
+  {
+    label: "Produtos",
+  }
+]
 
 
 
 export default function StockControlProduct() {
   return (
-    <div>
-      <h1>StockControl Product Page</h1>
-    </div>
+    <View.Vertical className="h-screen">
+      <CustomBreadcrumb items={breadcrumbItems} borderB />
+      <View.Scroll>
+        <ProductDisplay/>
+      </View.Scroll>
+    </View.Vertical>
   )
 }
