@@ -96,7 +96,7 @@ export function PatientResumeInfo({
   ];
 
   return (
-    <div className=" w-full gap-x-5 gap-y-5 pb-5 flex flex-col md:justify-between lg:flex-row  overflow-auto  [&::-webkit-scrollbar]:hidden ">
+    <div className=" w-full gap-x-5 gap-y-5 pb-5  flex flex-col md:justify-between lg:flex-row  overflow-auto  [&::-webkit-scrollbar]:hidden ">
       {/* Card principal */}
       <Card className=" md:min-w-[65%]  h-max shadow-md flex flex-col gap-10">
         <CardHeader className="flex flex-col md:flex-row md:justify-between gap-5 px-4 py-2">

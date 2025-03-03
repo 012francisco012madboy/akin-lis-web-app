@@ -98,7 +98,7 @@ export const ExamCard = ({ data }: ResponseData) => {
           <p className="text-gray-700"><span className="font-medium">Data:</span> {exam.data_agendamento} às {exam.hora_agendamento}</p>
           <p className="text-gray-700"><span className="font-medium">Status:</span> {exam.status}</p>
           <p className="text-gray-700"><span className="font-medium">Status do Pagamento:</span> {exam.status_pagamento}</p>
-          <p className="text-gray-700"><span className="font-medium">Preço:</span> {exam.Tipo_Exame.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+          <p className="text-gray-700"><span className="font-medium">Preço:</span> {exam.Tipo_Exame.preco.toLocaleString('pt-ao', { style: 'currency', currency: 'AOA' })}</p>
           <p className="text-gray-700 flex items-center gap-1">
             <span className="font-medium">
               Técnico Alocado: {" "}
@@ -126,7 +126,7 @@ export const ExamCard = ({ data }: ResponseData) => {
               <p></p>
             ) : (
               <Button
-                className="mt-24 text-md font-medium"
+                className="mt-24 text-md font-medium bg-akin-turquoise hover:bg-akin-turquoise/80"
                 onClick={() => setIsNextExamOpen((prev) => ({ ...prev, [exam.id]: true }))}
               >
                 Começar

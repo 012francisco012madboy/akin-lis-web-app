@@ -23,6 +23,8 @@ export const Register = () => {
     email: "",
     senha: "",
     status: "ATIVO",
+    contacto_telefonico: "",
+    id_sexo: "",
   });
   const [errors, setErrors] = useState({
     tipo: "",
@@ -30,10 +32,12 @@ export const Register = () => {
     nome: "",
     email: "",
     senha: "",
+    contacto_telefonico: "",
+    id_sexo: "",
   });
 
   const validate = () => {
-    let tempErrors = { tipo: "", nRef: "", nome: "", email: "", senha: "" };
+    let tempErrors = { tipo: "", nRef: "", nome: "", email: "", senha: "", contacto_telefonico: "", id_sexo: "", };
     if (!formData.nome) tempErrors.nome = "Nome é obrigatório.";
     if (!formData.email) tempErrors.email = "Email é obrigatório.";
     if (!/\S+@\S+\.\S+/.test(formData.email)) tempErrors.email = "Email inválido.";
@@ -41,6 +45,8 @@ export const Register = () => {
     if (formData.senha.length < 6) tempErrors.senha = "Senha deve ter pelo menos 6 caracteres.";
     if (!formData.tipo) tempErrors.tipo = "Cargo é obrigatório.";
     if (!formData.nRef) tempErrors.nRef = "Referência é obrigatória.";
+    if (!formData.contacto_telefonico) tempErrors.contacto_telefonico = "Telefone é obrigatório.";
+    if (!formData.id_sexo) tempErrors.id_sexo = "Genero é obrigatório.";
     setErrors(tempErrors);
     return Object.values(tempErrors).every(x => x === "");
   };
@@ -112,6 +118,34 @@ export const Register = () => {
               {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
             </div>
             <div>
+              <Label htmlFor="contacto_telefonico">contacto_telefonico</Label>
+              <Input
+                id="contacto_telefonico"
+                name="contacto_telefonico"
+                type="tel"
+                value={formData.contacto_telefonico}
+                onChange={handleInputChange}
+                placeholder="Digite o telefone"
+                disabled={isLoading}
+              />
+              {errors.email && <p className="text-red-500 text-sm">{errors.contacto_telefonico}</p>}
+            </div>
+            <div>
+              <Label htmlFor="id_sexo">Genero</Label>
+              <Select
+                onValueChange={(value) => setFormData({ ...formData, id_sexo: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o genero" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={"1"} disabled={isLoading}>Masculino</SelectItem>
+                  <SelectItem value={"2"} disabled={isLoading}>Feminino</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.tipo && <p className="text-red-500 text-sm">{errors.id_sexo}</p>}
+            </div>
+            <div>
               <Label htmlFor="id_cargo">Cargo</Label>
               <Select
                 onValueChange={(value) => setFormData({ ...formData, tipo: value })}
@@ -169,11 +203,11 @@ export const Register = () => {
           </form>
 
           <div className="text-center text-sm text-gray-600 mt-4">
-          Já possui uma conta?{" "}
-          <Link href="/" className="text-blue-500 hover:underline">
-            Entrar
-          </Link>
-        </div>
+            Já possui uma conta?{" "}
+            <Link href="/" className="text-blue-500 hover:underline">
+              Entrar
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>

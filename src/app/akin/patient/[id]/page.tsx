@@ -60,7 +60,7 @@ export default function PatientByIdProfile({ params }: IPatientById) {
 
   if (isPending || getBasicExamHistory.isPending || getPatientInfo.isPending || userRole.isPending) {
     return (
-      <View.Vertical className="h-screen">
+      <View.Vertical className="h-screen pb-10">
         <CustomBreadcrumb items={breadcrumbItems} borderB />
         <PatientByIdProfileSkeleton />
       </View.Vertical>
@@ -79,7 +79,7 @@ export default function PatientByIdProfile({ params }: IPatientById) {
     <View.Vertical className="h-screen">
       <CustomBreadcrumb items={breadcrumbItems} borderB />
 
-      <div className="flex gap-4  text-akin-white-smoke p-0 rounded-lg w-full h-full">
+      <div className="flex gap-4 bg-red px-2 md:px-0 md:pr-2 text-akin-white-smoke p-0 rounded-lg w-full h-full">
         <PatientResumeInfo
           patient={getPatientInfo.data!.data}
           basicExamHistory={getBasicExamHistory.data?.data}
