@@ -81,13 +81,13 @@ export default function CardSchedule({ data }: ICardSchedule) {
 
   //[&::-webkit-scrollbar]:hidden 
   return (
-    <div className="card shadow-xl border border-gray-300 rounded-lg flex flex-col items-center bg-white min-h-[400px] max-h-[250px]  transition-all duration-300 hover:scale-105">
+    <div className="card min-w-max  shadow-xl border border-gray-300 rounded-lg flex flex-col items-center bg-white min-h-[400px] max-h-[250px]  transition-all duration-300 hover:scale-105">
       {/* Exame Information */}
       {showExams ? (
         <div className="flex-1 rounded-t-lg w-full overflow-y-scroll [&::-webkit-scrollbar]:hidden space-y-4 p-4 h-[19.2rem]">
-          <View.Scroll className="max-h-full pl-4 overflow-y-auto space-y-2">
+          <View.Scroll className="min-w-max max-h-full pl-4 overflow-y-auto space-y-2 ">
             {data.Exame.map((exame) => (
-              <div key={exame.id} className="w-full pb-4 border-b border-gray-200 ">
+              <div key={exame.id} className="min-w-max w-full pb-4 border-b border-gray-200 ">
 
                 <p className="font-semibold text-xl flex justify-between items-center mr-3">
                   {exame.Tipo_Exame.nome || "Nome não disponível"}
@@ -191,7 +191,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
       ) : (
         <>
           {/* Image and Actions */}
-          <div className="w-full relative h-48">
+          <div className="min-w-[280px] w-full relative h-48">
             <Image
               className="bg-center object-cover rounded-t-lg"
               src="/images/exam/Plasmodium.png"
@@ -212,7 +212,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
 
           {/* Patient Information */}
           <div className="w-full px-4 py-2 space-y-1.5 flex flex-col mt-2 text-gray-800">
-            <h1 className="text-xl font-semibold">{data.Paciente?.nome_completo}</h1>
+            <h1 className="text-xl font-semibold">{data.Paciente?.nome_completo} </h1>
             <span className="text-sm text-gray-500">BI: {data.Paciente?.numero_identificacao}</span>
             <span className="text-sm text-gray-500">Sexo: {data.Paciente?.id_sexo === 1 ? "Masculino" : "Feminino"}</span>
             <span className="text-sm text-gray-500">Idade: {age}</span>
@@ -223,9 +223,9 @@ export default function CardSchedule({ data }: ICardSchedule) {
       {/* Toggle Button */}
       <div className="w-full flex flex-col lg:flex-row  gap-3 px-4  pb-2 text-sm">
         <Primary
-          className="w-full h-full flex justify-center bg-cyan-600 text-white font-semibold py-2 rounded-b-lg  transition-all duration-300 hover:bg-cyan-500 outline-none"
+          className=" min-w-max w-full h-full flex justify-center bg-cyan-600 text-white font-semibold py-2 rounded-b-lg  transition-all duration-300 hover:bg-cyan-500 outline-none"
           onClick={() => setShowExams((prev) => !prev)}
-          label={showExams ? "Ver Agendamento" : "Ver Exame"}
+          label={showExams ? "Agendamento" : "Ver Exame"}
         />
         <AllocateTechniciansModal
           exams={groupedExams}

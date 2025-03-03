@@ -145,7 +145,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
       ) : (
         <div>
           {currentItems.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="flex flex-col sm:flex-row gap-6 space-x-1">
               {currentItems.map((data, index) => {
                 // Filtrar exames no nível do card com base no filtro aplicado
                 const filteredExams = data.Exame?.filter((exame) => {
@@ -169,7 +169,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
                 }
 
                 return (
-                  <Card key={index} className="p-4">
+                  <Card key={index} className="p-4 min-w-max ">
                     <CardSchedule data={{ ...data, Exame: filteredExams }} />
                   </Card>
                 );
@@ -180,7 +180,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
           )}
 
           {/* Pagination */}
-          <div className="flex justify-between items-center px-4 py-2 bg-gray-50 border-t">
+          <div className="flex justify-between items-center px-4 py-2 bg-gray-50 border-t mt-3">
             <span className="text-sm text-gray-600">
               Exibindo {startIndex + 1} - {Math.min(startIndex + ITEMS_PER_PAGE, totalItems)} de {totalItems} agendamentos
             </span>

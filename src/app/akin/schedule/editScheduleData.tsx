@@ -13,7 +13,7 @@ import { ___showErrorToastNotification, ___showSuccessToastNotification } from "
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import Cookies from "js-cookie";
 
-//Precisa de ser atualizado o Typescript desse componente e aplicar refatoração
+//Precisa de ser atualizado o Typescript desse componente e aplicar refatoração de codigo para melhorar a legibilidade - (Mario SALVADOR)
 export function EditScheduleFormModal({
   open,
   active,
@@ -24,7 +24,7 @@ export function EditScheduleFormModal({
   techName,
   examId,
 }: any): JSX.Element {
-  const [formData, setFormData] = useState(
+  const [ formData, setFormData] = useState(
     exam || {
       id: "",
       date: "",
@@ -34,6 +34,7 @@ export function EditScheduleFormModal({
       techName: "",
       examId: "",
       type: "", // Adicione o campo type
+      id_tipo_exame: 0, // Adicione o campo id_tipo_exame
     }
   );
   const [isProcessing, setIsProcessing] = useState(false);
@@ -103,7 +104,7 @@ export function EditScheduleFormModal({
   };
 
   const handleExamSelection = (selectedExam: any) => {
-    setFormData({ ...formData, type: selectedExam?.nome || "" });
+    setFormData({ ...formData, type: selectedExam?.id || "" });
   };
 
   if (technicians.isLoading || exams.isLoading) return <></>;
@@ -146,11 +147,11 @@ export function EditScheduleFormModal({
       formattedValue.status = formData.status || "PENDENTE";
     }
     if (formData.type !== exam.type) {
-      formattedValue.tipo_exame = formData.type || formData.name;
+      formattedValue.id_tipo_exame = formData.type || formData.id;
     }
 
-    console.log("examId", examId);
-    console.log("formattedValue", formattedValue);
+    // console.log("examId", examId);
+    // console.log("formattedValue", formattedValue);
     saveScheduleMutation.mutate(formattedValue);
   };
 
