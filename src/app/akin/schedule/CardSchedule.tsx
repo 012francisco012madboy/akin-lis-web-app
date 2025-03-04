@@ -11,7 +11,8 @@ import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
 import { Exam } from "../patient/[id]/exam-history/useExamHookData";
 import { EditScheduleFormModal } from "./editScheduleData";
-import { useAuthStore } from "@/utils/zustand-store/authStore";
+import Cookies from "js-cookie";
+import { labChiefRoutes } from "@/module/services/routes/lab-chief";
 
 interface ICardSchedule {
   data: ScheduleType;
@@ -22,14 +23,9 @@ export default function CardSchedule({ data }: ICardSchedule) {
   const [groupedExams, setGroupedExams] = useState<Exam[]>([]);
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { user } = useAuthStore();
+  const userRole = Cookies.get("akin-role") || "";
+  const role = "RECEPCIONISTA";
 
-  const userRole = useQuery({
-    queryKey: ["user-role"],
-    queryFn: async () => {
-      return await _axios.get(`/users/${user?.id}`);
-    },
-  });
 
   const handleEditClick = (exam: Exam) => {
     setSelectedExam(exam);
@@ -42,6 +38,15 @@ export default function CardSchedule({ data }: ICardSchedule) {
       return await _axios.get<LabTechnician[]>("lab-technicians");
     },
   });
+
+  const labChiefs = useQuery({
+    queryKey: ["lab-chief"],
+    queryFn: async () => {
+      return await labChiefRoutes.getAllLabChief();
+    },
+  });
+
+  console.log("lab", labChiefs.data);
 
   const handleGroupExams = () => {
     if (data?.Exame?.length > 0) {
@@ -98,32 +103,32 @@ export default function CardSchedule({ data }: ICardSchedule) {
                       userRole.data?.data.tipo !== "RECEPCIONISTA" ? (
                         <></>
                       ) : ( */}
-                        <>
-                          <Pencil size={18}
-                            className="cursor-pointer text-gray-500"
-                            onClick={() => handleEditClick({
-                              // @ts-ignore
-                              id: exame.id,
-                              name: exame.Tipo_Exame?.nome,
-                              date: exame.data_agendamento,
-                              time: exame.hora_agendamento,
-                              technicianId: exame.id_tecnico_alocado,
-                            })}
-                          />
-                          <span className="absolute cursor-pointer -left-8 top-5 mt-0 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => handleEditClick({
-                              // @ts-ignore
-                              id: exame.id,
-                              name: exame.Tipo_Exame?.nome,
-                              date: exame.data_agendamento,
-                              time: exame.hora_agendamento,
-                              technicianId: exame.id_tecnico_alocado,
-                            })}
-                          >
-                            Editar
-                          </span>
-                        </>
-                      {/* )
+                    <>
+                      <Pencil size={18}
+                        className="cursor-pointer text-gray-500"
+                        onClick={() => handleEditClick({
+                          // @ts-ignore
+                          id: exame.id,
+                          name: exame.Tipo_Exame?.nome,
+                          date: exame.data_agendamento,
+                          time: exame.hora_agendamento,
+                          technicianId: exame.id_tecnico_alocado,
+                        })}
+                      />
+                      <span className="absolute cursor-pointer -left-8 top-5 mt-0 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => handleEditClick({
+                          // @ts-ignore
+                          id: exame.id,
+                          name: exame.Tipo_Exame?.nome,
+                          date: exame.data_agendamento,
+                          time: exame.hora_agendamento,
+                          technicianId: exame.id_tecnico_alocado,
+                        })}
+                      >
+                        Editar
+                      </span>
+                    </>
+                    {/* )
                     } */}
                     <EditScheduleFormModal
                       active
@@ -235,7 +240,9 @@ export default function CardSchedule({ data }: ICardSchedule) {
             className="w-full h-full"
             onClick={handleGroupExams}
           >
-            Alocar Técnicos
+            {
+              userRole === role ? "Alocar Chefe" : "Alocar Técnicos"
+            }
           </Button>
         </AllocateTechniciansModal>
       </div>

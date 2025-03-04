@@ -11,7 +11,7 @@ import { UserData } from "@/app/akin/profile/page";
 import { Pencil } from "lucide-react";
 import { EditScheduleFormModal } from "@/app/akin/schedule/editScheduleData";
 
-export const ExamCard = ({ data }: ResponseData) => {
+export const ExamCard = ({ data,name_patient }: ResponseData & { name_patient: string }) => {
   const { user } = useAuthStore();
   const [isNextExamOpen, setIsNextExamOpen] = useState<{ [key: string]: boolean }>({});
   const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState<{ [key: string]: boolean }>({});
@@ -148,7 +148,7 @@ export const ExamCard = ({ data }: ResponseData) => {
             isOpen={isMaterialsModalOpen[exam.id] || false}
             onClose={() => setIsMaterialsModalOpen((prev) => ({ ...prev, [exam.id]: false }))}
             exam_id={String(exam.id_tipo_exame)}
-            patient_name={"Paulo"}
+            patient_name={name_patient}
             exam_name={exam.Tipo_Exame.nome}
           />
         </>

@@ -9,7 +9,6 @@ const queryClient = new QueryClient()
 export default function Home() {
   return (
     <QueryClientProvider client={queryClient}>
-
       {/* grid md:grid-cols-3 min-h-screen */}
       <section className="flex justify-center items-center">
         {/* Formulário de Login */}

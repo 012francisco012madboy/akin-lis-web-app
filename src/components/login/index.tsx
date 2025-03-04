@@ -8,9 +8,9 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { APP_CONFIG } from "@/config/app";
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { useMutation, useQuery, } from "@tanstack/react-query";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
@@ -111,6 +111,7 @@ export const Login = () => {
                 placeholder="Digite seu e-mail"
                 aria-label="Digite seu e-mail"
                 className="mt-2"
+                disabled={loginMutation.isPending}
               />
               {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
             </div>
@@ -128,6 +129,7 @@ export const Login = () => {
                 placeholder="Digite sua senha"
                 aria-label="Digite sua senha"
                 className="mt-2"
+                disabled={loginMutation.isPending}
               />
               <button
                 type="button"

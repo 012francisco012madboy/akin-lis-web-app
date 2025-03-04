@@ -28,13 +28,15 @@ export default function SampleVisualizationPage() {
       return await _axios.get<PatientType>(`/pacients/${id}`);
     }
   })
-
+  console.log("exame", exam_id)
   const getExamById = useQuery({
     queryKey: ['Exam-Info', exam_id],
     queryFn: async () => {
       return await _axios.get(`/exams/${exam_id}`);
     }
   })
+
+  console.log("getExamById", getExamById.data?.data)
 
   const handleDeleteImage = (image: string) => {
     setCapturedImages((prev) => prev.filter((img) => img !== image));
@@ -147,7 +149,8 @@ export default function SampleVisualizationPage() {
         setImageAnnotations={setImageAnnotations} // ✅ Passando anotações
         moreFuncIsShow={true}
       />
-      {/* <ImageModal
+      {/*
+       <ImageModal
         selectedImage={selectedImage}
         setSelectedImage={setSelectedImage}
         notes={notes}
@@ -163,15 +166,14 @@ export default function SampleVisualizationPage() {
             Enviar à IA
           </Button>  */}
 
+          <Button onClick={handleClickOnGenerateLaudo} className="bg-green-500 hover:bg-green-600">
+            Gerar laudo
+          </Button>
           <Button onClick={handleGenerateReport} className="bg-green-500 hover:bg-green-600">
             Concluir
           </Button>
         </div>
       )}
-
-      <Button onClick={handleClickOnGenerateLaudo} className="bg-green-500 hover:bg-green-600">
-        Gerar laudo
-      </Button>
 
       <LaudoModal
         laudoModalOpen={laudoModalOpen}

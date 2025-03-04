@@ -14,7 +14,6 @@ export default function Completed() {
       return await _axios.get<ScheduleType[]>("/schedulings/concluded")
     },
   })
-
   if (isPending) {
     return (
       <div className="h-screen px-6 mx-auto">

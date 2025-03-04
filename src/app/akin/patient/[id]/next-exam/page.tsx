@@ -83,7 +83,7 @@ const UpcomingExams = () => {
             ))}
           </>
         ) : (
-          <ExamCard data={filteredData!} />
+          <ExamCard data={filteredData!} name_patient={userName.data?.data.nome_completo} />
         )}
       </div>
     </div>

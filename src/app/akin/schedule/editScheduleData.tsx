@@ -168,13 +168,13 @@ export function EditScheduleFormModal({
 
         <div className="card gap-3 w-full">
           <label htmlFor="type" className="font-bold block mb-2">
-            Tipo de Exame
+          Alterar  Exame
           </label>
           <Combobox
             data={exams.data?.data.data || []}
             displayKey="nome"
             onSelect={handleExamSelection}
-            placeholder="Selecione exame a editar"
+            placeholder="Selecione o novo exame"
             clearLabel="Limpar"
           />
         </div>
