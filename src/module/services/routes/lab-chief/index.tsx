@@ -12,7 +12,7 @@ interface Usuario {
   atualizado_aos: string;
 }
 
-interface LabChief {
+export interface LabChief {
   id: string;
   numero_identificacao: string;
   nome_completo: string;
@@ -27,14 +27,18 @@ interface LabChief {
   usuario: Usuario;
 }
 
-
 class LabChiefRoutes {
-
   async getAllLabChief() {
-   const response = await _axios.get<LabChief[]>("/lab-chiefs");
-   return response.data;
+    const response = await _axios.get<LabChief[]>("/lab-chiefs");
+    return response.data;
   }
 
+  async allocateLabChief(examId: number, labChiefId: string) {
+    const response = await _axios.post(`/exams/lab-chief/set/${examId}`, {
+      id_chefe_alocado: labChiefId,
+    });
+    return response.data;
+  }
 }
 
 export const labChiefRoutes = new LabChiefRoutes();

@@ -18,6 +18,7 @@ import { ChevronDown, ChevronUp, Loader } from "lucide-react";
 import { Exam } from "../patient/[id]/exam-history/useExamHookData";
 import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
+import { LabChief, labChiefRoutes } from "@/module/services/routes/lab-chief";
 
 export interface LabTechnician {
   id: string;
@@ -37,6 +38,8 @@ interface AllocateTechniciansModalProps {
   technicians: LabTechnician[];
   exams: Exam[];
   onAllocate?: (allocations: { examId: number; id_tecnico_alocado: string[] }[]) => void;
+  isLabChief?: boolean;
+  labChiefs?: LabChief;
 }
 
 export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> = ({
@@ -44,6 +47,8 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
   exams,
   onAllocate,
   children,
+  isLabChief = false,
+  labChiefs,
 }) => {
   const [selectedTechnicians, setSelectedTechnicians] = useState<{ [key: number]: LabTechnician[] }>({});
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -56,18 +61,31 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
     setSelectedTechnicians((prev) => {
       const currentSelection = prev[examId] || [];
       const isAlreadySelected = currentSelection.some((tech) => tech.id === technician.id);
-  
+
       // Atualização da seleção
       const newSelection = isAlreadySelected
         ? currentSelection.filter((tech) => tech.id !== technician.id)
         : [technician]; // Permita apenas um técnico por exame
-  
+
       console.log("Novo estado selecionado:", newSelection);
-  
+
       return { ...prev, [examId]: newSelection };
     });
   };
-  
+
+  const handleLabChiefSelection = (examId: number, labChief: LabChief) => {
+    setSelectedTechnicians((prev) => {
+      const currentSelection = prev[examId] || [];
+      const isAlreadySelected = currentSelection.some((chief) => chief.id === labChief.id);
+
+      const newSelection = isAlreadySelected
+        ? currentSelection.filter((chief) => chief.id !== labChief.id)
+        : [labChief];
+
+      return { ...prev, [examId]: newSelection };
+    });
+  };
+
   const allExamsAllocated = exams.every(
     //@ts-ignore 
     (exam) => exam.id_tecnico_alocado != null
@@ -85,22 +103,30 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
       });
       return;
     }
-   
+
     setIsLoading(true);
     try {
-      const res = await Promise.all(
-        allocations.map((e) =>
-          _axios.post(`/exams/technician/set/${e.examId}`, {
-            id_tecnico_alocado: e.id_tecnico_alocado.toString(),
-          })
-        )
-      );
-      ___showSuccessToastNotification({ message: "Alocação confirmada!" })
+      if (isLabChief) {
+        await Promise.all(
+          allocations.map((e) =>
+            labChiefRoutes.allocateLabChief(e.examId, e.id_tecnico_alocado[0])
+          )
+        );
+      } else {
+        await Promise.all(
+          allocations.map((e) =>
+            _axios.post(`/exams/technician/set/${e.examId}`, {
+              id_tecnico_alocado: e.id_tecnico_alocado.toString(),
+            })
+          )
+        );
+      }
+      ___showSuccessToastNotification({ message: "Alocação confirmada!" });
       setIsLoading(false);
       setIsSucess(false);
     } catch (error) {
-      ___showErrorToastNotification({ message: "Erro ao confirmar Alocação!" })
-    }finally{
+      ___showErrorToastNotification({ message: "Erro ao confirmar Alocação!" });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -111,13 +137,19 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
       tech.cargo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const filteredLabChiefs = Array.isArray(labChiefs) ? labChiefs.filter(
+    (chief) =>
+      chief.nome_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      chief.cargo.toLowerCase().includes(searchTerm.toLowerCase())
+  ) : [];
+
   return (
     <Dialog open={isSucess}>
       <DialogTrigger asChild onClick={() => setIsSucess(true)}>{children}</DialogTrigger>
       <DialogContent className="w-full h-full sm:h-[95%] lg:min-w-[700px] lg:h-[600px] overflow-auto [&::-webkit-scrollbar]:hidden">
         <DialogDescription></DialogDescription>
         <DialogHeader>
-          <DialogTitle>Alocar Técnicos</DialogTitle>
+          <DialogTitle>{isLabChief ? "Alocar Chefes de Laboratório" : "Alocar Técnicos"}</DialogTitle>
         </DialogHeader>
         <div className="space-y-6">
           {
@@ -164,7 +196,7 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
                     {isExpanded && (
                       <div className="w-1/2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Selecionar Técnicos
+                          {isLabChief ? "Selecionar Chefes de Laboratório" : "Selecionar Técnicos"}
                         </label>
                         <div className="space-y-2">
                           <Input
@@ -174,28 +206,28 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
                             className="mb-2"
                           />
                           <ScrollArea className="max-h-40 border rounded-md p-2 overflow-auto">
-                            {filteredTechnicians.map((technician) => (
+                            {(isLabChief ? filteredLabChiefs : filteredTechnicians).map((person) => (
                               // @ts-ignore
                               <div
-                                key={technician.id}
+                                key={person.id}
                                 className={`flex flex-col items-start md:flex-row justify-between p-2  rounded-md my-1 cursor-pointer 
                                   ${
                                   // @ts-ignore
-                                  selectedTechnicians[exam.id]?.some((tech) => tech.id === technician.id)
+                                  selectedTechnicians[exam.id]?.some((p) => p.id === person.id)
                                     ? "bg-blue-100"
                                     : "hover:bg-gray-100"
                                   }`}
                                 // @ts-ignore
-                                onClick={() => handleTechnicianSelection(exam.id, technician)}
+                                onClick={() => isLabChief ? handleLabChiefSelection(exam.id, person) : handleTechnicianSelection(exam.id, person)}
                               >
                                 <div>
-                                  <p className="text-sm font-medium">{technician.nome_completo}</p>
-                                  <p className="text-xs text-gray-600">{technician.cargo}</p>
+                                  <p className="text-sm font-medium">{person.nome_completo}</p>
+                                  <p className="text-xs text-gray-600">{person.cargo}</p>
                                 </div>
                                 {
                                   // @ts-ignore
                                   selectedTechnicians[exam.id]?.some(
-                                    (tech) => tech.id === technician.id
+                                    (p) => p.id === person.id
                                   ) && (
                                     <Badge variant="secondary" className="text-xs">
                                       Selecionado
@@ -221,7 +253,7 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
                     {!isExpanded && (
                       <Badge variant="secondary" className="text-xs">
                         {/* @ts-ignore */}
-                        Total: {selectedTechnicians[exam.id]?.length || 0} técnico(s)
+                        Total: {selectedTechnicians[exam.id]?.length || 0} {isLabChief ? "chefe(s)" : "técnico(s)"}
                       </Badge>
                     )}
                   </div>

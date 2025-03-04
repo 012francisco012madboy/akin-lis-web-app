@@ -46,6 +46,10 @@ export default function CardSchedule({ data }: ICardSchedule) {
     },
   });
 
+  if (labChiefs.isLoading) {
+    return <div>Loading...</div>;
+  }
+
   console.log("lab", labChiefs.data);
 
   const handleGroupExams = () => {
@@ -235,6 +239,9 @@ export default function CardSchedule({ data }: ICardSchedule) {
         <AllocateTechniciansModal
           exams={groupedExams}
           technicians={tecnico.data ? tecnico.data.data : []}
+          isLabChief={userRole === role}
+          //@ts-ignore
+          labChiefs={labChiefs.data}
         >
           <Button
             className="w-full h-full"
