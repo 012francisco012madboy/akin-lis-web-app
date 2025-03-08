@@ -34,6 +34,7 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
           <GridOrBlockDisplayButton
             displayMode={displayMode}
             setDisplayMode={setDisplayMode}
+            isGrid
           />
         </div>
 

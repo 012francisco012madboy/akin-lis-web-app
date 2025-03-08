@@ -1,32 +1,49 @@
 "use client";
 
 import { useState } from "react";
-
 import { Input } from "@/components/ui/input";
 import { GridOrBlockDisplayButton } from "../../patient/components/gridOrBlockButtonMode";
 import { ListMode } from "./list-mode";
 import { Combobox } from "@/components/combobox/comboboxExam";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface ProductDisplay {
-
-}
+import { ProductModal } from "./productModalToCreate";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { stockMaterialRoutes } from "@/module/services/routes/stock-material";
 
 export default function ProductDisplay() {
   const [filteredProduct, setFilteredProduct] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [displayMode, setDisplayMode] = useState<DisplayMode>("list");
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const categories = ["Categoria 1", "Categoria 2", "Categoria 3"];
+
+  const stockMaterialMutate = useMutation({
+    mutationKey: ["stockMaterial"],
+    mutationFn: async (data: any) => {
+      const response = await stockMaterialRoutes.createStockMaterial(data);
+      return response;
+    },
+  });
+  const getAllStockMaterials = useQuery({
+    queryKey: ["stockMaterial"],
+    queryFn: async () => {
+      const response = await stockMaterialRoutes.getAllStockMaterials();
+      return response;
+    },
+  });
+  console.log(getAllStockMaterials.data); 
+
 
   function handleSearch(searchText: string) {
     setIsSearching(searchText.length > 0);
+    // ...existing code...
+  }
 
-    // const foundPatients = patients.filter((patient) =>
-    //   patient.nome_completo.toLowerCase().includes(searchText.toLowerCase())
-    // );
-    // setFilteredPatients(foundPatients);
+  function handleSaveProduct(product: { nome: string; quantidade: number; unidade_de_medida: string }) {
+    // Lógica para salvar o produto
+    console.log("Produto salvo:", product);
+    stockMaterialMutate.mutate(product);
   }
 
   return (
@@ -42,49 +59,28 @@ export default function ProductDisplay() {
         </div>
         <div className="w-full flex gap-2 sm:w-auto">
           <Combobox
-              data={[
-                { label: "Cat 1", value: "Cat 1" },
-                { label: "Cat 2", value: "Cat 2" },
-                { label: "Cat 3", value: "Cat 3 " },
-              ]}
-              displayKey="label"
-              onSelect={() =>{} }
-              placeholder="Filtrar por status"
-              clearLabel="Limpar"
-              width=""
-            />
-        {/* Campo de busca */}
-
+            data={[
+              { label: "Cat 1", value: "Cat 1" },
+              { label: "Cat 2", value: "Cat 2" },
+              { label: "Cat 3", value: "Cat 3 " },
+            ]}
+            displayKey="label"
+            onSelect={() => { }}
+            placeholder="Filtrar por status"
+            clearLabel="Limpar"
+            width=""
+          />
+          {/* Campo de busca */}
           <Input
             className="w-full sm:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus-visible:ring-0"
             placeholder="Procurar por nome"
             onChange={(e) => handleSearch(e.target.value)}
           />
-          {/* {isSearching && (
-            <p className="mt-2 text-sm text-gray-600 italic">
-              {filteredPatients.length > 0
-                ? `Total de pacientes encontrados: ${filteredPatients.length}`
-                : "Nenhum paciente encontrado"}
-            </p>
-          )} */}
-
-          <Button> <Plus/> Cadastrar</Button>
+          <Button onClick={() => setIsModalOpen(true)}> <Plus /> Cadastrar</Button>
         </div>
       </div>
-      {/* {
-        filteredPatients.length > 0 ? (
-          <> */}
       {displayMode === "list" && <ListMode />}
-      {/* {displayMode === "block" && <BlockMode patientList={filteredPatients} />} */}
-      {/* </>
-        ) : (
-          <div className="py-12 text-center">
-            <p className="text-lg text-gray-500">
-              Nenhum producto encontrado.
-            </p>
-          </div>
-        )
-      } */}
+      <ProductModal open={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleSaveProduct} />
     </div>
   );
 }

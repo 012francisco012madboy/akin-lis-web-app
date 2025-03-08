@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { APP_CONFIG } from "@/config/app";
 import Link from "next/link";
+import { EllipsisIcon } from "lucide-react";
 
 const ITEMS_PER_PAGE = 10; // Número de pacientes por página
 
@@ -22,7 +23,7 @@ export function ListMode() {
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
       <div className="flex justify-between items-center p-4">
-        <h2 className="text-lg font-medium text-gray-700">Lista de Pacientes</h2>
+        <h2 className="text-lg font-medium text-gray-700">Lista de Produtos</h2>
       </div>
       <table className="min-w-full divide-y divide-gray-200 text-sm">
         {/* Cabeçalho */}
@@ -49,7 +50,7 @@ export function ListMode() {
               2025/02/02
             </td>
             <td className="px-4 py-3 text-gray-700">
-             250 gr
+              250 gr
               {/* {new Date(patient.data_nascimento).toLocaleDateString()} */}
             </td>
             <td className="px-4 py-3 text-gray-700">100 - Laminas</td>
@@ -59,7 +60,8 @@ export function ListMode() {
                 className="inline-block rounded bg-blue-600 px-4 py-2 text-xs font-medium text-white transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                 aria-label={`Ver detalhes de $`}
               >
-                Ver Paciente
+                {/* <EllipsisIcon size={20} /> */}
+                Ações
               </Link>
             </td>
           </tr>
@@ -71,7 +73,7 @@ export function ListMode() {
       <div className="flex justify-between items-center px-4 py-2 bg-gray-50 border-t">
         <span className="text-sm text-gray-600">
           Exibindo {startIndex + 1} -{" "}
-          {Math.min(startIndex + ITEMS_PER_PAGE, totalItems)} de {totalItems} pacientes
+          {Math.min(startIndex + ITEMS_PER_PAGE, totalItems)} de {totalItems} produtos
         </span>
         <div className="flex gap-2">
           <button

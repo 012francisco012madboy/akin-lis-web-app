@@ -38,6 +38,7 @@ export function FormModal({ open, technician, onClose, onSave }: any) {
         onClose();
       } else {
         const { usuario, ...newTechnicianData } = formData;
+        console.log("newTechnicianData", newTechnicianData);
         await onSave(newTechnicianData);
         onClose();
       }
