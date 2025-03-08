@@ -5,6 +5,9 @@ import PatientDisplay from "./patient-display";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { useQuery } from "@tanstack/react-query";
 import { PatientDisplaySkeleton } from "./components/patientDisplaySkeleton";
+import { labTechniciansRoutes } from "@/module/services/routes/lab-technicians";
+import Cookies from "js-cookie";
+import { patientRoutes } from "@/module/services/routes/patients";
 
 const breadcrumbItems = [
   {
@@ -13,20 +16,29 @@ const breadcrumbItems = [
 ]
 
 export default function Patient() {
-  const patients = useQuery({
+  const userRole = Cookies.get("akin-role") || "";
+  const isLabTechnician = userRole === "TECNICO";
+
+  const patientsQuery = useQuery({
     queryKey: ["patient-data"],
     queryFn: async () => {
-      return await _axios.get<PatientType[]>("/pacients");
+      if (isLabTechnician) {
+        return await labTechniciansRoutes.getPacientsAssocietedToLabTechnician("cm681rq01000pfe0x5b9gi2y8");
+      } else {
+        return await patientRoutes.getAllPacients();
+      }
     },
-  })
+  });
 
-  if (patients.isError) return <p>{patients.error.message}</p>
-  if (patients.isLoading) return <PatientDisplaySkeleton />
+  if (patientsQuery.isError) return <p>{patientsQuery.error.message}</p>
+  if (patientsQuery.isLoading) return <PatientDisplaySkeleton />
+
   return (
     <View.Vertical className="h-screen">
       <CustomBreadcrumb items={breadcrumbItems} borderB />
       <View.Scroll>
-        <PatientDisplay patients={patients.data!.data} />
+        <p></p>
+        <PatientDisplay patients={patientsQuery.data} />
       </View.Scroll>
     </View.Vertical>
   );
