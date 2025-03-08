@@ -13,6 +13,18 @@ const breadcrumbItems = [{ label: "Painel " }];
 export default function StockControlDashboard() {
   const [activeTab, setActiveTab] = useState("general");
 
+  // <div className="flex gap-4">
+  //   <Button variant="outline">
+  //     <Boxes size={16} className="mr-2" /> Produtos
+  //   </Button>
+  //   <Button variant="outline">
+  //     <FileText size={16} className="mr-2" /> Registro de Consumo
+  //   </Button>
+  //   <Button variant="outline">
+  //     <FileText size={16} className="mr-2" /> Relatórios
+  //   </Button>
+  // </div>
+
   return (
     <main className="w-full h-full p-4 text-white font-semibold text-lg overflow-y-auto [&::-webkit-scrollbar]:hidden">
       <div className="flex flex-col md:flex-row justify-start w-full md:justify-between md:items-center ">
@@ -47,11 +59,11 @@ export default function StockControlDashboard() {
         </Tabs>
       </div>
       <div className="w-full h-[0.5px] bg-black/20 my-1"></div>
-      <div className="w-full h-full bg-slate-400 p-4 text-white font-semibold text-lg ">
+      <div className="w-full h-full p-4 text-white font-semibold text-lg ">
         {activeTab === "general" && <StockControlDashboardGeneral />}
-        {activeTab === "notifications" && <StockControlDashboardNotifications/>}
-        {activeTab === "reports" && <StockControlDashboardReports/>}
-        {activeTab === "consumption" && <StockControlDashboardConsumption/>}
+        {activeTab === "notifications" && <StockControlDashboardNotifications />}
+        {activeTab === "reports" && <StockControlDashboardReports />}
+        {activeTab === "consumption" && <StockControlDashboardConsumption />}
       </div>
     </main>
   );
