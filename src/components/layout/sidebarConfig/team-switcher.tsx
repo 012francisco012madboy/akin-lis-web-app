@@ -25,9 +25,9 @@ export function TeamSwitcher({
     image?: string
   }[]
 }) {
-  const akinData = Cookies.get("akin-userdata") || "";
+  const akinData =typeof window !== "undefined" ? Cookies.get("akin-userdata") || "" : "";
   const unit_health = JSON.parse(akinData)
-  const akinRole = Cookies.get("akin-role") || "";
+  const akinRole = typeof window !== "undefined" ? Cookies.get("akin-role") || "" : "";
 
   const { isMobile } = useSidebar()
   const [activeTeam, setActiveTeam] = React.useState(teams[0])

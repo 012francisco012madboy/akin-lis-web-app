@@ -25,7 +25,7 @@ export default function New() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | undefined>();
   const [schedules, setSchedules] = useState([{ exam: "", date: new Date(), time: "" }]);
   const [resetPatient, setResetPatient] = useState(false);
-  const akinData = Cookies.get("akin-userdata") || "";
+  const akinData = typeof window !== "undefined" ? Cookies.get("akin-userdata") || "" : "";
   const unit_health = JSON.parse(akinData)
 
   useEffect(() => {
