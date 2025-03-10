@@ -127,7 +127,6 @@ export default function New() {
       setIsSaving(false);
     }
   };
-
   return (
     <div className="min-h-screen px-6 py-2 pb-5 bg-gray-50 overflow-x-hidden">
       {/* Cabeçalho */}
