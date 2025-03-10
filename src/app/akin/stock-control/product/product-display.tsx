@@ -32,8 +32,6 @@ export default function ProductDisplay() {
       return response;
     },
   });
-  console.log(getAllStockMaterials.data); 
-
 
   function handleSearch(searchText: string) {
     setIsSearching(searchText.length > 0);
@@ -43,7 +41,7 @@ export default function ProductDisplay() {
   function handleSaveProduct(product: { nome: string; quantidade: number; unidade_de_medida: string }) {
     // Lógica para salvar o produto
     console.log("Produto salvo:", product);
-    stockMaterialMutate.mutate(product);
+    // stockMaterialMutate.mutate(product);
   }
 
   return (
