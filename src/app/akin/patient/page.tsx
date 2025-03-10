@@ -16,7 +16,7 @@ const breadcrumbItems = [
 ]
 
 export default function Patient() {
-  const userRole = Cookies.get("akin-role") || "";
+  const userRole = typeof window !== "undefined" ? Cookies.get("akin-role") || "" : "";
   const isLabTechnician = userRole === "TECNICO";
 
   const patientsQuery = useQuery({

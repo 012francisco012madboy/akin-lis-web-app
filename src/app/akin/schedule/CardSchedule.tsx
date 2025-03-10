@@ -23,7 +23,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
   const [groupedExams, setGroupedExams] = useState<Exam[]>([]);
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const userRole = Cookies.get("akin-role") || "";
+  const userRole = typeof window !== "undefined" ? Cookies.get("akin-role") || "" : "";
   const role = "RECEPCIONISTA";
 
 
