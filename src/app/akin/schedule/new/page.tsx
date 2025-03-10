@@ -11,10 +11,9 @@ import { PatientDetails } from "./components/PatientDetails";
 import { ScheduleDetails } from "./components/ScheduleDetails";
 import { Button } from "@/components/ui/button";
 import { resetInputs } from "./utils/reset-inputs-func";
+import Cookies from "js-cookie";
 
 export type SchemaScheduleType = z.infer<typeof schemaSchedule>;
-
-const DEFAULT_USER = { id: "cm27g9oa00001lg20jnnzb0wr", name: "João Silva", id_unidade_de_saude: 1 };
 
 export default function New() {
   const [isLoading, setIsLoading] = useState(true);
@@ -26,6 +25,8 @@ export default function New() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | undefined>();
   const [schedules, setSchedules] = useState([{ exam: "", date: new Date(), time: "" }]);
   const [resetPatient, setResetPatient] = useState(false);
+  const akinData = Cookies.get("akin-userdata") || "";
+  const unit_health = JSON.parse(akinData)
 
   useEffect(() => {
     fetchPatientsAndExams();
@@ -89,7 +90,7 @@ export default function New() {
       isValid: true,
       data: {
         id_paciente: selectedPatient!.id,
-        id_unidade_de_saude: "CLI2527",
+        id_unidade_de_saude: unit_health.health_unit_ref,
         exames_paciente: schedules.map((schedule) => {
           const date = schedule.date instanceof Date ? schedule.date : new Date(schedule.date);
           return {

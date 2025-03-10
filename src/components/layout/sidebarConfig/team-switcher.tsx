@@ -27,6 +27,8 @@ export function TeamSwitcher({
 }) {
   const akinData = Cookies.get("akin-userdata") || "";
   const unit_health = JSON.parse(akinData)
+  const akinRole = Cookies.get("akin-role") || "";
+
   const { isMobile } = useSidebar()
   const [activeTeam, setActiveTeam] = React.useState(teams[0])
   return (
@@ -43,7 +45,7 @@ export function TeamSwitcher({
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">{unit_health.health_unit_ref}</span>
-              <span className="truncate text-xs">{activeTeam.plan}</span>
+              <span className="truncate text-xs">{akinRole}</span>
             </div>
             {/* <ChevronsUpDown className="ml-auto" /> */}
           </SidebarMenuButton>

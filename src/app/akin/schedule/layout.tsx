@@ -32,7 +32,6 @@ export default function Schedule({ children }: ISchedule) {
 
   const activeTab = routes.find((item) => pathname === item.path)?.path || routes[0]?.path;
 
-console.log("activeTab", activeTab);
   return (
     <View.Vertical className="gap-4 h-screen">
       <div className="flex flex-col md:flex-row justify-start w-full md:justify-between md:items-center">
