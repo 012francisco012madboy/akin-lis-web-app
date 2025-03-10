@@ -9,6 +9,7 @@ import { APP_CONFIG } from "@/config/app"
 import Cookies from "js-cookie";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 
+
 // This is sample data.
 const data = {
   user: {
@@ -19,7 +20,7 @@ const data = {
   teams: [
     {
       name: "OsapiCare",
-      plan: "System",
+      plan: "Akin System",
       image: "/avatars/osapicare.png",
     },
   ],
