@@ -13,14 +13,12 @@ import { APP_CONFIG } from "@/config/app";
 import { MenuIcon } from "lucide-react";
 import { _axios } from "@/lib/axios";
 import { filterRoutesByAccess } from "@/config/filteredAcessRoutes";
-import Cookies from 'js-cookie';
+import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 export default function Menu() {
   const activeSegment = useSelectedLayoutSegment() as string;
   const [isSheetOpen, setSheetOpen] = useState(false);
-  const cookie = Cookies;
-  const role =  typeof window !== "undefined" ? cookie.get("akin-role") || "" : "";
-
+  const role = getAllDataInCookies().userRole;
   const routes = role ? filterRoutesByAccess(role) : [];
 
   return (

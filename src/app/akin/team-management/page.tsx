@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { teamManagementRoutes } from "@/module/services/routes/team-management";
+import { teamManagementRoutes } from "@/module/services/api/routes/team-management";
 import { FormModal } from "./formModalToCreate";
 import TechnicianCardGrid from "@/app/akin/team-management/technician-card-grid";
 import LoadingState from "@/app/akin/team-management/loading-state";
@@ -34,7 +34,7 @@ export default function TeamManagement() {
 
   const teamManagementCreate = useMutation({
     mutationFn: async (data: ITeamManagement) => {
-      console.log("Está a ser criado!",data);
+      console.log("Está a ser criado!", data);
       return (await teamManagementRoutes.createLabTech(data));
     },
     onSuccess: () => {
@@ -77,10 +77,10 @@ export default function TeamManagement() {
 
   const handleSave = (data: ITeamManagement) => {
     if (data.id) {
-      console.log("Edite Tecnico",data);
+      console.log("Edite Tecnico", data);
       teamManagementUpdate.mutate(data);
     } else {
-      console.log("Create Tecnico",data);
+      console.log("Create Tecnico", data);
       teamManagementCreate.mutate(data);
     }
     setFormModalOpen(false);

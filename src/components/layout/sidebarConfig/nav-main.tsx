@@ -37,7 +37,7 @@ export function NavMain({
         {items
           .filter((item) => item.access.includes(userRole))
           .map((item) => {
-            const isActive = pathname.startsWith(item.path);
+            const isActive = pathname ? pathname.startsWith(item.path) : false;
             return (
               <Collapsible
                 key={item.label}
@@ -66,7 +66,7 @@ export function NavMain({
                         {item.subItems
                           .filter((subItem) => subItem.access.includes(userRole))
                           .map((subItem) => {
-                            const isSubActive = pathname.startsWith(subItem.path);
+                            const isSubActive = pathname ? pathname.startsWith(subItem.path) : false;
                             return (
                               <SidebarMenuSubItem key={subItem.label} className={isSubActive ? "bg-sidebar-accent text-black rounded-md": ""}>
                                 <SidebarMenuSubButton asChild>

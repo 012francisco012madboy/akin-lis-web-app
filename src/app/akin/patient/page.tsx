@@ -5,8 +5,8 @@ import PatientDisplay from "./patient-display";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { useQuery } from "@tanstack/react-query";
 import { PatientDisplaySkeleton } from "./components/patientDisplaySkeleton";
-import { labTechniciansRoutes } from "@/module/services/routes/lab-technicians";
-import { patientRoutes } from "@/module/services/routes/patients";
+import { labTechniciansRoutes } from "@/module/services/api/routes/lab-technicians";
+import { patientRoutes } from "@/module/services/api/routes/patients";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 const breadcrumbItems = [

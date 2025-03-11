@@ -6,8 +6,7 @@ import { NavUser } from "./nav-user"
 import { TeamSwitcher } from "./team-switcher"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
 import { APP_CONFIG } from "@/config/app"
-import Cookies from "js-cookie";
-import { useAuthStore } from "@/utils/zustand-store/authStore";
+import { getAllDataInCookies } from "@/utils/get-data-in-cookies"
 
 
 // This is sample data.
@@ -29,8 +28,7 @@ const data = {
 // Simulação do papel do usuário (substitua pelo papel dinâmico do sistema)
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useAuthStore();
-  const userRole = typeof window !== "undefined" ? Cookies.get("akin-role") || "" : "";
+  const userRole = getAllDataInCookies().userRole;
   return (
     <Sidebar collapsible="icon" {...props} className="max-w-[201px] bg-akin-turquoise border-r-akin-turquoise">
       <SidebarHeader className="bg-akin-turquoise text-white">

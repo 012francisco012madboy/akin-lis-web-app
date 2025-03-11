@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
 import { Exam } from "../patient/[id]/exam-history/useExamHookData";
 import { EditScheduleFormModal } from "./editScheduleData";
-import { labChiefRoutes } from "@/module/services/routes/lab-chief";
+import { labChiefRoutes } from "@/module/services/api/routes/lab-chief";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 interface ICardSchedule {

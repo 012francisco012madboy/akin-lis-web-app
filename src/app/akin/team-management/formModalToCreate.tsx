@@ -4,16 +4,14 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { useState } from "react";
-import Cookies from "js-cookie";
+import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 const genderOptions = ["Masculino", "Femenino"]
 export function FormModal({ open, technician, onClose, onSave }: any) {
-  const { user } = useAuthStore();
-  const akinData = typeof window !== "undefined" ? Cookies.get("akin-userdata") || "" : "";
-  const unit_health = JSON.parse(akinData)
+  const unit_health = getAllDataInCookies().userdata.health_unit_ref;
   const [formData, setFormData] = useState<ITeamManagement>(
     technician || {
-      nome_completo: "", usuario: { nome: "", email: "", hash: "", hashedRt: "", tipo: "", status: "", criado_aos: "", atualizado_aos: "" }, cargo: "Tecnico de Laboratório", email: "", contacto_telefonico: "", status: "ATIVO", id_unidade_saude: unit_health.health_unit_ref,
+      nome_completo: "", usuario: { nome: "", email: "", hash: "", hashedRt: "", tipo: "", status: "", criado_aos: "", atualizado_aos: "" }, cargo: "Tecnico de Laboratório", email: "", contacto_telefonico: "", status: "ATIVO", id_unidade_saude: unit_health,
       //  id_chefe_lab: user?.id, 
       data_nascimento: "", numero_identificacao: "", id_sexo: 0, senha: "", tipo: "TECNICO"
     }

@@ -1,8 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { ChevronsUpDown, Plus } from "lucide-react"
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +10,8 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
-import Cookies from "js-cookie";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
+import { getAllDataInCookies } from "@/utils/get-data-in-cookies"
 
 export function TeamSwitcher({
   teams,
@@ -25,11 +23,9 @@ export function TeamSwitcher({
     image?: string
   }[]
 }) {
-  const akinData =typeof window !== "undefined" ? Cookies.get("akin-userdata") || "" : "";
-  const unit_health = JSON.parse(akinData)
-  const akinRole = typeof window !== "undefined" ? Cookies.get("akin-role") || "" : "";
+  const unit_health = getAllDataInCookies().userdata.health_unit_ref;
+  const akinRole = getAllDataInCookies().userRole;
 
-  const { isMobile } = useSidebar()
   const [activeTeam, setActiveTeam] = React.useState(teams[0])
   return (
     <SidebarMenu>
@@ -44,7 +40,7 @@ export function TeamSwitcher({
               {activeTeam.logo && <activeTeam.logo className="size-4" />}
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{unit_health.health_unit_ref}</span>
+              <span className="truncate font-semibold">{unit_health}</span>
               <span className="truncate text-xs">{akinRole}</span>
             </div>
             {/* <ChevronsUpDown className="ml-auto" /> */}

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
-import { stockMaterialRoutes } from "@/module/services/routes/stock-material";
+import { stockMaterialRoutes } from "@/module/services/api/routes/stock-material";
 
 interface ProductModalProps {
   open: boolean;
@@ -62,7 +62,7 @@ export function ProductModal({ open, onClose, onSave }: ProductModalProps) {
             <Select
               onValueChange={(value) => setFormData({ ...formData, unidade_de_medida: value })}
               disabled={isLoadingCategories}
-            
+
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione a categoria" className="mb-4 focus-visible:ring-akin-turquoise" />

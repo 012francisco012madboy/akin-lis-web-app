@@ -18,7 +18,7 @@ import { ChevronDown, ChevronUp, Loader } from "lucide-react";
 import { Exam } from "../patient/[id]/exam-history/useExamHookData";
 import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
-import { LabChief, labChiefRoutes } from "@/module/services/routes/lab-chief";
+import { LabChief, labChiefRoutes } from "@/module/services/api/routes/lab-chief";
 
 export interface LabTechnician {
   id: string;

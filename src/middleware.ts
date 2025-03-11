@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
 
 const publicRoutes = ["/", "/auth/forgot-password", "/auth/forgot-password/change-password", "/auth/signup"];
 const protectedRoutes = [
