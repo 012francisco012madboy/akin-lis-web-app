@@ -12,6 +12,7 @@ import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import Cookies from "js-cookie";
+import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 //Precisa de ser atualizado o Typescript desse componente e aplicar refatoração de codigo para melhorar a legibilidade - (Mario SALVADOR)
 export function EditScheduleFormModal({
@@ -44,9 +45,8 @@ export function EditScheduleFormModal({
   >({});
 
   const queryClient = useQueryClient();
-  const userRole = typeof window !== "undefined" ? Cookies.get("akin-role") || "": "";
+  const userRole = getAllDataInCookies().userRole;
   const role = "CHEFE";
-  const { user } = useAuthStore();
 
   // Fetch dos técnicos
   const technicians = useQuery({

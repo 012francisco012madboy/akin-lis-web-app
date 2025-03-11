@@ -11,8 +11,8 @@ import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/lib/axios";
 import { Exam } from "../patient/[id]/exam-history/useExamHookData";
 import { EditScheduleFormModal } from "./editScheduleData";
-import Cookies from "js-cookie";
 import { labChiefRoutes } from "@/module/services/routes/lab-chief";
+import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 interface ICardSchedule {
   data: ScheduleType;
@@ -23,7 +23,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
   const [groupedExams, setGroupedExams] = useState<Exam[]>([]);
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const userRole = typeof window !== "undefined" ? Cookies.get("akin-role") || "" : "";
+  const userRole = getAllDataInCookies().userRole;
   const role = "RECEPCIONISTA";
 
 

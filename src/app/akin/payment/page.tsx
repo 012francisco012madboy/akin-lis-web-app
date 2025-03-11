@@ -12,16 +12,8 @@ const breadcrumbItems = [
     label: "Pagamento",
   },
 ];
-
-// const getData = async () => {
-//   await new Promise((resolve) => setTimeout(resolve, 2000));
-//   console.log("Payment");
-//   return new Date().toLocaleString();
-// };
-
 export default function Payment({ }: IPayment) {
   const [open, setOpen] = useState(false);
-  // const data = await getData();
 
   return (
     <View.Vertical className="h-screen px-6 py-4 bg-gray-50">
@@ -78,19 +70,6 @@ export default function Payment({ }: IPayment) {
         </div>
       </div>
       <h1>Tela em Versao Beta </h1>
-
-
-      {/* Toast Notification */}
-      {/* <Toast.Provider>
-        <Toast.Root open={open} onOpenChange={setOpen}>
-          <Toast.Title>Pagamento realizado com sucesso!</Toast.Title>
-          <Toast.Description>Friday, February 10, 2023 at 5:57 PM</Toast.Description>
-          <Toast.Action asChild altText="Goto schedule to undo">
-            <Button>Undo</Button>
-          </Toast.Action>
-        </Toast.Root>
-        <Toast.Viewport />
-      </Toast.Provider> */}
     </View.Vertical>
   );
 }

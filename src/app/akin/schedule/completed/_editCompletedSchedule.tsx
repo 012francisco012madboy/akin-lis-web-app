@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Input } from "@/components/ui/input";
 import { Select, SelectItem } from "@/components/ui/select";
 import React, { useState } from "react";
-// import { Exam } from "../../patient/[id]/exam-history/useExamHookData";
 
 interface Exam {
   id: number;

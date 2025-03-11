@@ -7,7 +7,7 @@ import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { _axios } from "@/lib/axios";
-import Cookies from "js-cookie";
+import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 interface ISchedule {
   children: React.ReactNode;
@@ -27,7 +27,7 @@ const filterScheduleByAccess = (schedule: string) => {
 
 export default function Schedule({ children }: ISchedule) {
   const pathname = usePathname();
-  const userRole = typeof window !== "undefined" ? Cookies.get("akin-role") || "" : "";
+  const userRole = getAllDataInCookies().userRole;
   const routes = filterScheduleByAccess(userRole);
 
   const activeTab = routes.find((item) => pathname === item.path)?.path || routes[0]?.path;
