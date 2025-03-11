@@ -17,6 +17,7 @@ import { isWithinInterval } from "date-fns";
 import { DateRange } from "react-day-picker";
 
 export default function ExamsHistory() {
+  //@ts-ignore
   const { id } = useParams();
   const [namePatient, setNamePatient] = useState("");
   const [exams, setExams] = useState<IExamProps[]>([]);

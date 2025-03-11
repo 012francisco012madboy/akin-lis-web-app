@@ -30,6 +30,7 @@ export const MedicalMaterialsModal: React.FC<{
   const [materials, setMaterials] = useState<Material[]>([]);
   const [selectedMaterial, setSelectedMaterial] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("");
+  //@ts-ignore
   const { id } = useParams();
 
   const addMaterial = () => {

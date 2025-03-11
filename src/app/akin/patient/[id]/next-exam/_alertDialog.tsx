@@ -1,6 +1,4 @@
 import { AlertDialogAction, AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { MedicalMaterialsModal } from "./_materialModal"
-import { useState } from "react";
 
 export const AlerDialogNextExam = ({ isOpen, onClose, onIgnore }: { isOpen: boolean; onClose: () => void; onIgnore: () => void }) => (
   <AlertDialog open={isOpen} onOpenChange={onClose}>

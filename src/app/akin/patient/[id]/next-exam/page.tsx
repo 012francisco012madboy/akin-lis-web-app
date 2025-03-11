@@ -1,7 +1,6 @@
 "use client";
 
 import CustomBreadcrumb from '@/components/custom-breadcrumb';
-import { Button } from '@/components/ui/button';
 import { _axios } from '@/lib/axios';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
@@ -25,6 +24,7 @@ const SkeletonCard = () => (
 );
 
 const UpcomingExams = () => {
+  //@ts-ignore
   const { id } = useParams();
   const [filter, setFilter] = useState('');
 

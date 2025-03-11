@@ -6,8 +6,8 @@ import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { useQuery } from "@tanstack/react-query";
 import { PatientDisplaySkeleton } from "./components/patientDisplaySkeleton";
 import { labTechniciansRoutes } from "@/module/services/routes/lab-technicians";
-import Cookies from "js-cookie";
 import { patientRoutes } from "@/module/services/routes/patients";
+import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 const breadcrumbItems = [
   {
@@ -16,14 +16,17 @@ const breadcrumbItems = [
 ]
 
 export default function Patient() {
-  const userRole = typeof window !== "undefined" ? Cookies.get("akin-role") || "" : "";
+  const userRole = getAllDataInCookies().userRole;
   const isLabTechnician = userRole === "TECNICO";
+
+  console.log("user role", userRole);
+  console.log("isLabTechnician", isLabTechnician);
 
   const patientsQuery = useQuery({
     queryKey: ["patient-data"],
     queryFn: async () => {
       if (isLabTechnician) {
-        return await labTechniciansRoutes.getPacientsAssocietedToLabTechnician("cm681rq01000pfe0x5b9gi2y8");
+        return await labTechniciansRoutes.getPacientsAssocietedToLabTechnician(getAllDataInCookies().userdata.id);
       } else {
         return await patientRoutes.getAllPacients();
       }

@@ -20,6 +20,8 @@ export default function SampleVisualizationPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen] = useState(false);
   const [imageAnnotations, setImageAnnotations] = useState<Record<string, Shape[]>>({}); // 🔹 Armazena anotações de todas as imagens
+
+  //@ts-ignore
   const { id, exam_id } = useParams();
 
   const getPatientInfo = useQuery({
@@ -28,15 +30,12 @@ export default function SampleVisualizationPage() {
       return await _axios.get<PatientType>(`/pacients/${id}`);
     }
   })
-  console.log("exame", exam_id)
   const getExamById = useQuery({
     queryKey: ['Exam-Info', exam_id],
     queryFn: async () => {
       return await _axios.get(`/exams/${exam_id}`);
     }
   })
-
-  console.log("getExamById", getExamById.data?.data)
 
   const handleDeleteImage = (image: string) => {
     setCapturedImages((prev) => prev.filter((img) => img !== image));
