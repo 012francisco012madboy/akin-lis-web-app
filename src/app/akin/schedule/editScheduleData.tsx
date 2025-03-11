@@ -44,7 +44,7 @@ export function EditScheduleFormModal({
   >({});
 
   const queryClient = useQueryClient();
-  const userRole = Cookies.get("akin-role") || "";
+  const userRole = typeof window !== "undefined" ? Cookies.get("akin-role") || "": "";
   const role = "CHEFE";
   const { user } = useAuthStore();
 

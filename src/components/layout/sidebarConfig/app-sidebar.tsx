@@ -30,7 +30,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuthStore();
-  const userRole = Cookies.get("akin-role") || "";
+  const userRole = typeof window !== "undefined" ? Cookies.get("akin-role") || "" : "";
   return (
     <Sidebar collapsible="icon" {...props} className="max-w-[201px] bg-akin-turquoise border-r-akin-turquoise">
       <SidebarHeader className="bg-akin-turquoise text-white">

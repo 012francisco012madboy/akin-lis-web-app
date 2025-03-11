@@ -19,7 +19,7 @@ export default function Menu() {
   const activeSegment = useSelectedLayoutSegment() as string;
   const [isSheetOpen, setSheetOpen] = useState(false);
   const cookie = Cookies;
-  const role = cookie.get("akin-role")
+  const role =  typeof window !== "undefined" ? cookie.get("akin-role") || "" : "";
 
   const routes = role ? filterRoutesByAccess(role) : [];
 
