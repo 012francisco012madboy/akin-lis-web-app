@@ -59,7 +59,8 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
 
     setError(null);
     setIsCapturing(true);
-    setTimer(5);
+    setTimer(timer); // Mantém o valor configurado pelo usuário
+
     setCapturedImages([]);
     setMessage("Posicione a lâmina corretamente.");
   };
@@ -90,6 +91,32 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
     if (capturedImages.length + 1 >= maxCaptures) setIsCapturing(false); // Adjusted condition
   }, [capturedImages.length, maxCaptures, currentImage, devices.length]);
 
+  useEffect(() => {
+    if (!devices.length) {
+      setError("Nenhuma câmera detectada. Certifique-se de que a câmera está conectada.");
+    } else {
+      setError(null);
+    }
+  }, [devices]);
+
+  useEffect(() => {
+    if (!isCapturing || capturedImages.length >= maxCaptures) return;
+  
+    const interval = setInterval(() => {
+      setTimer((prevTimer) => {
+        if (prevTimer === 1) {
+          handleCaptureImage();
+          return timer; // Mantém o timer sem resetá-lo automaticamente
+        }
+        return prevTimer - 1;
+      });
+    }, 1000);
+  
+    return () => clearInterval(interval);
+  }, [isCapturing, capturedImages.length, maxCaptures, handleCaptureImage]);
+  
+
+
   const handleStopCapturing = () => {
     setIsCapturing(false);
     setMessage("Captura finalizada. Escolha como enviar as imagens.");
@@ -102,24 +129,6 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
     }
   };
 
-  useEffect(() => {
-    if (!devices.length) {
-      setError("Nenhuma câmera detectada. Certifique-se de que a câmera está conectada.");
-    } else {
-      setError(null);
-    }
-  }, [devices]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isCapturing && capturedImages.length < maxCaptures) {
-      interval = setInterval(() => {
-        setTimer((prev) => (prev > 1 ? prev - 1 : 1));
-        if (timer === 1) handleCaptureImage();
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isCapturing, timer, capturedImages.length, handleCaptureImage, maxCaptures]);
 
   return (
     isAutomatedAnalysisOpen && (
