@@ -33,7 +33,7 @@ export default function SampleVisualizationPage() {
   const getExamById = useQuery({
     queryKey: ['Exam-Info', exam_id],
     queryFn: async () => {
-      return await _axios.get(`/exams/${exam_id}`);
+      return await _axios.get(`/exam-types/${exam_id}`);
     }
   })
 
@@ -84,12 +84,24 @@ export default function SampleVisualizationPage() {
     // Adicione a lógica para enviar o array de objetos à IA aqui
   };
 
+  /*
+  "data": {
+        "id": 11,
+        "nome": "Dengue",
+        "descricao": "...",
+        "preco": 5000,
+        "status": "DISPONIVEL",
+        "criado_aos": "2025-01-07T22:07:23.634Z",
+        "atualizado_aos": "2025-01-07T22:07:23.634Z"
+    },
+  */
+
   return (
     <div className="min-h-screen  overflow-y-auto">
       {/* Header */}
       <header className="bg-white shadow py-2 px-5 flex gap-2 flex-col lg:flex-row justify-between items-start lg:items-center rounded-md">
         <h1 className="text-lg font-semibold">Paciente: {getPatientInfo.data?.data.nome_completo}</h1>
-        <h1 className="text-lg font-semibold">Exame: {getExamById.data?.data.data.Tipo_Exame.nome}</h1>
+        <h1 className="text-lg font-semibold">Exame: {getExamById.data?.data.data.nome}</h1>
         <DropdownMenu >
           <DropdownMenuTrigger className="bg-black text-white px-2 py-2 rounded-md hover:bg-black/90">
             Iniciar Analíse
