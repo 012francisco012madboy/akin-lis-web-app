@@ -7,6 +7,8 @@ import CustomCamera from "@/app/akin/camera/camera";
 import { ___showErrorToastNotification } from "@/lib/sonner";
 import { CapturedImages } from "./components/listCaptureImages";
 import { ImageModal } from "./components/selectedCaptureImages";
+import { useMutation } from "@tanstack/react-query";
+import { processingImageRoute } from "@/module/services/api/routes/processing-image";
 
 export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen }: { isAutomatedAnalysisOpen: boolean, setIsAutomatedAnalysisOpen: (value: boolean) => void }) {
 
@@ -26,6 +28,29 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
   const [maxCaptures, setMaxCaptures] = useState(20);
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+
+  const sendImageToIA = useMutation({
+    mutationKey: ["sendImageToIA"],
+    mutationFn: async (formData: FormData) => {
+      const response = await processingImageRoute.sendImageToIA(formData);
+      return response;
+    },
+    onError: (error) => {
+      ___showErrorToastNotification({
+        message: "Erro ao enviar imagem à IA. Tente novamente.",
+      });
+    },
+    onSuccess: (data) => {
+      console.log("data", data);
+      ___showErrorToastNotification({
+        message: "Imagem enviada com sucesso.",
+      });
+      setCapturedImages([]);
+      setIsCapturing(false);
+    }
+  })
+
 
   const handleDeleteImage = (image: string) => {
     setCapturedImages((prev) => prev.filter((img) => img !== image));
@@ -88,7 +113,7 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
       setCurrentImage(null);
     }
     setMessage("Posicione a próxima lâmina.");
-    if (capturedImages.length + 1 >= maxCaptures) setIsCapturing(false); // Adjusted condition
+    // if (capturedImages.length + 1 >= maxCaptures) setIsCapturing(false); // Adjusted condition
   }, [capturedImages.length, maxCaptures, currentImage, devices.length]);
 
   useEffect(() => {
@@ -100,21 +125,26 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
   }, [devices]);
 
   useEffect(() => {
-    if (!isCapturing || capturedImages.length >= maxCaptures) return;
-  
+    if (!isCapturing) return;
+
+    if (capturedImages.length >= maxCaptures) {
+      setIsCapturing(false);
+      return;
+    }
+
     const interval = setInterval(() => {
       setTimer((prevTimer) => {
         if (prevTimer === 1) {
           handleCaptureImage();
-          return timer; // Mantém o timer sem resetá-lo automaticamente
+          return timer; // Mantém o valor configurado pelo usuário
         }
         return prevTimer - 1;
       });
     }, 1000);
-  
+
     return () => clearInterval(interval);
   }, [isCapturing, capturedImages.length, maxCaptures, handleCaptureImage]);
-  
+
 
 
   const handleStopCapturing = () => {
@@ -129,7 +159,23 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
     }
   };
 
+  const handleSendImageToIA = async () => {
+    if (!capturedImages.length) {
+      ___showErrorToastNotification({
+        message: "Nenhuma imagem capturada. Capture imagens para enviar à IA.",
+      });
+      return;
+    }
 
+    const formData = new FormData();
+    capturedImages.forEach((image, index) => {
+      formData.append(`image${index + 1}`, image);
+    });
+    console.log("enviando...")
+    console.log("formData", formData);
+
+    sendImageToIA.mutate(formData);
+  };
   return (
     isAutomatedAnalysisOpen && (
       <div className="h-full p-4 flex flex-col justify-between">
@@ -255,7 +301,7 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
             <Button onClick={handleStopCapturing} disabled={!isCapturing}>
               Parar Captura
             </Button>
-            <Button disabled={capturedImages.length === 0} className="bg-green-500 hover:bg-green-600">
+            <Button disabled={capturedImages.length === 0} onClick={handleCaptureImage} className="bg-green-500 hover:bg-green-600">
               Finalizar e Enviar à IA
             </Button>
           </div>
