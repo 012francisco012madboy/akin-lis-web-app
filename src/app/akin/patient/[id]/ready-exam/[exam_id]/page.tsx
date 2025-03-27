@@ -84,17 +84,6 @@ export default function SampleVisualizationPage() {
     // Adicione a lógica para enviar o array de objetos à IA aqui
   };
 
-  /*
-  "data": {
-        "id": 11,
-        "nome": "Dengue",
-        "descricao": "...",
-        "preco": 5000,
-        "status": "DISPONIVEL",
-        "criado_aos": "2025-01-07T22:07:23.634Z",
-        "atualizado_aos": "2025-01-07T22:07:23.634Z"
-    },
-  */
 
   return (
     <div className="min-h-screen  overflow-y-auto">
