@@ -1,41 +1,91 @@
 "use client";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import Loading from "../loading";
-import {
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/sidebarConfig/app-sidebar";
+import { motion, AnimatePresence } from "framer-motion";
+import { MessageCircleMoreIcon, XIcon } from "lucide-react";
 
 interface IDashboard {
   children: React.ReactNode;
 }
-const queryClient = new QueryClient()
+
+const queryClient = new QueryClient();
+
 export default function Akin({ children }: IDashboard) {
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   return (
     <QueryClientProvider client={queryClient}>
       <SidebarProvider>
         <AppSidebar />
-        <SidebarContentWrapper>
-          {children}
-        </SidebarContentWrapper>
+        <SidebarContentWrapper>{children}</SidebarContentWrapper>
+
+        {/* Floating Chatbot Button */}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          className="fixed bottom-6 right-6 z-50 p-4 bg-akin-turquoise text-white rounded-full shadow-lg hover:bg-akin-turquoise/80  transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300"
+        >
+          <MessageCircleMoreIcon size={24} />
+          {/* 💬 */}
+        </motion.button>
+
+        {/* Chatbot */}
+        <Chatbot isChatOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
       </SidebarProvider>
     </QueryClientProvider>
   );
 }
 
+// Componente do Chatbot
+function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => void }) {
+  return (
+    <AnimatePresence>
+      {isChatOpen && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.8, y: 20 }}
+          transition={{ duration: 0.3 }}
+          className="fixed bottom-20 right-6 z-50 w-80 h-96 bg-white shadow-xl rounded-lg border border-gray-300 flex flex-col"
+        >
+          <header className="flex justify-between items-center p-3 bg-akin-turquoise text-white rounded-t-lg">
+            <h2 className="text-sm font-semibold">Chat-kin</h2>
+            <button onClick={onClose} className="text-white hover:text-gray-200">
+              <XIcon size={20} />
+            </button>
+          </header>
+          <div className="p-4 overflow-y-auto flex-1">
+            <p className="text-gray-500 text-sm">Comece sua conversa...</p>
+          </div>
+          <footer className="p-3 border-t border-gray-300 flex">
+            <input
+              type="text"
+              placeholder="Digite uma mensagem..."
+              className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-0"
+            />
+            <button className="ml-2 px-3 py-2 bg-akin-turquoise text-white rounded-md hover:bg-akin-turquoise transition-all">
+              ➤
+            </button>
+          </footer>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// Wrapper para o conteúdo principal
 function SidebarContentWrapper({ children }: { children: React.ReactNode }) {
   const { state } = useSidebar();
 
   return (
-    <SidebarInset
-      className={`flex px-1 transition-all duration-300 ${state === "expanded" ? "" : ""}`}
-    >
-      <header className="flex h-10 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-10">
+    <SidebarInset className={`flex px-1 transition-all duration-300 ${state === "expanded" ? "" : ""}`}>
+      <header className="flex h-10 shrink-0 items-center gap-2 transition-[width,height] ease-linear">
         <div className="flex items-center gap-2">
-          <SidebarTrigger  />
+          <SidebarTrigger />
         </div>
       </header>
       <Suspense fallback={<Loading />}>{children}</Suspense>

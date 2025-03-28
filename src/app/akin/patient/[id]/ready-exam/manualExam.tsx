@@ -4,7 +4,6 @@ import CustomCamera from "@/app/akin/camera/camera";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ___showErrorToastNotification } from "@/lib/sonner";
-import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 
 interface IManualExamProps {
@@ -39,11 +38,11 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
     cameraRef.current.captureImage();
   };
 
-  const handleCloseModal =  () => {
+  const handleCloseModal = () => {
     if (cameraRef.current) {
       setIsModalOpen(false);
-       cameraRef.current.stopCamera()
-       console.log("Camera fechou!")
+      cameraRef.current.stopCamera()
+      //  console.log("Camera fechou!")
     }
   };
 
@@ -170,10 +169,17 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
 
         {/* Footer */}
         <div className="p-4 border-t flex justify-end gap-2">
+          {/* <Button
+            onClick={handleCloseModal}
+            className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white"
+          >
+            Salvar e gerar laudo
+          </Button> */}
+
           <Button
             variant="outline"
             onClick={handleCloseModal}
-            className="px-4 py-2 border rounded bg-gray-100 hover:bg-gray-200"
+            className="px-4 py-2 border bg-gray-100 hover:bg-gray-200"
           >
             Fechar
           </Button>

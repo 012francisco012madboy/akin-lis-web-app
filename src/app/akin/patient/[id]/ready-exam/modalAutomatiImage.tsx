@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import CustomCamera from "@/app/akin/camera/camera";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
@@ -113,7 +112,6 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
       setCurrentImage(null);
     }
     setMessage("Posicione a próxima lâmina.");
-    // if (capturedImages.length + 1 >= maxCaptures) setIsCapturing(false); // Adjusted condition
   }, [currentImage, devices.length]);
 
   useEffect(() => {

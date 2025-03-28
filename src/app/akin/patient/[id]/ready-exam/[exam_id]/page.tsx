@@ -86,99 +86,115 @@ export default function SampleVisualizationPage() {
 
 
   return (
-    <div className="min-h-screen  overflow-y-auto">
-      {/* Header */}
-      <header className="bg-white shadow py-2 px-5 flex gap-2 flex-col lg:flex-row justify-between items-start lg:items-center rounded-md">
-        <h1 className="text-lg font-semibold">Paciente: {getPatientInfo.data?.data.nome_completo}</h1>
-        <h1 className="text-lg font-semibold">Exame: {getExamById.data?.data.data.nome}</h1>
-        <DropdownMenu >
-          <DropdownMenuTrigger className="bg-black text-white px-2 py-2 rounded-md hover:bg-black/90">
-            Iniciar Analíse
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent aria-roledescription="menu">
-            <DropdownMenuItem onClick={() => { setIsModalOpen(true); }}>
-              Analíse Manual
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => { handleAutomatedAnalysisOpen(); }}>
-              Analíse Automatizada
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </header>
-
-      {/* Automated Analysis Section */}
-      {
-        isAutomatedAnalysisOpen && (
-          <div id="modal" className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="max-w-7xl w-full h-full lg:h-[96%] bg-white rounded-lg overflow-y-auto shadow-lg">
-              <AutomatedAnalysis
-                isAutomatedAnalysisOpen={isAutomatedAnalysisOpen}
-                setIsAutomatedAnalysisOpen={setIsAutomatedAnalysisOpen}
-              />
-            </div>
+    <div className="min-h-screen overflow-y-auto">
+      {getPatientInfo.isLoading || getExamById.isLoading ? (
+        <div className="flex items-center justify-center h-screen">
+          <div className="animate-pulse space-y-4">
+            <div className="h-6 bg-gray-400 rounded w-3/4"></div>
+            <div className="h-6 bg-gray-400 rounded w-1/2"></div>
+            <div className="h-6 bg-gray-400 rounded w-full"></div>
+            <div className="h-6 bg-gray-400 rounded w-5/6"></div>
           </div>
-        )
-      }
-
-      {/* Modal for Visualization */}
-      {isModalOpen && (
-        <ManualExam
-          setIsModalOpen={setIsModalOpen}
-          onCaptureImage={(images) => {
-            setCapturedImages((prevImages) => {
-              // Filtrar imagens novas que não estão na lista atual
-              const newImages = images.filter((image) => !prevImages.includes(image));
-              return [...prevImages, ...newImages];
-            });
-          }}
-        />
-      )}
-
-      <CapturedImages
-        capturedImages={capturedImages}
-        setSelectedImage={setSelectedImage}
-        handleDeleteImage={handleDeleteImage}
-      />
-
-      <ImageModal
-        selectedImage={selectedImage}
-        setSelectedImage={setSelectedImage}
-        notes={notes}
-        handleNoteChanged={handleNoteChange} // ✅ Passando corretamente
-        setImageAnnotations={setImageAnnotations} // ✅ Passando anotações
-        moreFuncIsShow={true}
-      />
-      {/*
-       <ImageModal
-        selectedImage={selectedImage}
-        setSelectedImage={setSelectedImage}
-        notes={notes}
-        handleNoteChange={(image, value) => setNotes((prev) => ({ ...prev, [image]: value }))}
-        setImageAnnotations={setImageAnnotations} // Passa para armazenar formas e notas das formas
-        moreFuncIsShow={true}
-      /> */}
-
-      {/* Generate Report Button */}
-      {capturedImages.length > 0 && (
-        <div className="mt-6 flex justify-end gap-2">
-          {/* <Button onClick={handleSendToAI} className="bg-green-500 hover:bg-green-600">
-            Enviar à IA
-          </Button>  */}
-
-          <Button onClick={handleClickOnGenerateLaudo} className="bg-green-500 hover:bg-green-600">
-            Gerar laudo
-          </Button>
-          <Button onClick={handleGenerateReport} className="bg-green-500 hover:bg-green-600">
-            Concluir
-          </Button>
         </div>
-      )}
+      ) : (
+        <>
+          {/* Header */}
+          <header className="bg-white shadow py-2 px-5 flex gap-2 flex-col lg:flex-row justify-between items-start lg:items-center rounded-md">
+            <h1 className="text-lg font-semibold">Paciente: {getPatientInfo.data?.data.nome_completo}</h1>
+            <h1 className="text-lg font-semibold">Exame: {getExamById.data?.data.data.nome}</h1>
+            <DropdownMenu >
+              <DropdownMenuTrigger className="bg-black text-white px-2 py-2 rounded-md hover:bg-black/90">
+                Iniciar Analíse
+              </DropdownMenuTrigger>
 
-      <LaudoModal
-        laudoModalOpen={laudoModalOpen}
-        setLaudoModalOpen={setLaudoModalOpen}
-      />
+              <DropdownMenuContent aria-roledescription="menu">
+                <DropdownMenuItem onClick={() => { setIsModalOpen(true); }}>
+                  Analíse Manual
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => { handleAutomatedAnalysisOpen(); }}>
+                  Analíse Automatizada
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </header>
+
+          {/* Automated Analysis Section */}
+          {
+            isAutomatedAnalysisOpen && (
+              <div id="modal" className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="max-w-7xl w-full h-full lg:h-[96%] bg-white rounded-lg overflow-y-auto shadow-lg">
+                  <AutomatedAnalysis
+                    isAutomatedAnalysisOpen={isAutomatedAnalysisOpen}
+                    setIsAutomatedAnalysisOpen={setIsAutomatedAnalysisOpen}
+                  />
+                </div>
+              </div>
+            )
+          }
+
+          {/* Modal for Visualization */}
+          {isModalOpen && (
+            <ManualExam
+              setIsModalOpen={setIsModalOpen}
+              onCaptureImage={(images) => {
+                setCapturedImages((prevImages) => {
+                  // Filtrar imagens novas que não estão na lista atual
+                  const newImages = images.filter((image) => !prevImages.includes(image));
+                  return [...prevImages, ...newImages];
+                });
+              }}
+            />
+          )}
+
+          <CapturedImages
+            capturedImages={capturedImages}
+            setSelectedImage={setSelectedImage}
+            handleDeleteImage={handleDeleteImage}
+          />
+
+          <ImageModal
+            selectedImage={selectedImage}
+            setSelectedImage={setSelectedImage}
+            notes={notes}
+            handleNoteChanged={handleNoteChange}
+            setImageAnnotations={setImageAnnotations}
+            moreFuncIsShow={true}
+          />
+          {/*
+          <ImageModal
+            selectedImage={selectedImage}
+            setSelectedImage={setSelectedImage}
+            notes={notes}
+            handleNoteChange={(image, value) => setNotes((prev) => ({ ...prev, [image]: value }))}
+            setImageAnnotations={setImageAnnotations} // Passa para armazenar formas e notas das formas
+            moreFuncIsShow={true}
+          /> */}
+
+          {/* Generate Report Button */}
+          {capturedImages.length > 0 && (
+            <div className="mt-6 flex justify-end gap-2">
+              {/* <Button onClick={handleSendToAI} className="bg-green-500 hover:bg-green-600">
+                Enviar à IA
+              </Button>  */}
+
+              <Button onClick={() => {
+                handleClickOnGenerateLaudo();
+                handleGenerateReport();
+              }} className="bg-green-500 hover:bg-green-600">
+                Gerar laudo
+              </Button>
+              {/* <Button onClick={handleGenerateReport} className="bg-green-500 hover:bg-green-600">
+                Concluir
+              </Button> */}
+            </div>
+          )}
+
+          <LaudoModal
+            laudoModalOpen={laudoModalOpen}
+            setLaudoModalOpen={setLaudoModalOpen}
+          />
+        </>
+      )}
     </div >
   );
 };
