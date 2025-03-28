@@ -8,6 +8,8 @@ import { CapturedImages } from "./components/listCaptureImages";
 import { ImageModal } from "./components/selectedCaptureImages";
 import { useMutation } from "@tanstack/react-query";
 import { processingImageRoute } from "@/module/services/api/routes/processing-image";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"; // Import Shadcn modal components
+import Image from "next/image";
 
 export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen }: { isAutomatedAnalysisOpen: boolean, setIsAutomatedAnalysisOpen: (value: boolean) => void }) {
 
@@ -27,7 +29,9 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
   const [maxCaptures, setMaxCaptures] = useState(20);
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-
+  const [isSending, setIsSending] = useState(false); // New state to track sending status
+  const [results, setResults] = useState<any[]>([]); // State to store backend results
+  const [isResultsModalOpen, setIsResultsModalOpen] = useState(false); // State to control results modal visibility
 
   const sendImageToIA = useMutation({
     mutationKey: ["sendImageToIA"],
@@ -36,13 +40,13 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
       return response;
     },
     onError: (error) => {
-      ___showSuccessToastNotification({
+      ___showErrorToastNotification({
         message: "Erro ao enviar imagem à IA. Tente novamente.",
       });
     },
     onSuccess: (data) => {
       console.log("data", data);
-      ___showErrorToastNotification({
+      ___showSuccessToastNotification({
         message: "Imagem enviada com sucesso.",
       });
       setCapturedImages([]);
@@ -162,11 +166,12 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
       ___showErrorToastNotification({
         message: "Nenhuma imagem capturada. Capture imagens para enviar à IA.",
       });
-      return; 
+      return;
     }
-  
+
+    setIsSending(true); // Disable inputs and buttons
     const formData = new FormData();
-    
+
     capturedImages.forEach((image, index) => {
       // Converter a imagem base64 para Blob
       const byteCharacters = atob(image.split(",")[1]);
@@ -176,17 +181,24 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
       }
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: "image/png" });
-  
+
       // Criar um arquivo e adicionar ao FormData
       formData.append("images", blob, `image${index + 1}.png`);
     });
-  
+
     console.log("📌 Enviando FormData para o servidor:", formData);
-  
+
     // Chamar a mutação corretamente
-    sendImageToIA.mutate(formData);
+    sendImageToIA.mutate(formData, {
+      onSuccess: (data) => {
+        console.log("📌 Resultados da IA:", data);
+        setResults(data); // Store results from backend
+        setIsResultsModalOpen(true); // Open results modal
+      },
+      onSettled: () => setIsSending(false), // Re-enable inputs and buttons
+    });
   };
-  
+
   return (
     isAutomatedAnalysisOpen && (
       <div className="h-full p-4 flex flex-col justify-between">
@@ -205,6 +217,7 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
                 }}
                 value={devices[0]?.deviceId || "Sem câmeras detectadas"}
                 className="px-0 py-1.5 border mt-1 border-gray-200 rounded-sm shadow-sm text-sm"
+                disabled={isSending} // Disable while sending
               >
                 {devices.length > 0 ? (
                   devices.map((device) => (
@@ -231,6 +244,7 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
                   console.log("Max. Cap:", maxCaptures);
                 }}
                 className="mt-1 block w-full px-2 py-1 border rounded"
+                disabled={isSending} // Disable while sending
               />
             </div>
 
@@ -244,9 +258,10 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
                 value={timer}
                 onChange={(e) => setTimer(Number(e.target.value))}
                 className="mt-1 block w-full px-2 py-1 border rounded"
+                disabled={isSending} // Disable while sending
               />
             </div>
-            <Button onClick={handleStartCapturing} disabled={isCapturing}>
+            <Button onClick={handleStartCapturing} disabled={isCapturing || isSending}>
               Iniciar Captura
             </Button>
           </header>
@@ -309,10 +324,10 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
 
         <footer className="mt-6 pb-3 gap-2 flex justify-between items-end">
           <div className="flex gap-3">
-            <Button onClick={handleStopCapturing} disabled={!isCapturing}>
+            <Button onClick={handleStopCapturing} disabled={!isCapturing || isSending}>
               Parar Captura
             </Button>
-            <Button type={"button"} disabled={capturedImages.length === 0} onClick={()=>{
+            <Button type={"button"} disabled={capturedImages.length === 0 || isSending} onClick={() => {
               console.log("ola");
               handleSendImageToIA();
             }} className="bg-green-500 hover:bg-green-600">
@@ -322,10 +337,58 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
           <Button variant={"outline"} onClick={() => {
             handleCloseModal();
             setIsAutomatedAnalysisOpen(false)
-          }}>
+          }} disabled={isSending}>
             Fechar
           </Button>
         </footer>
+
+        {/* Modal for sending images */}
+        <Dialog open={isSending}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Enviando Imagens</DialogTitle>
+            </DialogHeader>
+            <p className="text-center mt-4">Por favor, aguarde enquanto as imagens estão sendo enviadas...</p>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal for displaying results */}
+        <Dialog open={isResultsModalOpen} onOpenChange={setIsResultsModalOpen}>
+          <DialogContent className="max-w-4xl h-[90%] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-center text-lg font-semibold">Resultados da Análise</DialogTitle>
+            </DialogHeader>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+              {results.map((result, index) => (
+                <div key={index} className="p-4 border rounded-lg shadow-sm bg-white">
+                  <p className="text-sm font-medium"><strong>Arquivo:</strong> {result.filename}</p>
+                  <p className="text-sm"><strong>Contagem:</strong> {result.count}</p>
+                  <p className="text-sm"><strong>Per mm³:</strong> {result.calculations.per_mm3}</p>
+                  <p className="text-sm"><strong>Per µL (1):</strong> {result.calculations.per_ul_1}</p>
+                  <p className="text-sm"><strong>Per µL (2):</strong> {result.calculations.per_ul_2}</p>
+                  {result.processed_image && (
+                    <Image
+                      src={`data:image/png;base64,${result.processed_image}`}
+                      alt="Processed"
+                      className="mt-4 w-full h-auto rounded-md border"
+                      width={200}
+                      height={200}
+                      unoptimized
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-center mt-6">
+              <Button
+                className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                onClick={() => setIsResultsModalOpen(false)}
+              >
+                Fechar
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     )
   );
