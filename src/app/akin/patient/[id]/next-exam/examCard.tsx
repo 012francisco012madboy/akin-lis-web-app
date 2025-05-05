@@ -101,7 +101,7 @@ export const ExamCard = ({ data,name_patient }: ResponseData & { name_patient: s
           <p className="text-gray-700"><span className="font-medium">Preço:</span> {exam.Tipo_Exame.preco.toLocaleString('pt-ao', { style: 'currency', currency: 'AOA' })}</p>
           <p className="text-gray-700 flex items-center gap-1">
             <span className="font-medium">
-              Técnico Alocado: {" "}
+              Chefe de Laboratorio Alocado: {" "}
             </span>
             {
               techLab.isLoading ? (

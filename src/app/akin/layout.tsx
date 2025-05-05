@@ -42,6 +42,34 @@ export default function Akin({ children }: IDashboard) {
 
 // Componente do Chatbot
 function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => void }) {
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [resposta, setResposta] = useState("");
+
+  const handleEnviar = async () => {
+    if (!input.trim()) return;
+
+    setIsLoading(true);
+    try {
+      const res = await fetch("http://34.10.126.45:5000/chefe_laboratorio", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ texto: input }),
+      });
+
+      const data = await res.json();
+      setResposta(data.resposta || "Sem resposta do agente.");
+    } catch (error) {
+      console.error("Erro ao conectar:", error);
+      setResposta("Erro ao conectar com o agente.");
+    } finally {
+      setIsLoading(false);
+      setInput("");
+    }
+  };
+
   return (
     <AnimatePresence>
       {isChatOpen && (
@@ -58,16 +86,27 @@ function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => 
               <XIcon size={20} />
             </button>
           </header>
-          <div className="p-4 overflow-y-auto flex-1">
-            <p className="text-gray-500 text-sm">Comece sua conversa...</p>
+          <div className="p-4 overflow-y-auto flex-1 space-y-2 text-sm">
+            <p className="text-gray-500">Comece sua conversa...</p>
+            {isLoading ? (
+              <p className="text-gray-400">Carregando resposta...</p>
+            ) : (
+              resposta && <p className="text-gray-700">{resposta}</p>
+            )}
           </div>
           <footer className="p-3 border-t border-gray-300 flex">
             <input
               type="text"
               placeholder="Digite uma mensagem..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
               className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-0"
+              onKeyDown={(e) => e.key === "Enter" && handleEnviar()}
             />
-            <button className="ml-2 px-3 py-2 bg-akin-turquoise text-white rounded-md hover:bg-akin-turquoise transition-all">
+            <button
+              onClick={handleEnviar}
+              className="ml-2 px-3 py-2 bg-akin-turquoise text-white rounded-md hover:bg-akin-turquoise transition-all"
+            >
               ➤
             </button>
           </footer>
@@ -92,3 +131,4 @@ function SidebarContentWrapper({ children }: { children: React.ReactNode }) {
     </SidebarInset>
   );
 }
+
