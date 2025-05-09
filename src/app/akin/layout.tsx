@@ -60,7 +60,7 @@ function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => 
       });
 
       const data = await res.json();
-      setResposta(data.resposta || "Sem resposta do agente.");
+      setResposta(data.resposta || "Sem nenhuma resposta do agente.");
     } catch (error) {
       console.error("Erro ao conectar:", error);
       setResposta("Erro ao conectar com o agente.");
