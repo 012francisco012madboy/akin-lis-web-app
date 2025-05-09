@@ -109,7 +109,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
             placeholder="Procurar por paciente"
             onChange={(e) => handleSearch(e.target.value)}
           />
-          <div className="flex flex-col md:flex-row items-center gap-2 w-full">
+          {/*<div className="flex flex-col md:flex-row items-center gap-2 w-full">
             <DatePickerWithRange
               enableRange={true}
               enableDateFilter={true} // Sempre permitir a filtragem de data
@@ -117,7 +117,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
               onDateChange={handleDateChange}
               setEnableDateFilter={setIsDateFilterEnabled} // Passa a função de ativação de filtragem
             />
-          </div>
+          </div>*/}
           <select
             className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-nonefocus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
             value={filterByTechnician}

@@ -233,7 +233,7 @@ export function EditScheduleFormModal({
 
         <div className="card gap-3 w-full">
           <label htmlFor="technicianId" className="font-bold block mb-2">
-            Técnico Alocado
+          Chefe de Laboratório Alocado
           </label>
           <Input
             id="technicianId"
@@ -245,9 +245,9 @@ export function EditScheduleFormModal({
           />
         </div>
 
-        {/* Alocação de Técnico */}
+        {/* Alocação de chefe de laboratório */}
         <div className="w-full">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Alocar novo técnico</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Alocar novo chefe de laboratório</label>
           <Input
             placeholder="Pesquise por nome ou cargo"
             value={searchTerm}

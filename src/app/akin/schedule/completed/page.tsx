@@ -30,7 +30,7 @@ export default function Completed() {
   }));
 
   return (
-    <div className="h-max px-6 pb-6">
+    <div className="h-max w-full px-6 pb-6">
       <CardScheduleContainer
         isLoading={isPending}
         title="Agendamentos Concluídos"
