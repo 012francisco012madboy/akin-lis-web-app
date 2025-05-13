@@ -89,7 +89,7 @@ function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => 
           <div className="p-4 overflow-y-auto flex-1 space-y-2 text-sm">
             <p className="text-gray-500">Comece sua conversa...</p>
             {isLoading ? (
-              <p className="text-gray-400">Carregando resposta...</p>
+              <p className="text-gray-400">A carregar resposta...</p>
             ) : (
               resposta && <p className="text-gray-700">{resposta}</p>
             )}
