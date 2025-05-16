@@ -75,6 +75,7 @@ const CustomCamera = forwardRef<{
       fetchDevices();
     }, [getAllVideoDevices, setCameraError]);
 
+
     const startCamera = useCallback(async (deviceId: string) => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({

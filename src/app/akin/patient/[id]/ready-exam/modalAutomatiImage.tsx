@@ -9,11 +9,13 @@ import { ImageModal } from "./components/selectedCaptureImages";
 import { useMutation } from "@tanstack/react-query";
 import { processingImageRoute } from "@/module/services/api/routes/processing-image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"; // Import Shadcn modal components
+import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
 
 export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen }: { isAutomatedAnalysisOpen: boolean, setIsAutomatedAnalysisOpen: (value: boolean) => void }) {
 
   const cameraRef = useRef<{
+    startCamera: () => Promise<void>;
     captureImage: () => void;
     stopCamera: () => void;
   }>(null);
@@ -32,6 +34,14 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
   const [isSending, setIsSending] = useState(false); // New state to track sending status
   const [results, setResults] = useState<any[]>([]); // State to store backend results
   const [isResultsModalOpen, setIsResultsModalOpen] = useState(false); // State to control results modal visibility
+  const [notes, setNotes] = useState<{ [key: string]: string }>({});
+
+  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target;
+    if (currentImage) {
+      setNotes((prev) => ({ ...prev, [currentImage]: value }));
+    }
+  };
 
   const sendImageToIA = useMutation({
     mutationKey: ["sendImageToIA"],
@@ -147,11 +157,18 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
     return () => clearInterval(interval);
   }, [isCapturing, capturedImages.length, maxCaptures, handleCaptureImage, timer]);
 
+  const [isCameraOn, setIsCameraOn] = useState(true); // Ligada como padrão
+  
 
 
   const handleStopCapturing = () => {
     setIsCapturing(false);
     setMessage("Captura finalizada. Escolha como enviar as imagens.");
+    if (cameraRef.current) {
+      cameraRef.current.stopCamera();
+      console.log(" camera fechou");
+    }
+
   };
 
   const handleCloseModal = () => {
@@ -266,7 +283,8 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
             </Button>
           </header>
           <section className="mt-6 overflow-y-auto h-full max-h-[500px] shadow-md rounded-md pb-10">
-            <div className="w-[500px] h-[500px]">
+            <div className="p-4 flex items-center flex-col lg:flex-row gap-4 max-h-[600px]">
+            {isAutomatedAnalysisOpen && (
               <CustomCamera
                 ref={cameraRef}
                 getCapturedImage={(img) => setCurrentImage(img)}
@@ -275,7 +293,16 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
                 videoClassName="h-full w-full"
                 showDevices={false}
               />
-            </div>
+            )}
+
+            <Textarea
+              value={currentImage ? notes[currentImage] || "" : ""}
+              onChange={handleNotesChange}
+              placeholder="Escreva suas anotações aqui..."
+              className="w-full h-full max-h-[500px] min-h-[400px]"
+            />
+          </div>
+
 
             <CapturedImages
               maxCapturedImage={String(capturedImages.length)}
@@ -324,6 +351,28 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
 
         <footer className="mt-6 pb-3 gap-2 flex justify-between items-end">
           <div className="flex gap-3">
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                if (cameraRef.current) {
+                  if (isCameraOn) {
+                    cameraRef.current.stopCamera();
+                    setIsCameraOn(false);
+                    console.log("Câmera desligada");
+                  } else {
+                    await cameraRef.current.startCamera();
+                    setIsCameraOn(true);
+                    console.log("Câmera ligada");
+                  }
+                }
+              }}
+              disabled={isSending}
+            >
+              {isCameraOn ? "Desligar Câmera" : "Ligar Câmera"}
+            </Button>
+
+
+
             <Button onClick={handleStopCapturing} disabled={!isCapturing || isSending}>
               Parar Captura
             </Button>

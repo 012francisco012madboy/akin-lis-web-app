@@ -10,6 +10,7 @@ import { ManualExam } from "../manualExam";
 import { ImageModal, Shape } from "../components/selectedCaptureImages";
 import { CapturedImages } from "../components/listCaptureImages";
 import { LaudoModal } from "../laudo";
+import { ChevronDown } from "lucide-react";
 
 
 export default function SampleVisualizationPage() {
@@ -101,20 +102,22 @@ export default function SampleVisualizationPage() {
           <header className="bg-white shadow py-2 px-5 flex gap-2 flex-col lg:flex-row justify-between items-start lg:items-center rounded-md">
             <h1 className="text-lg font-semibold">Paciente: {getPatientInfo.data?.data.nome_completo}</h1>
             <h1 className="text-lg font-semibold">Exame: {getExamById.data?.data.data.nome}</h1>
-            <DropdownMenu >
-              <DropdownMenuTrigger className="bg-black text-white px-2 py-2 rounded-md hover:bg-black/90">
-                Iniciar Analíse
-              </DropdownMenuTrigger>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="bg-black text-white px-4 py-2 rounded-md hover:bg-black/90 transition"
+              >
+                Análise Manual
+              </button>
+              
+              <button
+                onClick={handleAutomatedAnalysisOpen}
+                className="bg-black text-white px-4 py-2 rounded-md hover:bg-black/90 transition"
+              >
+                Análise Automatizada
+              </button>
+            </div>
 
-              <DropdownMenuContent aria-roledescription="menu">
-                <DropdownMenuItem onClick={() => { setIsModalOpen(true); }}>
-                  Analíse Manual
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => { handleAutomatedAnalysisOpen(); }}>
-                  Analíse Automatizada
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </header>
 
           {/* Automated Analysis Section */}

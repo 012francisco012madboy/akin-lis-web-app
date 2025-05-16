@@ -3,6 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { Share2, Mail, Link as LinkIcon, MessageCircle } from 'lucide-react';
 import React, { useState } from 'react';
 import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, Image } from '@react-pdf/renderer';
 
@@ -116,7 +118,7 @@ export const LaudoModal = ({ laudoModalOpen, setLaudoModalOpen }: LaudoModalProp
           <h2 className="text-lg font-semibold">Conclusão</h2>
           <Textarea value={conclusao} onChange={(e) => setConclusao(e.target.value)} />
         </section>
-        <div className='flex flex-col gap-4'>
+        <div className='flex gap-4'>
           <section>
             <h2 className="text-lg font-semibold">Assinatura do Profissional</h2>
             <Input placeholder='Assinatura do Profissional' value={assinaturaDoutor} onChange={(e) => setAssinaturaDoutor(e.target.value)} />
@@ -128,19 +130,84 @@ export const LaudoModal = ({ laudoModalOpen, setLaudoModalOpen }: LaudoModalProp
           </section>
         </div>
 
-        <DialogFooter>
-          <Button className='bg-akin-turquoise hover:bg-akin-turquoise/80' asChild>
-            <PDFDownloadLink
-              document={<LaudoPDF nomePaciente={nomePaciente} idadePaciente={idadePaciente} identificacaoPaciente={identificacaoPaciente} detalhesAnalise={detalhesAnalise} conclusao={conclusao} assinaturaDoutor={assinaturaDoutor} crmDoutor={crmDoutor} />}
-              fileName={`laudo_${nomePaciente.replace(' ', '_')}.pdf`}
-            >
-              {({ loading }) => (loading ? 'Gerando PDF...' : 'Baixar PDF')}
-            </PDFDownloadLink>
-          </Button>
+        {<DialogFooter className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between sm:items-center">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button className='bg-akin-turquoise hover:bg-akin-turquoise/80' asChild>
+              <PDFDownloadLink
+                document={
+                  <LaudoPDF
+                    nomePaciente={nomePaciente}
+                    idadePaciente={idadePaciente}
+                    identificacaoPaciente={identificacaoPaciente}
+                    detalhesAnalise={detalhesAnalise}
+                    conclusao={conclusao}
+                    assinaturaDoutor={assinaturaDoutor}
+                    crmDoutor={crmDoutor}
+                  />
+                }
+                fileName={`laudo_${nomePaciente.replace(' ', '_')}.pdf`}
+              >
+                {({ loading }) => (loading ? 'Gerando PDF...' : 'Baixar PDF')}
+              </PDFDownloadLink>
+            </Button>
+
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2">
+
+            {/* Botão de Compartilhamento com Popover */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="flex gap-2">
+                  <Share2 className="w-4 h-4" />
+                  Compartilhar
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-56 space-y-2">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 cursor-pointer"
+                  onClick={() => {
+                    navigator.clipboard.writeText('https://meuslaudos.com/laudo/abc123');
+                    alert('Link copiado para a área de transferência!');
+                  }}
+                >
+                  <LinkIcon className="w-4 h-4 cursor-pointer" /> Copiar Link
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 cursor-pointer"
+                  onClick={() => {
+                    const mensagem = encodeURIComponent(`Confira o laudo de ${nomePaciente}: https://meuslaudos.com/laudo/abc123`);
+                    window.open(`https://wa.me/?text=${mensagem}`, '_blank');
+                  }}
+                >
+                  <MessageCircle className="w-4 h-4 cursor-pointer" /> WhatsApp
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 cursor-pointer"
+                  onClick={() => {
+                    const assunto = encodeURIComponent('Laudo Médico');
+                    const corpo = encodeURIComponent(`Segue o laudo de ${nomePaciente}: https://meuslaudos.com/laudo/abc123`);
+                    window.location.href = `mailto:?subject=${assunto}&body=${corpo}`;
+                  }}
+                >
+                  <Mail className="w-4 h-4 cursor-pointer" /> Email
+                </Button>
+              </PopoverContent>
+            </Popover>
+
           <Button variant="outline" onClick={() => setLaudoModalOpen(false)}>
             Fechar
           </Button>
-        </DialogFooter>
+
+
+          </div>
+
+        </DialogFooter>}
+
+
       </DialogContent>
     </Dialog>
   );
