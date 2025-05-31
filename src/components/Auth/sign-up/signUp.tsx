@@ -18,35 +18,29 @@ export const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     tipo: "",
-    nRef: "",
+    id_unidade_saude: "",
     nome: "",
     email: "",
     senha: "",
     status: "ATIVO",
-    contacto_telefonico: "",
-    id_sexo: "",
   });
   const [errors, setErrors] = useState({
     tipo: "",
-    nRef: "",
+    id_unidade_saude: "",
     nome: "",
     email: "",
     senha: "",
-    contacto_telefonico: "",
-    id_sexo: "",
   });
 
   const validate = () => {
-    let tempErrors = { tipo: "", nRef: "", nome: "", email: "", senha: "", contacto_telefonico: "", id_sexo: "", };
+    let tempErrors = { tipo: "", id_unidade_saude: "", nome: "", email: "", senha: "", };
     if (!formData.nome) tempErrors.nome = "Nome é obrigatório.";
     if (!formData.email) tempErrors.email = "Email é obrigatório.";
     if (!/\S+@\S+\.\S+/.test(formData.email)) tempErrors.email = "Email inválido.";
     if (!formData.senha) tempErrors.senha = "Senha é obrigatória.";
     if (formData.senha.length < 6) tempErrors.senha = "Senha deve ter pelo menos 6 caracteres.";
     if (!formData.tipo) tempErrors.tipo = "Cargo é obrigatório.";
-    if (!formData.nRef) tempErrors.nRef = "Referência é obrigatória.";
-    if (!formData.contacto_telefonico) tempErrors.contacto_telefonico = "Telefone é obrigatório.";
-    if (!formData.id_sexo) tempErrors.id_sexo = "Genero é obrigatório.";
+    if (!formData.id_unidade_saude) tempErrors.id_unidade_saude = "Referência é obrigatória.";
     setErrors(tempErrors);
     return Object.values(tempErrors).every(x => x === "");
   };
@@ -117,6 +111,7 @@ export const Register = () => {
               />
               {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
             </div>
+            {/*
             <div>
               <Label htmlFor="contacto_telefonico">contacto_telefonico</Label>
               <Input
@@ -144,7 +139,7 @@ export const Register = () => {
                 </SelectContent>
               </Select>
               {errors.tipo && <p className="text-red-500 text-sm">{errors.id_sexo}</p>}
-            </div>
+            </div>*/}
             <div>
               <Label htmlFor="id_cargo">Cargo</Label>
               <Select
@@ -164,15 +159,15 @@ export const Register = () => {
             <div>
               <Label htmlFor="email">Referência da unidade de saúde</Label>
               <Input
-                id="nRef"
-                name="nRef"
+                id="id_unidade_saude"
+                name="id_unidade_saude"
                 type="text"
-                value={formData.nRef}
+                value={formData.id_unidade_saude}
                 onChange={handleInputChange}
                 placeholder="Código de referência "
                 disabled={isLoading}
               />
-              {errors.nRef && <p className="text-red-500 text-sm">{errors.nRef}</p>}
+              {errors.id_unidade_saude && <p className="text-red-500 text-sm">{errors.id_unidade_saude}</p>}
             </div>
             <div className="relative">
               <Label htmlFor="senha" className="text-gray-700">
