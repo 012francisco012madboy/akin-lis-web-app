@@ -15,7 +15,7 @@ interface Usuario {
 export interface LabChief {
   id: string;
   numero_identificacao: string;
-  nome_completo: string;
+  nome: string;
   data_nascimento: string;
   tipo: string;
   contacto_telefonico: string;
