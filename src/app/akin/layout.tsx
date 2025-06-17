@@ -1,7 +1,7 @@
 "use client";
 import { Suspense, useState } from "react";
 import Loading from "../loading";
-import { QueryClient, QueryClientProvider, useMutation,useQuery } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
 import {
   SidebarInset,
   SidebarProvider,
@@ -57,11 +57,11 @@ export default function Akin({ children }: IDashboard) {
 
 // Componente do Chatbot
 function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => void }) {
-    const { user,token } = useAuthStore()
+  const { user, token } = useAuthStore()
   const [input, setInput] = useState("");
   const [resposta, setResposta] = useState("");
 
-    const { data, isPending } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ['user-data'],
     queryFn: async () => {
       return await _axios.get<UserData>(`/users/${user?.id}`);
@@ -70,16 +70,17 @@ function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => 
 
   const mutation = useMutation({
     mutationFn: async (texto: string) => {
-        if (!token) {
-    throw new Error("Token não encontrado");
-  }
+      if (!user || !token || !data) {
+        throw new Error("Usuário, token ou dados do usuário ausentes.");
+      }
+
 
       return iaAgentRoutes.sendMessageToAgent({
         message: texto,
-        user_id: user.id || "", 
-        session_id: token, 
-        email: data.email, 
-        senha: data.senha, 
+        user_id: user.id || "",
+        session_id: token,
+        email: data.email,
+        senha: data.senha,
       });
     },
     onSuccess: (data) => {
@@ -87,7 +88,7 @@ function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => 
       setInput("");
     },
     onError: (e) => {
-console.error("Erro ao enviar mensagem:", e);
+      console.error("Erro ao enviar mensagem:", e);
       setResposta("Erro ao conectar com o agente.");
     },
   });
