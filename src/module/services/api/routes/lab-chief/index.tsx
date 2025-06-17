@@ -17,7 +17,7 @@ export interface LabChief {
   numero_identificacao: string;
   nome_completo: string;
   data_nascimento: string;
-  cargo: string;
+  tipo: string;
   contacto_telefonico: string;
   criado_aos: string;
   atualizado_aos: string;
