@@ -73,7 +73,7 @@ function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => 
       
       return iaAgentRoutes.sendMessageToAgent({
         message: texto,
-        user_id: user.id, 
+        user_id: user?.id, 
         session_id: token, 
         email: data.email, 
         senha: data.senha, 
