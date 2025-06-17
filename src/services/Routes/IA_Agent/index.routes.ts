@@ -1,4 +1,4 @@
-import { agentUrl } from "../../api.ts";
+import { agentUrl } from "../../api";
 
 
 interface IA_AgentRoutesInterface {
