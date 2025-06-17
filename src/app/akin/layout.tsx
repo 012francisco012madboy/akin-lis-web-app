@@ -64,25 +64,25 @@ function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => 
   const { data, isPending } = useQuery({
     queryKey: ['user-data'],
     queryFn: async () => {
-      return await _axios.get<UserData>(`/users/${user?.id}`);
+      return await _axios.get(`/users/${user?.id}`);
     }
   });
+  console.log("dataaa",data)
 
   const mutation = useMutation({
-    mutationFn: async (texto: string) => {
-      if (!user || !token || !data) {
-        throw new Error("Usuário, token ou dados do usuário ausentes.");
-      }
+   mutationFn: async (texto: string) => {
+  if (!user || !token || !data?.data) {
+    throw new Error("Usuário, token ou dados do usuário ausentes.");
+  }
 
-
-      return iaAgentRoutes.sendMessageToAgent({
-        message: texto,
-        user_id: user.id || "",
-        session_id: token,
-        email: data.email,
-        senha: data.senha,
-      });
-    },
+  return iaAgentRoutes.sendMessageToAgent({
+    message: texto,
+    user_id: user.id,
+    session_id: token,
+    email: data.data.email,
+    senha: data.data.senha,
+  });
+},
     onSuccess: (data) => {
       setResposta(data.resposta || "Sem nenhuma resposta do agente.");
       setInput("");
