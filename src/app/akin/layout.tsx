@@ -70,10 +70,13 @@ function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => 
 
   const mutation = useMutation({
     mutationFn: async (texto: string) => {
-      
+        if (!token) {
+    throw new Error("Token não encontrado");
+  }
+
       return iaAgentRoutes.sendMessageToAgent({
         message: texto,
-        user_id: user?.id || "", 
+        user_id: user.id || "", 
         session_id: token, 
         email: data.email, 
         senha: data.senha, 
