@@ -26,7 +26,6 @@ export default function CardSchedule({ data }: ICardSchedule) {
   const userRole = getAllDataInCookies().userRole;
   const role = "RECEPCIONISTA";
 
-
   const handleEditClick = (exam: Exam) => {
     setSelectedExam(exam);
     setIsModalOpen(true);
@@ -99,7 +98,6 @@ export default function CardSchedule({ data }: ICardSchedule) {
           <View.Scroll className="min-w-max max-h-full pl-4 overflow-y-auto space-y-2 ">
             {data.Exame.map((exame) => (
               <div key={exame.id} className="min-w-max w-full pb-4 border-b border-gray-200 ">
-
                 <p className="font-semibold text-xl flex justify-between items-center mr-3">
                   {exame.Tipo_Exame.nome || "Nome não disponível"}
                   {/* <EditScheduleFormModal> */}
