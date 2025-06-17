@@ -267,7 +267,7 @@ export function EditScheduleFormModal({
               >
                 <div>
                   <p className="text-sm font-medium">{technician.nome}</p>
-                  <p className="text-xs text-gray-600">{technician.cargo}</p>
+                  <p className="text-xs text-gray-600">{technician.tipo}</p>
                 </div>
                 {selectedTechnicians[exam?.id]?.some((tech) => tech.id === technician.id) && (
                   <Badge variant="secondary" className="text-xs">
