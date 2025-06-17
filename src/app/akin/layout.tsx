@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircleMoreIcon, XIcon } from "lucide-react";
 import { iaAgentRoutes } from "@/services/Routes/IA_Agent/index.routes";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
+import { _axios } from "@/lib/axios";
 
 interface IDashboard {
   children: React.ReactNode;
