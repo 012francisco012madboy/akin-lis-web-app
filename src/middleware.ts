@@ -20,6 +20,7 @@ const protectedRoutes = [
 ];
 type Role = "CHEFE" | "RECEPCIONISTA" | "TECNICO";
 
+
 const ScreenToRendirectWhenLogin: Record<Role, string[]>[] = [{
   CHEFE: [
     "/akin/dashboard",
