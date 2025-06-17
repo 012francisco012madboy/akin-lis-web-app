@@ -191,7 +191,7 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
                               variant="outline"
                               className="text-xs flex justify-between items-center"
                             >
-                              {tech.nome_completo}
+                              {tech.nome}
                             </Badge>
                           ))}
                         </div>
