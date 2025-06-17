@@ -34,6 +34,7 @@ const UpcomingExams = () => {
       return await _axios.get<ResponseData>(`/exams/next/${id}`);
     }
   });
+  console.log("Next Exam",data);
   const userName = useQuery({
     queryKey: ["user-name"],
     queryFn: async () => {

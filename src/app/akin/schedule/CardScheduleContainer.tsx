@@ -39,6 +39,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
     setIsSearching(!!searchText);
 
     if (schedule) {
+      console.log("schedule for:", schedule);
       const filtered = schedule.filter((s) =>
         s.Paciente?.nome_completo?.toLowerCase().includes(searchText.toLowerCase())
       );

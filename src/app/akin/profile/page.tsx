@@ -33,57 +33,48 @@ export default function Profile() {
     queryFn: async () => {
       return await _axios.get<UserData>(`/users/${user?.id}`);
     }
-  })
+  });
 
   if (isPending) {
-    return (
-      <div> Carregando Informações...</div>
-    )
+    return <div className="p-8 text-center text-gray-500">Carregando Informações...</div>;
   }
 
-
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow p-4">
-        <h1 className="text-xl font-semibold text-gray-800">Perfil do Usuário</h1>
-      </header>
-
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto mt-6 p-4">
-        {/* Profile Card */}
-        <Card className="mb-6">
-          <CardHeader>
-            <div className="flex items-center gap-4">
-              <Avatar>
-                <AvatarImage
-                  src={userr.avatar}
-                  alt={userr.name}
-                  className="w-20 h-20 border-2 border-gray-300 rounded-full"
-                />
+    <div className="min-h-screen bg-gray-100 py-8">
+      <div className="max-w-4xl mx-auto px-4">
+        {/* Profile Header */}
+        <Card className="mb-6 rounded-xl shadow-sm">
+          <CardHeader className="flex flex-col items-center gap-4">
+            <div className="relative">
+              <Avatar className="w-24 h-24 border-4 border-white shadow-md ring-2 ring-primary">
+                <AvatarImage src={userr.avatar} alt={userr.name} />
               </Avatar>
-              <div>
-                <CardTitle>{data ? data.data.nome : "Nome do usuario"}</CardTitle>
-                <p className="text-gray-500">{data ? data.data.tipo : "Acesso do usuario"}</p>
-              </div>
-              <Button variant="ghost" size="icon" className="ml-auto">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="absolute top-0 right-0 bg-white hover:bg-gray-100 rounded-full p-1 shadow"
+              >
                 <Settings size={18} />
               </Button>
+            </div>
+            <div className="text-center">
+              <CardTitle className="text-lg">{data?.data.nome || "Nome do Usuário"}</CardTitle>
+              <p className="text-sm text-gray-500">{data?.data.tipo || "Tipo de acesso"}</p>
             </div>
           </CardHeader>
         </Card>
 
-        {/* Tabs for Details */}
+        {/* Tabs */}
         <Tabs defaultValue="info" className="w-full">
-          <TabsList>
+          <TabsList className="mb-4">
             <TabsTrigger value="info">Informações</TabsTrigger>
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
 
-          {/* Informações */}
+          {/* Informações Tab */}
           <TabsContent value="info">
-            <Card className="mt-4">
-              <CardContent>
+            <Card className="rounded-xl">
+              <CardContent className="space-y-4 py-6">
                 <ProfileDetail
                   label="Número de Telefone"
                   value={userr.phoneNumber}
@@ -91,24 +82,24 @@ export default function Profile() {
                 />
                 <ProfileDetail
                   label="Email"
-                  value={data ? data.data.email : "Email do usuario"}
+                  value={data?.data.email || "Email do Usuário"}
                   icon={<Mail size={18} />}
                 />
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Configurações */}
+          {/* Configurações Tab */}
           <TabsContent value="settings">
-            <Card className="mt-4">
-              <CardContent>
+            <Card className="rounded-xl mt-4">
+              <CardContent className="space-y-4 py-6">
                 <ProfileDetail
                   label="Senha"
                   value="*********"
                   icon={<Key size={18} />}
                 />
-                <div className="flex justify-end mt-4 gap-4">
-                  <Button variant="secondary">Redefinir Senha</Button>
+                <div className="flex justify-end gap-3 pt-4">
+                  <Button variant="outline">Redefinir Senha</Button>
                   <Button>Salvar Alterações</Button>
                 </div>
               </CardContent>
@@ -120,7 +111,6 @@ export default function Profile() {
   );
 }
 
-// Componente de detalhe do perfil
 function ProfileDetail({
   label,
   value,
@@ -131,11 +121,11 @@ function ProfileDetail({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-4 py-2 border-b last:border-none">
-      {icon && <div className="text-gray-500">{icon}</div>}
+    <div className="flex items-center gap-4 border-b pb-4 last:border-none">
+      <div className="text-gray-500">{icon}</div>
       <div className="flex-1">
-        <p className="text-sm text-gray-600">{label}</p>
-        <Input value={value} readOnly className="bg-gray-50" />
+        <p className="text-xs text-muted-foreground mb-1">{label}</p>
+        <Input value={value} readOnly className="bg-gray-50 text-sm" />
       </div>
     </div>
   );

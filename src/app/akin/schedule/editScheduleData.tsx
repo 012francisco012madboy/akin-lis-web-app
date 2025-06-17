@@ -56,6 +56,7 @@ export function EditScheduleFormModal({
       return response.data;
     },
   });
+  console.log("technicians", technicians.data);
 
   // Fetch dos exames
   const exams = useQuery({
@@ -118,7 +119,7 @@ export function EditScheduleFormModal({
   const filteredTechnicians = Array.isArray(technicians.data)
     ? technicians.data.filter(
       (tech) =>
-        tech.nome_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tech.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
         tech.cargo.toLowerCase().includes(searchTerm.toLowerCase())
     )
     : [];
@@ -265,7 +266,7 @@ export function EditScheduleFormModal({
                 onClick={() => handleTechnicianSelection(exam.id, technician)}
               >
                 <div>
-                  <p className="text-sm font-medium">{technician.nome_completo}</p>
+                  <p className="text-sm font-medium">{technician.nome}</p>
                   <p className="text-xs text-gray-600">{technician.cargo}</p>
                 </div>
                 {selectedTechnicians[exam?.id]?.some((tech) => tech.id === technician.id) && (

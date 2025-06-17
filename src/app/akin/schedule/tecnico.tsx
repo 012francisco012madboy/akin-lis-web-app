@@ -25,7 +25,7 @@ export interface LabTechnician {
   nome_completo: string;
   numero_identificacao: string;
   data_nascimento: string;
-  cargo: string;
+  tipo: string;
   contacto_telefonico: string;
   criado_aos: string;
   atualizado_aos: string;
@@ -56,6 +56,9 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
   const [errors, setErrors] = useState<{ [key: number]: string }>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSucess, setIsSucess] = useState<boolean>(false);
+
+  console.log("Exames:", exams);
+  console.log(" Technicians:", technicians);  
 
   const handleTechnicianSelection = (examId: number, technician: LabTechnician) => {
     setSelectedTechnicians((prev) => {
@@ -96,6 +99,7 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
       examId: Number(examId),
       id_tecnico_alocado: technicians.map((tech) => tech.id),
     }));
+    console.log("Alocações:", allocations);
 
     if (allocations.length === 0) {
       ___showErrorToastNotification({
@@ -133,14 +137,14 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
 
   const filteredTechnicians = technicians.filter(
     (tech) =>
-      tech.nome_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tech.cargo.toLowerCase().includes(searchTerm.toLowerCase())
+      tech.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tech.tipo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const filteredLabChiefs = Array.isArray(labChiefs) ? labChiefs.filter(
     (chief) =>
-      chief.nome_completo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      chief.cargo.toLowerCase().includes(searchTerm.toLowerCase())
+      chief.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      chief.tipo.toLowerCase().includes(searchTerm.toLowerCase())
   ) : [];
 
   return (
@@ -221,8 +225,8 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
                                 onClick={() => isLabChief ? handleLabChiefSelection(exam.id, person) : handleTechnicianSelection(exam.id, person)}
                               >
                                 <div>
-                                  <p className="text-sm font-medium">{person.nome_completo}</p>
-                                  <p className="text-xs text-gray-600">{person.cargo}</p>
+                                  <p className="text-sm font-medium">{person.nome}</p>
+                                  <p className="text-xs text-gray-600">{person.tipo}</p>
                                 </div>
                                 {
                                   // @ts-ignore

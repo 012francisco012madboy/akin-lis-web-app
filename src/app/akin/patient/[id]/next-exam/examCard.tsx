@@ -17,7 +17,7 @@ export const ExamCard = ({ data,name_patient }: ResponseData & { name_patient: s
   const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState<{ [key: string]: boolean }>({});
   const [selectedExam, setSelectedExam] = useState<{ [key: string]: any }>({});
   const [isModalOpen, setIsModalOpen] = useState<{ [key: string]: boolean }>({});
-
+console.log("Exam Card Data", data);
   const handleEditClick = (exam: any) => {
     setSelectedExam((prev) => ({ ...prev, [exam.id]: exam }));
     setIsModalOpen((prev) => ({ ...prev, [exam.id]: true }));
@@ -36,11 +36,13 @@ export const ExamCard = ({ data,name_patient }: ResponseData & { name_patient: s
       return await _axios.get<LabTechnician[]>("/lab-technicians");
     }
   });
+  console.log("Tech Lab", techLab.data);
 
   const getNameTech = (id: string | null) => {
+    console.log("ID do Técnico:", id);
     if (id === null) return 'Não atribuído';
     const tech = techLab.data?.data.find((tech) => tech.id === id);
-    return tech?.nome_completo;
+    return tech?.nome;
   }
 
   const handleIgnore = (examId: string) => {

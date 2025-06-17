@@ -39,6 +39,8 @@ export default function CardSchedule({ data }: ICardSchedule) {
     },
   });
 
+  console.log("tecnicooo", tecnico.data);
+
   const labChiefs = useQuery({
     queryKey: ["lab-chief"],
     queryFn: async () => {
@@ -81,7 +83,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
 
     // Busca o técnico pelo ID
     const tecnicoEncontrado = tecnicosData.find((t) => t.id === id);
-    return tecnicoEncontrado?.nome_completo || "Técnico não encontrado";
+    return tecnicoEncontrado?.nome || "Técnico não encontrado";
   };
 
   const age =
