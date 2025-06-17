@@ -119,8 +119,8 @@ export function EditScheduleFormModal({
   const filteredTechnicians = Array.isArray(technicians.data)
     ? technicians.data.filter(
       (tech) =>
-        tech.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tech.cargo.toLowerCase().includes(searchTerm.toLowerCase())
+        tech.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tech.tipo.toLowerCase().includes(searchTerm.toLowerCase())
     )
     : [];
 
