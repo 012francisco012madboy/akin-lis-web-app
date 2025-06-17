@@ -22,7 +22,8 @@ import { LabChief, labChiefRoutes } from "@/module/services/api/routes/lab-chief
 
 export interface LabTechnician {
   id: string;
-  nome_completo: string;
+  nome_completo?: string;
+  nome?:string;
   numero_identificacao: string;
   data_nascimento: string;
   tipo: string;
