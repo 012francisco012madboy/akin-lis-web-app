@@ -1,12 +1,12 @@
 "use client";
 
 import CustomBreadcrumb from '@/components/custom-breadcrumb';
-import { _axios } from '@/lib/axios';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { ResponseData } from '../next-exam/types';
 import { ExamCard } from './examCard';
+import { _axios } from '@/Api/axios.config';
 
 const SkeletonCard = () => (
   <div className="bg-gray-200 animate-pulse shadow-lg rounded-xl p-6 mb-6 flex flex-col md:flex-row md:justify-between items-start md:items-center">

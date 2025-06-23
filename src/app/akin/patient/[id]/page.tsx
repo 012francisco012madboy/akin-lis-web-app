@@ -1,6 +1,5 @@
 "use client";
 import { View } from "@/components/view";
-import { _axios } from "@/lib/axios";
 import { PatientResumeInfo } from "../components/patientResumeInfo";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -9,6 +8,7 @@ import { Exam } from "./exam-history/useExamHookData";
 import { PatientByIdProfileSkeleton } from "./patientProfileSkeleton";
 import { PatientNotFound } from "./patientNotFoundScreen";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
+import { _axios } from "@/Api/axios.config";
 
 interface IPatientById {
   params: {

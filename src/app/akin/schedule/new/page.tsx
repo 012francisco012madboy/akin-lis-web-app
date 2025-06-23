@@ -3,15 +3,15 @@
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { ModalNewPatient } from "./components/ModalNewPatient";
-import { _axios } from "@/lib/axios";
+import { _axios } from "@/Api/axios.config";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { schemaSchedule } from "./utils/schemaZodNewPatient";
-import { IExamProps, Patient } from "../types";
 import { PatientDetails } from "./components/PatientDetails";
 import { ScheduleDetails } from "./components/ScheduleDetails";
 import { Button } from "@/components/ui/button";
 import { resetInputs } from "./utils/reset-inputs-func";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
+import { IExamProps, Patient } from "@/module/types";
 
 export type SchemaScheduleType = z.infer<typeof schemaSchedule>;
 
@@ -105,7 +105,6 @@ export default function New() {
   const handleSubmit = async () => {
     const validation = validateSchedule();
     if (!validation.isValid) return;
-    console.log(" Validation", validation.data)
     setIsSaving(true);
     try {
       const response = await _axios.post("/schedulings/set-schedule", validation.data);

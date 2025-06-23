@@ -1,6 +1,6 @@
 import { Input } from "@/components/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Patient } from "../../types";
+import { Patient } from "@/module/types";
 
 
 export function PatientInfo({ patient, isLoading }: {

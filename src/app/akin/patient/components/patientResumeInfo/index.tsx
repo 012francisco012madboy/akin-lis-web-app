@@ -9,7 +9,7 @@ import { InfoGroup } from "./_infoGroup";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { _axios } from "@/lib/axios";
+import { _axios } from "@/Api/axios.config";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { Combobox } from "@/components/combobox/combobox";
 import { QueryClient, useMutation } from "@tanstack/react-query";

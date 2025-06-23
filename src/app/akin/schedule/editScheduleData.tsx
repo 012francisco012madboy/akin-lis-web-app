@@ -8,7 +8,7 @@ import { Combobox } from "@/components/combobox/comboboxExam";
 import { useEffect, useState } from "react";
 import { LabTechnician } from "./tecnico";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { _axios } from "@/lib/axios";
+import { _axios } from "@/Api/axios.config";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import Cookies from "js-cookie";

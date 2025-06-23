@@ -1,12 +1,12 @@
 "use client";
 import { Combobox } from "@/components/combobox/comboboxExam";
 import { Skeleton } from "@/components/ui/skeleton";
-import { IExamProps } from "../../types";
-import { _axios } from "@/lib/axios";
+import { _axios } from "@/Api/axios.config";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { Calendar } from "primereact/calendar";
 import TimePicker from "@/components/ui/timepicker";
+import { IExamProps } from "@/module/types";
 
 export function ScheduleDetails({
   isLoading,
@@ -31,19 +31,13 @@ export function ScheduleDetails({
         // Ajusta para horário local
         const localDate = new Date(dateValue.getTime() - dateValue.getTimezoneOffset() * 60 * 1000);
         formattedValue = localDate.toISOString().split("T")[0]; // Formato 'YYYY-MM-DD'
-        // console.log("Data formatada:", formattedValue);
-      } else {
-        // console.error("Valor inválido para data:", value);
-      }
+      } 
     } else if (key === "time") {
       const timeValue = value instanceof Date ? value : new Date(`1970-01-01T${value}`);
 
       if (!isNaN(timeValue.getTime())) {
         formattedValue = timeValue.toTimeString().split(" ")[0].slice(0, 5); // Formato 'HH:mm'
-        // console.log("Hora formatada:", formattedValue);
-      } else {
-        // console.error("Valor inválido para hora:", value);
-      }
+      } 
     }
 
     // Atualiza os agendamentos com o valor formatado
@@ -110,7 +104,7 @@ export function ScheduleDetails({
           </div>
         </div>
       ))}
-      <Button type="button" onClick={handleAddSchedule} className="bg-akin-yellow-light/80 text-black shadow-md  hover:bg-akin-yellow-light hover:scale-90">
+      <Button type="button" onClick={handleAddSchedule} className=" py-2  px-4 bg-green-600 hover:bg-green-500  text-white shadow-md">
         <Plus />
         Adicionar
       </Button>

@@ -1,5 +1,5 @@
+import { _axios } from "@/Api/axios.config";
 import { useEffect, useState } from "react";
-import { _axios } from "@/lib/axios";
 
 export interface Exam {
   data: {

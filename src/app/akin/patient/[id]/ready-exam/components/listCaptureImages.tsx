@@ -5,8 +5,8 @@ import { MoveDiagonalIcon, Trash, Upload } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { processingImageRoute } from "@/module/services/api/routes/processing-image";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
+import { processingImageRoute } from "@/Api/Routes/processing-image";
 
 interface CapturedImagesProps {
     capturedImages: string[];

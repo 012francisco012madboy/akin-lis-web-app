@@ -1,7 +1,7 @@
 "use client";
 
 import CardScheduleContainer from "../CardScheduleContainer";
-import { _axios } from "@/lib/axios";
+import { _axios } from "@/Api/axios.config";
 import { ___showErrorToastNotification } from "@/lib/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { groupSchedulesByPatient } from "./_groupSchedulesByPatient";

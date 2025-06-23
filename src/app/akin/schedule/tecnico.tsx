@@ -16,9 +16,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp, Loader } from "lucide-react";
 import { Exam } from "../patient/[id]/exam-history/useExamHookData";
-import { _axios } from "@/lib/axios";
+import { _axios } from "@/Api/axios.config";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
-import { LabChief, labChiefRoutes } from "@/module/services/api/routes/lab-chief";
+import { LabChief, labChiefRoutes } from "@/Api/Routes/lab-chief";
+
+
 
 export interface LabTechnician {
   id: string;
@@ -58,9 +60,6 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSucess, setIsSucess] = useState<boolean>(false);
 
-  console.log("Exames:", exams);
-  console.log(" Technicians:", technicians);  
-
   const handleTechnicianSelection = (examId: number, technician: LabTechnician) => {
     setSelectedTechnicians((prev) => {
       const currentSelection = prev[examId] || [];
@@ -70,8 +69,6 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
       const newSelection = isAlreadySelected
         ? currentSelection.filter((tech) => tech.id !== technician.id)
         : [technician]; // Permita apenas um técnico por exame
-
-      console.log("Novo estado selecionado:", newSelection);
 
       return { ...prev, [examId]: newSelection };
     });

@@ -8,10 +8,10 @@ import { Trash, CheckCircle, Pencil } from "lucide-react";
 import { AllocateTechniciansModal, LabTechnician } from "./tecnico";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { _axios } from "@/lib/axios";
+import { _axios } from "@/Api/axios.config";
 import { Exam } from "../patient/[id]/exam-history/useExamHookData";
 import { EditScheduleFormModal } from "./editScheduleData";
-import { labChiefRoutes } from "@/module/services/api/routes/lab-chief";
+import { labChiefRoutes } from "@/Api/Routes/lab-chief";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 interface ICardSchedule {

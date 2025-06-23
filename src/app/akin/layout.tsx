@@ -1,7 +1,8 @@
 "use client";
 import { Suspense, useState } from "react";
 import Loading from "../loading";
-import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import QueryProvider from "@/config/tanstack-query/queryClientProvider";
 import {
   SidebarInset,
   SidebarProvider,
@@ -11,29 +12,18 @@ import {
 import { AppSidebar } from "@/components/layout/sidebarConfig/app-sidebar";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircleMoreIcon, XIcon } from "lucide-react";
-import { iaAgentRoutes } from "@/services/Routes/IA_Agent/index.routes";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
-import { _axios } from "@/lib/axios";
-
+import {_axios} from "@/Api/axios.config";
+import { iaAgentRoutes } from "@/Api/Routes/IA_Agent/index.routes";
 interface IDashboard {
   children: React.ReactNode;
 }
-
-export interface UserData {
-  nome: string,
-  email: string,
-  senha: string,
-  tipo: string,
-  status: string
-}
-
-const queryClient = new QueryClient();
 
 export default function Akin({ children }: IDashboard) {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryProvider>
       <SidebarProvider>
         <AppSidebar />
         <SidebarContentWrapper>{children}</SidebarContentWrapper>
@@ -51,7 +41,7 @@ export default function Akin({ children }: IDashboard) {
         {/* Chatbot */}
         <Chatbot isChatOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
       </SidebarProvider>
-    </QueryClientProvider>
+      </QueryProvider>
   );
 }
 
@@ -67,7 +57,6 @@ function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => 
       return await _axios.get(`/users/${user?.id}`);
     }
   });
-  console.log("dataaa",data)
 
   const mutation = useMutation({
    mutationFn: async (texto: string) => {
@@ -75,7 +64,7 @@ function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => 
     throw new Error("Usuário, token ou dados do usuário ausentes.");
   }
 
-  return iaAgentRoutes.sendMessageToAgent({
+  return await iaAgentRoutes.sendMessageToAgent({
     message: texto,
     user_id: user.id,
     session_id: token,

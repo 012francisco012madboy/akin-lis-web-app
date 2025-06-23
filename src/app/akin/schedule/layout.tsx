@@ -6,7 +6,7 @@ import { View } from "@/components/view";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
-import { _axios } from "@/lib/axios";
+import { _axios } from "@/Api/axios.config";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 interface ISchedule {

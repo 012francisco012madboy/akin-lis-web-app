@@ -6,15 +6,15 @@ import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { Exam } from "./useExamHookData";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
-import { _axios } from "@/lib/axios";
 import { Combobox } from "@/components/combobox/comboboxExam";
-import { IExamProps } from "@/app/akin/schedule/types";
 import { ExamCard } from "../utils/exam-history/exam-card";
 import { PatientByIdProfileSkeleton } from "../utils/exam-history/patientByIdProfileSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import { DatePickerWithRange } from "@/components/ui/date-picker";
 import { isWithinInterval } from "date-fns";
 import { DateRange } from "react-day-picker";
+import { _axios } from "@/Api/axios.config";
+import { IExamProps } from "@/module/types";
 
 export default function ExamsHistory() {
   //@ts-ignore

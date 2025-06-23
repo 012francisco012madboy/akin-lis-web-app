@@ -1,6 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Exam } from "../../exam-history/useExamHookData";
-
 
 const getStatusColor = (status: string) => {
   switch (String(status).toLowerCase()) {

@@ -1,4 +1,4 @@
-import { IExamProps } from "@/app/akin/schedule/types";
+import { IExamProps } from "@/module/types";
 
 
 export const examsFilter: IExamProps[] = [

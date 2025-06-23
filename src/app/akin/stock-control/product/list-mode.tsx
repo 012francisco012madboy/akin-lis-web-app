@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { APP_CONFIG } from "@/config/app";
 import Link from "next/link";
-import { EllipsisIcon } from "lucide-react";
 
 const ITEMS_PER_PAGE = 10; // Número de pacientes por página
 

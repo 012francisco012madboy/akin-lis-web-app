@@ -9,7 +9,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductModal } from "./productModalToCreate";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { stockMaterialRoutes } from "@/module/services/api/routes/stock-material";
+import { stockMaterialRoutes } from "@/Api/Routes/stock-material";
 
 export default function ProductDisplay() {
   const [filteredProduct, setFilteredProduct] = useState([]);

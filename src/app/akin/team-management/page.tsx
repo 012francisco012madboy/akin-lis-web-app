@@ -6,11 +6,11 @@ import { Input } from "@/components/ui/input";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { teamManagementRoutes } from "@/module/services/api/routes/team-management";
 import { FormModal } from "./formModalToCreate";
 import TechnicianCardGrid from "@/app/akin/team-management/technician-card-grid";
 import LoadingState from "@/app/akin/team-management/loading-state";
 import TechnicianDialog from "./technician-dialog";
+import { teamManagementRoutes } from "@/Api/Routes/Team-management";
 
 const breadcrumbItems = [
   { label: "Gestão de Equipe", link: "/team-management" },

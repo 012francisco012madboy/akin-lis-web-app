@@ -7,10 +7,10 @@ import { ___showErrorToastNotification, ___showSuccessToastNotification } from "
 import { CapturedImages } from "./components/listCaptureImages";
 import { ImageModal } from "./components/selectedCaptureImages";
 import { useMutation } from "@tanstack/react-query";
-import { processingImageRoute } from "@/module/services/api/routes/processing-image";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"; // Import Shadcn modal components
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
+import { processingImageRoute } from "@/Api/Routes/processing-image";
 
 export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen }: { isAutomatedAnalysisOpen: boolean, setIsAutomatedAnalysisOpen: (value: boolean) => void }) {
 

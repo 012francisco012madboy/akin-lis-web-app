@@ -1,8 +1,8 @@
 import AutoComplete from "@/components/auto-complete";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Patient } from "../../types";
 import { PatientInfo } from "./PatientInfo";
 import Autocomplete from "@/components/ui/autocomplete";
+import { Patient } from "@/module/types";
 
 export function PatientDetails({ isLoading, selectedPatient, onPatientSelect, autoCompleteData, resetPatient }: {
   isLoading: boolean,

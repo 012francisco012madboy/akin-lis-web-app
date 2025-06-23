@@ -15,7 +15,7 @@ import {
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { useQuery } from "@tanstack/react-query"
-import { _axios } from "@/lib/axios"
+import { _axios } from "@/Api/axios.config";
 import { UserData } from "@/app/akin/profile/page"
 import Link from "next/link"
 

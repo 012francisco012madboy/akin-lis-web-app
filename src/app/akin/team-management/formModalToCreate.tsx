@@ -2,7 +2,6 @@ import { Combobox } from "@/components/combobox/combobox";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { useState } from "react";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 

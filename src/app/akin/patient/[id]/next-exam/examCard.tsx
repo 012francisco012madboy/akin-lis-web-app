@@ -4,12 +4,12 @@ import { AlerDialogNextExam } from "./_alertDialog";
 import { MedicalMaterialsModal } from "./_materialModal";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { _axios } from "@/lib/axios";
 import { LabTechnician } from "@/app/akin/schedule/tecnico";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { UserData } from "@/app/akin/profile/page";
 import { Pencil } from "lucide-react";
 import { EditScheduleFormModal } from "@/app/akin/schedule/editScheduleData";
+import { _axios } from "@/Api/axios.config";
 
 export const ExamCard = ({ data,name_patient }: ResponseData & { name_patient: string }) => {
   const { user } = useAuthStore();

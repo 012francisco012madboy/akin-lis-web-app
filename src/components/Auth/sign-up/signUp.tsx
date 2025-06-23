@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { APP_CONFIG } from "@/config/app";
 import { useState } from "react";
-import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { Eye, EyeOff } from "lucide-react";
+import { authRoutes } from "@/Api/Routes/Auth";
 import Link from "next/link";
 
 export const Register = () => {
@@ -55,7 +55,7 @@ export const Register = () => {
     if (!validate()) return;
     setIsLoading(true);
     try {
-      const response = await _axios.post("auth/local/signup", formData);
+      const response = await authRoutes.register(formData);
       if (response.status === 201) {
         ___showSuccessToastNotification({ message: "Usuário cadastrado com sucesso" });
       }

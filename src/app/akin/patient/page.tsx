@@ -1,12 +1,11 @@
 "use client"
 import { View } from "@/components/view";
-import { _axios } from "@/lib/axios";
 import PatientDisplay from "./patient-display";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { useQuery } from "@tanstack/react-query";
 import { PatientDisplaySkeleton } from "./components/patientDisplaySkeleton";
-import { labTechniciansRoutes } from "@/module/services/api/routes/lab-technicians";
-import { patientRoutes } from "@/module/services/api/routes/patients";
+import { labTechniciansRoutes } from "@/Api/Routes/lab-technicians";
+import { patientRoutes } from "@/Api/Routes/patients";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 const breadcrumbItems = [
@@ -18,9 +17,6 @@ const breadcrumbItems = [
 export default function Patient() {
   const userRole = getAllDataInCookies().userRole;
   const isLabTechnician = userRole === "TECNICO";
-
-  console.log("user role", userRole);
-  console.log("isLabTechnician", isLabTechnician);
 
   const patientsQuery = useQuery({
     queryKey: ["patient-data"],

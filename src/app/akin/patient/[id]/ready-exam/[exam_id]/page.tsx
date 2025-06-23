@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { _axios } from "@/lib/axios";
 import AutomatedAnalysis from "../modalAutomatiImage";
 import { ManualExam } from "../manualExam";
 import { ImageModal, Shape } from "../components/selectedCaptureImages";
 import { CapturedImages } from "../components/listCaptureImages";
 import { LaudoModal } from "../laudo";
 import { ChevronDown } from "lucide-react";
+import { _axios } from "@/Api/axios.config";
 
 
 export default function SampleVisualizationPage() {

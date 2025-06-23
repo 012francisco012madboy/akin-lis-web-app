@@ -1,13 +1,13 @@
 "use client";
-import { Button } from "@/components/button";
 import { DialogWindow } from "@/components/dialog";
 import { Input } from "@/components/input";
 import { Save, UserRoundPlus } from "lucide-react";
 import { useState } from "react";
 import { schemaSchedule } from "../utils/schemaZodNewPatient";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
-import { _axios } from "@/lib/axios";
+import { _axios } from "@/Api/axios.config";
 import { genders, mapFormDataToPatient } from "../utils/mapFormDataToPatient";
+import { Button } from "@/components/ui/button";
 
 
 export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: PatientType) => void }) => {
@@ -35,12 +35,10 @@ export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: 
       ___showErrorToastNotification({ messages: errorMessages });
       return;
     }
-
     await savePatientData(patientData);
   };
 
   const savePatientData = async (patientData: object) => {
-    console.log(" patientData", patientData)
     setIsSaving(true);
     try {
       const res = await _axios.post("/pacients", patientData);
@@ -48,8 +46,7 @@ export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: 
       if (res.status === 201) {
         ___showSuccessToastNotification({ message: "Paciente cadastrado com sucesso" });
 
-        // Comunicar o paciente cadastrado ao componente pai
-        onPatientSaved(res.data); // Assumindo que a API retorna o paciente cadastrado
+        onPatientSaved(res.data);
         handleCloseModal();
       } else {
         ___showErrorToastNotification({ message: "Erro ao cadastrar paciente." });
@@ -75,14 +72,14 @@ export const ModalNewPatient = ({ onPatientSaved }: { onPatientSaved: (patient: 
 };
 
 const RegisterPatientButton = ({ onClick }: { onClick: () => void }) => (
-  <button
+  <Button
     type="button"
-    className="w-max py-2  px-2 bg-akin-yellow-light/80 justify-center rounded-lg text-sm right-0 top-0 transform transition-all hover:bg-akin-yellow-light hover:scale-105 focus:outline-none focus:ring-2 focus:ring-akin-primary focus:ring-opacity-50 text-gray-800 flex items-center space-x-2 shadow-lg"
+    className="w-max py-2  px-2 bg-green-600 justify-center rounded-lg text-sm right-0 top-0 transform transition-all hover:bg-green-500   text-white flex items-center space-x-2 shadow-md"
     onClick={onClick}
   >
     <UserRoundPlus className="text-xl" />
     Registar Novo Paciente
-  </button>
+  </Button>
 );
 
 const PatientRegistrationModal = ({
@@ -145,13 +142,13 @@ const PatientRegistrationModal = ({
         className="border-[1px] bg-white border-gray-300 rounded-lg  transition-all placeholder-gray-500 text-gray-800"
       />
       <div className="flex justify-end gap-4 mt-6">
-        <Button.Primary
-          icon={<Save />}
+        <Button
           type="submit"
           className="bg-green-600 hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 text-white py-2 px-4 rounded-lg shadow-sm transition-all disabled:opacity-70 disabled:cursor-not-allowed"
-          label={isSaving ? "Salvando..." : "Salvar"}
           disabled={isSaving}
-        />
+        >
+          {isSaving ? "Salvando..." : "Salvar"}
+        </Button>
       </div>
     </form>
   </DialogWindow.Window>

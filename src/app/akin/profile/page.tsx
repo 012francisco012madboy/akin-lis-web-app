@@ -1,6 +1,5 @@
 "use client"
 import { Settings, Key, Mail, Phone } from "lucide-react";
-import { MOCK_LOGGED_USER } from "@/mocks/logged-user";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { useQuery } from "@tanstack/react-query";
-import { _axios } from "@/lib/axios";
+import { _axios } from "@/Api/axios.config";
 
 export interface UserData {
   nome: string,
@@ -17,14 +16,6 @@ export interface UserData {
   tipo: string,
   status: string
 }
-
-const userr = {
-  avatar: MOCK_LOGGED_USER.avatar,
-  name: MOCK_LOGGED_USER.fullName,
-  role: MOCK_LOGGED_USER.role,
-  phoneNumber: MOCK_LOGGED_USER.phoneNumber,
-  email: MOCK_LOGGED_USER.email,
-};
 
 export default function Profile() {
   const { user } = useAuthStore()
@@ -47,7 +38,7 @@ export default function Profile() {
           <CardHeader className="flex flex-col items-center gap-4">
             <div className="relative">
               <Avatar className="w-24 h-24 border-4 border-white shadow-md ring-2 ring-primary">
-                <AvatarImage src={userr.avatar} alt={userr.name} />
+                <AvatarImage src={""} alt={data?.data.nome} />
               </Avatar>
               <Button
                 size="icon"
@@ -75,11 +66,11 @@ export default function Profile() {
           <TabsContent value="info">
             <Card className="rounded-xl">
               <CardContent className="space-y-4 py-6">
-                <ProfileDetail
+                {/* <ProfileDetail
                   label="Número de Telefone"
-                  value={userr.phoneNumber}
+                  value={data?.data.}
                   icon={<Phone size={18} />}
-                />
+                /> */}
                 <ProfileDetail
                   label="Email"
                   value={data?.data.email || "Email do Usuário"}

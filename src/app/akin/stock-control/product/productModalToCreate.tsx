@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
-import { stockMaterialRoutes } from "@/module/services/api/routes/stock-material";
+import { stockMaterialRoutes } from "@/Api/Routes/stock-material";
 
 interface ProductModalProps {
   open: boolean;
