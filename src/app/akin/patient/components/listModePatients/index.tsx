@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { APP_CONFIG } from "@/config/app";
 import Link from "next/link";
+import { getAgeText } from "@/utils/get-yearUser";
 
-const ITEMS_PER_PAGE = 10; // Número de pacientes por página
+const ITEMS_PER_PAGE = 10;
 
 export function ListMode({ patientList }: { patientList: PatientType[] }) {
   const [currentPage, setCurrentPage] = useState(1);
+  const date = new Date();
+  const currentYear = date.getFullYear();
 
   const totalItems = patientList.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -46,7 +49,7 @@ export function ListMode({ patientList }: { patientList: PatientType[] }) {
               <td className="px-4 py-3 text-gray-700">{patient.nome_completo}</td>
               <td className="px-4 py-3 text-gray-700">{patient.numero_identificacao}</td>
               <td className="px-4 py-3 text-gray-700">
-                {2024 - Number(new Date(patient.data_nascimento).getFullYear())}
+                {getAgeText(patient.data_nascimento, currentYear)}
               </td>
               <td className="px-4 py-3 text-gray-700">
                 {new Date(patient.data_nascimento).toLocaleDateString()}

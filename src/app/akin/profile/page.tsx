@@ -1,13 +1,15 @@
 "use client"
-import { Settings, Key, Mail, Phone } from "lucide-react";
+import { Settings, Key, Mail } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { _axios } from "@/Api/axios.config";
+import { userRoutes } from "@/Api/Routes/User";
+import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 
 export interface UserData {
   nome: string,
@@ -18,7 +20,8 @@ export interface UserData {
 }
 
 export default function Profile() {
-  const { user } = useAuthStore()
+  const { user, logout } = useAuthStore();
+
   const { data, isPending } = useQuery({
     queryKey: ['user-data'],
     queryFn: async () => {
@@ -26,12 +29,32 @@ export default function Profile() {
     }
   });
 
+  const deleteUser = useMutation({
+    mutationKey: ['delete-user'],
+    mutationFn: async () => {
+      if (!user?.id) throw new Error("User ID is required");
+      return await userRoutes.deleteUser(user.id);
+    },
+    onSuccess: () => {
+      ___showSuccessToastNotification({
+        message: "Conta excluída com sucesso.",
+      })
+      logout();
+      window.location.href = "/";
+    },
+    onError: () => {
+      ___showErrorToastNotification({
+        message: "Erro ao excluir conta. Tente novamente mais tarde.",
+      })
+    }
+  })
+
   if (isPending) {
     return <div className="p-8 text-center text-gray-500">Carregando Informações...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
+    <div className="min-h-screen py-8">
       <div className="max-w-4xl mx-auto px-4">
         {/* Profile Header */}
         <Card className="mb-6 rounded-xl shadow-sm">
@@ -89,6 +112,18 @@ export default function Profile() {
                   value="*********"
                   icon={<Key size={18} />}
                 />
+
+                <div>
+                  <Button variant="destructive" onClick={async () => {
+                    if (confirm("Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.")) {
+                      await deleteUser.mutate();
+                      return;
+                    }
+                  }}
+                  >
+                    {deleteUser.isPending ? "Excluindo..." : "Excluir Conta"}
+                  </Button>
+                </div>
                 <div className="flex justify-end gap-3 pt-4">
                   <Button variant="outline">Redefinir Senha</Button>
                   <Button>Salvar Alterações</Button>
@@ -98,7 +133,7 @@ export default function Profile() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </div >
   );
 }
 

@@ -13,10 +13,11 @@ import { _axios } from "@/Api/axios.config";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { Combobox } from "@/components/combobox/combobox";
 import { QueryClient, useMutation } from "@tanstack/react-query";
+import { getAgeText } from "@/utils/get-yearUser";
 
 const genderOptions = ["Masculino", "Femenino"]
 const queryClient = new QueryClient()
-// Componente principal
+
 export function PatientResumeInfo({
   patient,
   basicExamHistory,
@@ -50,6 +51,8 @@ export function PatientResumeInfo({
       nome: patient.sexo.nome
     }
   });
+    const date = new Date();
+  const currentYear = date.getFullYear();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -91,7 +94,7 @@ export function PatientResumeInfo({
     { label: "Bilhete de Identidade", value: patient.numero_identificacao },
     { label: "Gênero", value: patient.id_sexo === 1 ? "Masculino" : "Feminino" },
     { label: "Data de nascimento", value: new Date(patient.data_nascimento).toLocaleDateString() },
-    { label: "Idade", value: `${2024 - Number(new Date(patient.data_nascimento).getFullYear())}` },
+    { label: "Idade", value: `${getAgeText(patient.data_nascimento, currentYear)}` },
     { label: "Contacto", value: patient.contacto_telefonico },
   ];
 
@@ -151,7 +154,6 @@ export function PatientResumeInfo({
             </div>
             <div className="space-y-2">
               <label className="text-gray-800 font-medium" htmlFor="id_sexo">Gênero</label>
-
               <Combobox
                 onChange={(value) =>
                   setFormData((prev) => ({
@@ -277,10 +279,10 @@ export function PatientResumeInfo({
                 </Button>
               </Link>
             </CardFooter>
-          {/* ) : (
-            <></>
-          )
-          } */}
+            {/* ) : (
+              <></>
+            )
+            } */}
         </Card>
       </div>
     </div>

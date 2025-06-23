@@ -170,7 +170,7 @@ export const Register = () => {
               {errors.id_unidade_saude && <p className="text-red-500 text-sm">{errors.id_unidade_saude}</p>}
             </div>
             <div className="relative">
-              <Label htmlFor="senha" className="text-gray-700">
+              <Label htmlFor="senha">
                 Senha
               </Label>
               <Input

@@ -38,8 +38,6 @@ export default function CardSchedule({ data }: ICardSchedule) {
     },
   });
 
-  console.log("tecnicooo", tecnico.data);
-
   const labChiefs = useQuery({
     queryKey: ["lab-chief"],
     queryFn: async () => {
@@ -50,8 +48,6 @@ export default function CardSchedule({ data }: ICardSchedule) {
   if (labChiefs.isLoading) {
     return <div>Loading...</div>;
   }
-
-  console.log("lab", labChiefs.data);
 
   const handleGroupExams = () => {
     if (data?.Exame?.length > 0) {
@@ -102,11 +98,11 @@ export default function CardSchedule({ data }: ICardSchedule) {
                   {exame.Tipo_Exame.nome || "Nome não disponível"}
                   {/* <EditScheduleFormModal> */}
                   <div className="relative group">
-
                     {/* {
                       userRole.data?.data.tipo !== "RECEPCIONISTA" ? (
                         <></>
                       ) : ( */}
+
                     <>
                       <Pencil size={18}
                         className="cursor-pointer text-gray-500"

@@ -2,11 +2,14 @@ import { useState } from "react";
 import { APP_CONFIG } from "@/config/app";
 import Link from "next/link";
 import Image from "next/image";
+import { getAgeText } from "@/utils/get-yearUser";
 
-const ITEMS_PER_PAGE = 6; // Número de pacientes por página
+const ITEMS_PER_PAGE = 6;
 
 export function BlockMode({ patientList }: { patientList: PatientType[] }) {
   const [currentPage, setCurrentPage] = useState(1);
+  const date = new Date();
+  const currentYear = date.getFullYear();
 
   const totalItems = patientList.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -49,7 +52,7 @@ export function BlockMode({ patientList }: { patientList: PatientType[] }) {
               </p>
               <p className="text-gray-700">
                 <strong className="font-medium">Idade:</strong>{" "}
-                {2024 - Number(new Date(patient.data_nascimento).getFullYear())}
+                {getAgeText(patient.data_nascimento, currentYear)}
               </p>
               <p className="text-gray-700">
                 <strong className="font-medium">Data de Nascimento:</strong>{" "}
@@ -90,11 +93,10 @@ export function BlockMode({ patientList }: { patientList: PatientType[] }) {
           {Array.from({ length: totalPages }).map((_, idx) => (
             <button
               key={idx}
-              className={`px-3 py-1 text-sm font-medium border rounded ${
-                currentPage === idx + 1
+              className={`px-3 py-1 text-sm font-medium border rounded ${currentPage === idx + 1
                   ? "bg-blue-600 text-white"
                   : "bg-white text-gray-500 hover:bg-gray-100"
-              }`}
+                }`}
               onClick={() => handlePageChange(idx + 1)}
             >
               {idx + 1}

@@ -6,13 +6,8 @@ class UserRoutes {
     return response.data;
   }
 
-  async createUser(data: CreateUserDto) {
-    const response = await _axios.post<User>("/users", data);
-    return response.data;
-  }
-
-  async updateUser(id: string, data: UpdateUserDto) {
-    const response = await _axios.put<User>(`/users/${id}`, data);
+  async createUser() {
+    const response = await _axios.post("/users");
     return response.data;
   }
 

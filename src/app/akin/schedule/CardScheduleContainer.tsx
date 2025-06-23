@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/card";
 import { useCallback, useEffect, useState } from "react";
 import CardSchedule from "./CardSchedule";
 import { isWithinInterval } from "date-fns";
-import { DatePickerWithRange } from "@/components/ui/date-picker";
 import { DateRange } from "react-day-picker";
 
 interface ICardScheduleContainer {
@@ -23,8 +22,8 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
   const [filteredSchedule, setFilteredSchedule] = useState<ScheduleType[]>(
     schedule.map((s) => ({
       ...s,
-      Exame: s.Exame?.filter((exame) => exame.status === "PENDENTE"), // Excluir exames realizados
-    })).filter((s) => s.Exame && s.Exame.length > 0) // Excluir cards sem exames pendentes
+      Exame: s.Exame?.filter((exame) => exame.status === "PENDENTE"), 
+    })).filter((s) => s.Exame && s.Exame.length > 0)
   );
   const [isSearching, setIsSearching] = useState(false);
   const [filterByTechnician, setFilterByTechnician] = useState<typeof all | typeof allocated | typeof notAllocated>(all);
@@ -161,7 +160,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
                   } else if (filterByTechnician === notAllocated) {
                     return exame.id_tecnico_alocado === null;
                   }
-                  return true; // Para "all", incluir todos os exames
+                  return true;
                 });
 
                 // Se não houver exames correspondentes ao filtro, não renderizar o card

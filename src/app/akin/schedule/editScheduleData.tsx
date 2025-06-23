@@ -10,8 +10,6 @@ import { LabTechnician } from "./tecnico";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { _axios } from "@/Api/axios.config";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
-import { useAuthStore } from "@/utils/zustand-store/authStore";
-import Cookies from "js-cookie";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 //Precisa de ser atualizado o Typescript desse componente e aplicar refatoração de codigo para melhorar a legibilidade - (Mario SALVADOR)
@@ -25,7 +23,7 @@ export function EditScheduleFormModal({
   techName,
   examId,
 }: any): JSX.Element {
-  const [ formData, setFormData] = useState(
+  const [formData, setFormData] = useState(
     exam || {
       id: "",
       date: "",
@@ -46,7 +44,7 @@ export function EditScheduleFormModal({
 
   const queryClient = useQueryClient();
   const userRole = getAllDataInCookies().userRole;
-  const role = "CHEFE";
+  const chefe = "CHEFE";
 
   // Fetch dos técnicos
   const technicians = useQuery({
@@ -56,7 +54,6 @@ export function EditScheduleFormModal({
       return response.data;
     },
   });
-  console.log("technicians", technicians.data);
 
   // Fetch dos exames
   const exams = useQuery({
@@ -151,8 +148,6 @@ export function EditScheduleFormModal({
       formattedValue.id_tipo_exame = formData.type || formData.id;
     }
 
-    // console.log("examId", examId);
-    // console.log("formattedValue", formattedValue);
     saveScheduleMutation.mutate(formattedValue);
   };
 
@@ -165,25 +160,25 @@ export function EditScheduleFormModal({
             Editar Exame - <span className="text-zinc-600 font-semibold">{formData.name || "Exame"}</span>
           </h2>
         </DialogHeader>
-        {/* Formulário */}
 
-        <div className="card gap-3 w-full">
-          <label htmlFor="type" className="font-bold block mb-2">
-          Alterar  Exame
-          </label>
-          <Combobox
-            data={exams.data?.data.data || []}
-            displayKey="nome"
-            onSelect={handleExamSelection}
-            placeholder="Selecione o novo exame"
-            clearLabel="Limpar"
-          />
-        </div>
+        {/* Formulário */}
         {
-          userRole === role ? (
+          userRole === chefe ? (
             <></>
           ) : (
             <>
+              <div className="card gap-3 w-full">
+                <label htmlFor="type" className="font-bold block mb-2">
+                  Alterar  Exame
+                </label>
+                <Combobox
+                  data={exams.data?.data.data || []}
+                  displayKey="nome"
+                  onSelect={handleExamSelection}
+                  placeholder="Selecione o novo exame"
+                  clearLabel="Limpar"
+                />
+              </div>
               <div className="card gap-3 w-full">
                 <label htmlFor="date" className="font-bold block mb-2">
                   Data
@@ -234,7 +229,7 @@ export function EditScheduleFormModal({
 
         <div className="card gap-3 w-full">
           <label htmlFor="technicianId" className="font-bold block mb-2">
-          Chefe de Laboratório Alocado
+            Chefe de Laboratório Alocado
           </label>
           <Input
             id="technicianId"
