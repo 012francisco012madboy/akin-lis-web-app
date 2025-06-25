@@ -13,7 +13,7 @@ import {
   Settings2,
   Settings,
   Cog,
-  Wrench,
+  SquareActivity,
   UsersRound,
   CalendarPlus2,
   CalendarSearch,
@@ -46,7 +46,7 @@ export const APP_CONFIG = {
         subItems: [
           { label: "Novo", icon: CalendarPlus2, path: "/akin/schedule/new", access: ["RECEPCIONISTA"] },
           { label: "Solicitações", icon: CalendarSearch, path: "/akin/schedule/request", access: ["RECEPCIONISTA"] },
-          { label: "Confirmados", icon: CalendarCheck2, path: "/akin/schedule/completed", access: ["CHEFE","RECEPCIONISTA"] }
+          { label: "Confirmados", icon: CalendarCheck2, path: "/akin/schedule/completed", access: ["CHEFE", "RECEPCIONISTA"] }
         ]
       },
       {
@@ -55,6 +55,13 @@ export const APP_CONFIG = {
         path: "/akin/patient",
         access: ["RECEPCIONISTA", "CHEFE", "TECNICO"]
       },
+      {
+        label: "Exames Laboratoriais",
+        icon: SquareActivity,
+        path: "/akin/lab-exams",
+        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"]
+      }
+      ,
       {
         label: "Gestão Equipe",
         icon: UserRoundCog,

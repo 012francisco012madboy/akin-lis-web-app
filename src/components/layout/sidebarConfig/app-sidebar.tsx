@@ -30,7 +30,7 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const userRole = getAllDataInCookies().userRole;
   return (
-    <Sidebar collapsible="icon" {...props} className="max-w-[201px] bg-akin-turquoise border-r-akin-turquoise">
+    <Sidebar collapsible="icon" {...props} className="max-w-[220px] bg-akin-turquoise border-r-akin-turquoise">
       <SidebarHeader className="bg-akin-turquoise text-white">
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
