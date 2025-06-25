@@ -200,7 +200,7 @@ export const Register = () => {
               {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
             </div>
             <div>
-              <Label htmlFor="confirmarSenha">Confirmar Senha</Label>
+              <Label htmlFor="confirmarSenha">Confirme a Senha</Label>
               <Input
                 id="confirmarSenha"
                 name="confirmarSenha"
