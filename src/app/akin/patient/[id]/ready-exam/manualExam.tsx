@@ -9,9 +9,10 @@ import { useState, useRef, useEffect } from "react";
 interface IManualExamProps {
   setIsModalOpen: (isOpen: boolean) => void;
   onCaptureImage: (images: string[]) => void;
+  isOpen?: boolean;
 }
 
-export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptureImage }) => {
+export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptureImage, isOpen = true }) => {
   const cameraRef = useRef<{
     captureImage: () => void;
     stopCamera: () => void;
@@ -39,11 +40,10 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
   };
 
   const handleCloseModal = () => {
-    if (cameraRef.current) {
-      setIsModalOpen(false);
-      cameraRef.current.stopCamera()
-      //  console.log("Camera fechou!")
+    if (cameraRef.current && cameraRef.current.stopCamera) {
+      cameraRef.current.stopCamera();
     }
+    setIsModalOpen(false);
   };
 
   // Atualiza a lista de imagens capturadas
@@ -61,7 +61,6 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
   // Valida se as câmeras foram detectadas ao montar o componente
   useEffect(() => {
     if (!devices.length) {
-
       setError("Nenhuma câmera detectada. Certifique-se de que a câmera está conectada.");
     } else {
       setError(null);
@@ -115,14 +114,16 @@ export const ManualExam: React.FC<IManualExamProps> = ({ setIsModalOpen, onCaptu
         <div className="p-4 flex flex-col lg:flex-row gap-4 max-h-[600px]">
           {/* Camera View */}
           <div className="w-full h-80 lg:h-auto rounded-lg relative bg-black">
-            <CustomCamera
-              ref={cameraRef}
-              getCapturedImage={(img) => setCurrentImage(img)}
-              getAllVideoDevices={setDevices}
-              className="h-full w-full"
-              videoClassName="h-full w-full"
-              showDevices={false}
-            />
+            {isOpen && (
+              <CustomCamera
+                ref={cameraRef}
+                getCapturedImage={(img) => setCurrentImage(img)}
+                getAllVideoDevices={setDevices}
+                className="h-full w-full"
+                videoClassName="h-full w-full"
+                showDevices={false}
+              />
+            )}
             <Button
               onClick={handleCaptureImage}
               className="absolute bottom-4 right-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"

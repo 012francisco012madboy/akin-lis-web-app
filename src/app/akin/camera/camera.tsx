@@ -99,6 +99,7 @@ const CustomCamera = forwardRef<{
       if (videoRef.current?.srcObject) {
         const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
         tracks.forEach((track) => track.stop());
+        videoRef.current.srcObject = null;
       }
     }, []);
 

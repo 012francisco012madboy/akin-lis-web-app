@@ -9,7 +9,6 @@ import { ManualExam } from "../manualExam";
 import { ImageModal, Shape } from "../components/selectedCaptureImages";
 import { CapturedImages } from "../components/listCaptureImages";
 import { LaudoModal } from "../laudo";
-import { ChevronDown } from "lucide-react";
 import { _axios } from "@/Api/axios.config";
 
 
@@ -19,8 +18,8 @@ export default function SampleVisualizationPage() {
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen] = useState(false);
-  const [imageAnnotations, setImageAnnotations] = useState<Record<string, Shape[]>>({}); // 🔹 Armazena anotações de todas as imagens
-
+  const [imageAnnotations, setImageAnnotations] = useState<Record<string, Shape[]>>({});
+  
   //@ts-ignore
   const { id, exam_id } = useParams();
 
@@ -81,12 +80,10 @@ export default function SampleVisualizationPage() {
       note: notes[image] || "",
     }));
     console.log("Enviando à IA:", imagesWithNotes);
-    // Adicione a lógica para enviar o array de objetos à IA aqui
   };
 
-
   return (
-    <div className="min-h-screen overflow-y-auto">
+    <div className="min-h-screen overflow-y-auto pb-2">
       {getPatientInfo.isLoading || getExamById.isLoading ? (
         <div className="flex items-center justify-center h-screen">
           <div className="animate-pulse space-y-4">
@@ -99,26 +96,22 @@ export default function SampleVisualizationPage() {
       ) : (
         <>
           {/* Header */}
-          <header className="bg-white shadow py-2 px-5 flex gap-2 flex-col lg:flex-row justify-between items-start lg:items-center rounded-md">
-            <h1 className="text-lg font-semibold">Paciente: {getPatientInfo.data?.data.nome_completo}</h1>
-            <h1 className="text-lg font-semibold">Exame: {getExamById.data?.data.data.nome}</h1>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="bg-black text-white px-4 py-2 rounded-md hover:bg-black/90 transition"
-              >
-                Análise Manual
-              </button>
-              
-              <button
-                onClick={handleAutomatedAnalysisOpen}
-                className="bg-black text-white px-4 py-2 rounded-md hover:bg-black/90 transition"
-              >
-                Análise Automatizada
-              </button>
+          <div className="bg-white shadow rounded-md p-6 space-y-4">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-800">Paciente: {getPatientInfo.data?.data.nome_completo}</h2>
+                <p className="text-gray-600">Exame: {getExamById.data?.data.data.nome}</p>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={() => setIsModalOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+                  Análise Manual
+                </Button>
+                <Button onClick={handleAutomatedAnalysisOpen} className="bg-gray-600 hover:bg-gray-700">
+                  Análise Automática
+                </Button>
+              </div>
             </div>
-
-          </header>
+          </div>
 
           {/* Automated Analysis Section */}
           {
@@ -174,23 +167,15 @@ export default function SampleVisualizationPage() {
 
           {/* Generate Report Button */}
           {capturedImages.length > 0 && (
-            <div className="mt-6 flex justify-end gap-2">
-              {/* <Button onClick={handleSendToAI} className="bg-green-500 hover:bg-green-600">
-                Enviar à IA
-              </Button>  */}
-
+            <div className="mt-6 flex justify-end gap-3">
               <Button onClick={() => {
                 handleClickOnGenerateLaudo();
                 handleGenerateReport();
-              }} className="bg-green-500 hover:bg-green-600">
-                Gerar laudo
+              }} className="bg-green-600 hover:bg-green-700">
+                Gerar Laudo
               </Button>
-              {/* <Button onClick={handleGenerateReport} className="bg-green-500 hover:bg-green-600">
-                Concluir
-              </Button> */}
             </div>
           )}
-
           <LaudoModal
             laudoModalOpen={laudoModalOpen}
             setLaudoModalOpen={setLaudoModalOpen}

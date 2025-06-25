@@ -19,9 +19,14 @@ interface InfoPatient {
   identificacaoPaciente: string;
   detalhesAnalise: string;
   assinaturaDoutor: string;
-  crmDoutor: string;
   conclusao: string;
+  tipoExame: string;
+  dataNascimento: string;
+  sexo: string;
+  dataColeta: string;
+  medicoSolicitante: string;
 }
+
 
 const styles = StyleSheet.create({
   page: { padding: 20, fontSize: 12 },
@@ -38,43 +43,74 @@ const styles = StyleSheet.create({
 });
 
 const getDate = new Date();
-const LaudoPDF: React.FC<InfoPatient> = ({ nomePaciente, idadePaciente, identificacaoPaciente, detalhesAnalise, conclusao, assinaturaDoutor, crmDoutor }) => (
+const LaudoPDF: React.FC<InfoPatient> = ({
+  nomePaciente, idadePaciente, identificacaoPaciente, detalhesAnalise, conclusao,
+  assinaturaDoutor, tipoExame, dataNascimento, sexo, dataColeta, medicoSolicitante
+}) => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
-        <Text style={styles.title}>Laudo de Análise Microscópica</Text>
-        <Text>Emitido em: {getDate.toLocaleDateString()}</Text>
+        <Text style={[styles.title, { textAlign: 'center' }]}>Laudo de Microscopia</Text>
+        <Text style={{ textAlign: 'center' }}>Tipo de Exame: {tipoExame}</Text>
       </View>
+
       <View style={styles.section}>
-        <Text style={styles.title}>Informações do Paciente</Text>
+        <Text style={styles.title}>Dados do Paciente</Text>
         <Text>Nome: {nomePaciente}</Text>
-        <Text>Idade: {idadePaciente}</Text>
-        <Text>Identificação: {identificacaoPaciente}</Text>
+        <Text>ID do Paciente: {identificacaoPaciente}</Text>
+        <Text>Data de Nascimento: {dataNascimento}   Sexo: {sexo}</Text>
+        <Text>Data de Coleta: {dataColeta}   Data de Emissão: {new Date().toLocaleDateString()}</Text>
+        <Text>Médico Solicitante: {medicoSolicitante}</Text>
       </View>
+
       <View style={styles.section}>
-        <Text style={styles.title}>Detalhes da Análise</Text>
+        <Text style={styles.title}>Resultados do Exame</Text>
+        <Text>Parâmetro | Resultado | Unidade | Intervalo de Referência</Text>
+        <Text>_______________________________________________________</Text>
         <Text>{detalhesAnalise}</Text>
       </View>
+
       <View style={styles.section}>
-        <Text style={styles.title}>Imagens Capturadas</Text>
-        <View style={styles.imgDiv}>
-          <Image src="https://github.com/artemsyvko.png" style={styles.image} />
-        </View>
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.title}>Conclusão</Text>
+        <Text style={styles.title}>Observações e Interpretações</Text>
         <Text>{conclusao}</Text>
       </View>
-      <View>
-        <Text style={styles.title}>Assinatura do Profissional</Text>
-        <Text>{assinaturaDoutor}</Text>
-        <Text>CRM: {crmDoutor}</Text>
+
+      <View style={styles.section}>
+        <Text style={styles.title}>Imagens Anexas</Text>
+        <Text>Adicionar imagens capturadas durante o exame:</Text>
+        <View style={styles.imgDiv}>
+          <Image src="https://via.placeholder.com/150" style={styles.image} />
+          <Image src="https://via.placeholder.com/150" style={styles.image} />
+        </View>
       </View>
+
+      <View style={{ ...styles.section, flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View>
+          <Text>_______________________________</Text>
+          <Text>Técnico Responsável</Text>
+        </View>
+        <Image
+          src="https://api.qrserver.com/v1/create-qr-code/?data=https://meuslaudos.com/laudo/abc123&size=100x100"
+          style={{ width: 80, height: 80 }}
+        />
+      </View>
+
+      <Text style={{ marginTop: 10, fontStyle: 'italic', textAlign: 'center' }}>
+        Laudo válido somente com assinatura do responsável técnico.
+      </Text>
     </Page>
   </Document>
 );
 
+
 export const LaudoModal = ({ laudoModalOpen, setLaudoModalOpen }: LaudoModalProps) => {
+  const [tipoExame, setTipoExame] = useState('Análise Citopatológica');
+  const [dataNascimento, setDataNascimento] = useState('1978-03-15');
+  const [sexo, setSexo] = useState('Masculino');
+  const [dataColeta, setDataColeta] = useState('2025-06-15');
+  const [medicoSolicitante, setMedicoSolicitante] = useState('Dr. Rafael Almeida');
+
+
   const [nomePaciente, setNomePaciente] = useState('João da Silva');
   const [idadePaciente, setIdadePaciente] = useState(45);
   const [identificacaoPaciente, setIdentificacaoPaciente] = useState('#12345');
@@ -85,7 +121,6 @@ export const LaudoModal = ({ laudoModalOpen, setLaudoModalOpen }: LaudoModalProp
     'Baseado nos resultados, não foram detectadas alterações relevantes. Recomenda-se acompanhamento regular e realização de exames complementares se necessário.'
   );
   const [assinaturaDoutor, setAssinaturaDoutor] = useState('');
-  const [crmDoutor, setCrmDoutor] = useState('');
 
   return (
     <Dialog open={laudoModalOpen} onOpenChange={() => setLaudoModalOpen(false)}>
@@ -110,6 +145,33 @@ export const LaudoModal = ({ laudoModalOpen, setLaudoModalOpen }: LaudoModalProp
             </div>
           </div>
         </section>
+
+        <section className="p-4 border-b">
+          <h2 className="text-lg font-semibold">Informações do Exame</h2>
+          <div className="space-y-2">
+            <div>
+              <strong>Tipo de Exame:</strong>
+              <Input value={tipoExame} onChange={(e) => setTipoExame(e.target.value)} />
+            </div>
+            <div>
+              <strong>Data de Nascimento:</strong>
+              <Input type="date" value={dataNascimento} onChange={(e) => setDataNascimento(e.target.value)} />
+            </div>
+            <div>
+              <strong>Sexo:</strong>
+              <Input value={sexo} onChange={(e) => setSexo(e.target.value)} />
+            </div>
+            <div>
+              <strong>Data de Coleta:</strong>
+              <Input type="date" value={dataColeta} onChange={(e) => setDataColeta(e.target.value)} />
+            </div>
+            <div>
+              <strong>Médico Solicitante:</strong>
+              <Input value={medicoSolicitante} onChange={(e) => setMedicoSolicitante(e.target.value)} />
+            </div>
+          </div>
+        </section>
+
         <section className="p-4 border-b">
           <h2 className="text-lg font-semibold">Detalhes da Análise</h2>
           <Textarea value={detalhesAnalise} onChange={(e) => setDetalhesAnalise(e.target.value)} />
@@ -122,11 +184,6 @@ export const LaudoModal = ({ laudoModalOpen, setLaudoModalOpen }: LaudoModalProp
           <section>
             <h2 className="text-lg font-semibold">Assinatura do Profissional</h2>
             <Input placeholder='Assinatura do Profissional' value={assinaturaDoutor} onChange={(e) => setAssinaturaDoutor(e.target.value)} />
-          </section>
-
-          <section>
-            <h2 className="text-lg font-semibold">CRM</h2>
-            <Input placeholder="CRM do Doutor" value={crmDoutor} onChange={(e) => setCrmDoutor(e.target.value)} />
           </section>
         </div>
 
@@ -142,19 +199,21 @@ export const LaudoModal = ({ laudoModalOpen, setLaudoModalOpen }: LaudoModalProp
                     detalhesAnalise={detalhesAnalise}
                     conclusao={conclusao}
                     assinaturaDoutor={assinaturaDoutor}
-                    crmDoutor={crmDoutor}
+                    tipoExame={tipoExame}
+                    dataNascimento={dataNascimento}
+                    sexo={sexo}
+                    dataColeta={dataColeta}
+                    medicoSolicitante={medicoSolicitante}
                   />
                 }
                 fileName={`laudo_${nomePaciente.replace(' ', '_')}.pdf`}
               >
-                {({ loading }) => (loading ? 'Gerando PDF...' : 'Baixar PDF')}
+                {({ loading }) => (loading ? 'Gerando Laudo...' : 'Baixar Laudo PDF')}
               </PDFDownloadLink>
             </Button>
-
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2">
-
             {/* Botão de Compartilhamento com Popover */}
             <Popover>
               <PopoverTrigger asChild>
@@ -198,16 +257,11 @@ export const LaudoModal = ({ laudoModalOpen, setLaudoModalOpen }: LaudoModalProp
               </PopoverContent>
             </Popover>
 
-          <Button variant="outline" onClick={() => setLaudoModalOpen(false)}>
-            Fechar
-          </Button>
-
-
+            <Button variant="outline" onClick={() => setLaudoModalOpen(false)}>
+              Fechar
+            </Button>
           </div>
-
         </DialogFooter>}
-
-
       </DialogContent>
     </Dialog>
   );
