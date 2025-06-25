@@ -22,7 +22,9 @@ export const Register = () => {
     nome: "",
     email: "",
     senha: "",
+    confirmarSenha: "",
     status: "ATIVO",
+    contacto_telefonico: "", 
   });
   const [errors, setErrors] = useState({
     tipo: "",
@@ -30,17 +32,21 @@ export const Register = () => {
     nome: "",
     email: "",
     senha: "",
+    confirmarSenha: "",
+    contacto_telefonico: "",
   });
 
   const validate = () => {
-    let tempErrors = { tipo: "", id_unidade_saude: "", nome: "", email: "", senha: "", };
-    if (!formData.nome) tempErrors.nome = "Nome é obrigatório.";
+    let tempErrors = { tipo: "", id_unidade_saude: "", nome: "", email: "", senha: "", confirmarSenha: "", contacto_telefonico: "" };
+    if (!formData.nome) tempErrors.nome = "Nome é obrigatório."; 
     if (!formData.email) tempErrors.email = "Email é obrigatório.";
     if (!/\S+@\S+\.\S+/.test(formData.email)) tempErrors.email = "Email inválido.";
     if (!formData.senha) tempErrors.senha = "Senha é obrigatória.";
+  if (!formData.confirmarSenha) tempErrors.confirmarSenha = "Confirme sua senha.";
     if (formData.senha.length < 6) tempErrors.senha = "Senha deve ter pelo menos 6 caracteres.";
     if (!formData.tipo) tempErrors.tipo = "Cargo é obrigatório.";
     if (!formData.id_unidade_saude) tempErrors.id_unidade_saude = "Referência é obrigatória.";
+    if (!formData.contacto_telefonico) tempErrors.contacto_telefonico = "Telefone é obrigatório.";
     setErrors(tempErrors);
     return Object.values(tempErrors).every(x => x === "");
   };
@@ -111,9 +117,8 @@ export const Register = () => {
               />
               {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
             </div>
-            {/*
             <div>
-              <Label htmlFor="contacto_telefonico">contacto_telefonico</Label>
+              <Label htmlFor="contacto_telefonico">Telefone</Label>
               <Input
                 id="contacto_telefonico"
                 name="contacto_telefonico"
@@ -123,8 +128,10 @@ export const Register = () => {
                 placeholder="Digite o telefone"
                 disabled={isLoading}
               />
-              {errors.email && <p className="text-red-500 text-sm">{errors.contacto_telefonico}</p>}
+              {errors.contacto_telefonico && <p className="text-red-500 text-sm">{errors.contacto_telefonico}</p>}
             </div>
+            {/*
+            
             <div>
               <Label htmlFor="id_sexo">Genero</Label>
               <Select
@@ -191,6 +198,19 @@ export const Register = () => {
                 {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
               </button>
               {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
+            </div>
+            <div>
+              <Label htmlFor="confirmarSenha">Confirmar Senha</Label>
+              <Input
+                id="confirmarSenha"
+                name="confirmarSenha"
+                type="password"
+                value={formData.confirmarSenha}
+                onChange={handleInputChange}
+                placeholder="Confirme sua senha"
+                disabled={isLoading}
+              />
+              {errors.confirmarSenha && <p className="text-red-500 text-sm">{errors.confirmarSenha}</p>}
             </div>
             <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
               {isLoading ? "Cadastrando..." : "Cadastrar"}
