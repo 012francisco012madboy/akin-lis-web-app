@@ -14,6 +14,7 @@ interface CapturedImagesProps {
     handleDeleteImage: (image: string) => void;
     maxCapturedImage?: string;
     maxCaptures?: string;
+    onCaptureImage?: (images: string[]) => void;
 }
 
 export const CapturedImages: React.FC<CapturedImagesProps> = ({
@@ -21,13 +22,16 @@ export const CapturedImages: React.FC<CapturedImagesProps> = ({
     maxCapturedImage,
     maxCaptures,
     setSelectedImage,
-    handleDeleteImage
+    handleDeleteImage,
+    onCaptureImage
 }) => {
     const [uploadModalOpen, setUploadModalOpen] = useState(false);
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
     const [isSending, setIsSending] = useState(false);
     const [results, setResults] = useState<any[]>([]);
     const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
+    const [analysisChoiceModalOpen, setAnalysisChoiceModalOpen] = useState(false);
+    const [isProcessingModalOpen, setIsProcessingModalOpen] = useState(false);
 
     const sendImageToIA = useMutation({
         mutationKey: ["sendImageToIA"],
@@ -36,11 +40,13 @@ export const CapturedImages: React.FC<CapturedImagesProps> = ({
             return response;
         },
         onError: () => {
+            setIsProcessingModalOpen(false);
             ___showErrorToastNotification({
                 message: "Erro ao enviar imagem à IA. Tente novamente.",
             });
         },
         onSuccess: (data) => {
+            setIsProcessingModalOpen(false);
             ___showSuccessToastNotification({
                 message: "Imagens enviadas com sucesso.",
             });
@@ -56,14 +62,37 @@ export const CapturedImages: React.FC<CapturedImagesProps> = ({
         setUploadedFiles([file]);
     };
 
-    const handleSendToIA = async () => {
+    const handleProceedWithChoice = () => {
         if (!uploadedFiles.length) {
             ___showErrorToastNotification({
                 message: "Nenhuma imagem carregada.",
             });
             return;
         }
+        setUploadModalOpen(false);
+        setAnalysisChoiceModalOpen(true);
+    };
+
+    const handleManualAnalysis = () => {
+        // Converter arquivos para URLs de imagem e adicionar às imagens capturadas
+        const imageUrls = uploadedFiles.map(file => URL.createObjectURL(file));
+
+        if (onCaptureImage) {
+            onCaptureImage(imageUrls);
+        }
+
+        setUploadedFiles([]);
+        setAnalysisChoiceModalOpen(false);
+
+        ___showSuccessToastNotification({
+            message: "Imagens carregadas para análise manual.",
+        });
+    };
+
+    const handleSendToIA = async () => {
         setIsSending(true);
+        setAnalysisChoiceModalOpen(false);
+        setIsProcessingModalOpen(true);
         const formData = new FormData();
         uploadedFiles.forEach((file, idx) => {
             formData.append("images", file, file.name || `image${idx + 1}.png`);
@@ -102,11 +131,11 @@ export const CapturedImages: React.FC<CapturedImagesProps> = ({
                                 />
                                 <div className="flex justify-end mt-4 gap-2">
                                     <Button
-                                        onClick={handleSendToIA}
-                                        disabled={isSending || uploadedFiles.length === 0}
-                                        className="bg-green-500 hover:bg-green-600"
+                                        onClick={handleProceedWithChoice}
+                                        disabled={uploadedFiles.length === 0}
+                                        className="bg-blue-500 hover:bg-blue-600"
                                     >
-                                        {isSending ? "Enviando..." : "Enviar à IA"}
+                                        Continuar
                                     </Button>
                                 </div>
                             </DialogContent>
@@ -146,6 +175,65 @@ export const CapturedImages: React.FC<CapturedImagesProps> = ({
                     </div>
                 ))}
             </div>
+
+            {/* Modal de Escolha de Análise */}
+            <Dialog open={analysisChoiceModalOpen} onOpenChange={setAnalysisChoiceModalOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-center text-lg font-semibold">
+                            Escolha o Tipo de Análise
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 mt-6">
+                        <p className="text-center text-gray-600">
+                            Como você gostaria de analisar as imagens carregadas?
+                        </p>
+                        <div className="flex flex-col gap-3">
+                            <Button
+                                onClick={handleManualAnalysis}
+                                className="w-full bg-blue-500 hover:bg-blue-600"
+                            >
+                                Análise Manual
+                            </Button>
+                            <Button
+                                onClick={handleSendToIA}
+                                disabled={isSending}
+                                className="w-full bg-green-500 hover:bg-green-600"
+                            >
+                                {isSending ? "Enviando..." : "Enviar para IA"}
+                            </Button>
+                            <Button
+                                onClick={() => setAnalysisChoiceModalOpen(false)}
+                                variant="outline"
+                                className="w-full"
+                            >
+                                Cancelar
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Modal de Processamento */}
+            <Dialog open={isProcessingModalOpen} onOpenChange={() => {}}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-center text-lg font-semibold">
+                            Processando Análise
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="flex flex-col items-center space-y-4 py-6">
+                        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-500"></div>
+                        <p className="text-center text-gray-600">
+                            Enviando imagens para o Agent de IA...
+                        </p>
+                        <p className="text-sm text-center text-gray-500">
+                            Por favor, aguarde enquanto processamos suas imagens.
+                        </p>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             <Dialog open={isResultsModalOpen} onOpenChange={setIsResultsModalOpen}>
                 <DialogContent className="max-w-4xl h-[90%] overflow-y-auto">
                     <DialogHeader>

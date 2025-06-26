@@ -19,7 +19,7 @@ export default function SampleVisualizationPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen] = useState(false);
   const [imageAnnotations, setImageAnnotations] = useState<Record<string, Shape[]>>({});
-  
+
   //@ts-ignore
   const { id, exam_id } = useParams();
 
@@ -145,6 +145,13 @@ export default function SampleVisualizationPage() {
             capturedImages={capturedImages}
             setSelectedImage={setSelectedImage}
             handleDeleteImage={handleDeleteImage}
+            onCaptureImage={(images) => {
+              setCapturedImages((prevImages) => {
+                // Filtrar imagens novas que não estão na lista atual
+                const newImages = images.filter((image) => !prevImages.includes(image));
+                return [...prevImages, ...newImages];
+              });
+            }}
           />
 
           <ImageModal
