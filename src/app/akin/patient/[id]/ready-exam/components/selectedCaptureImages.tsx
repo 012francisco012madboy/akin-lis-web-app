@@ -23,7 +23,6 @@ import { Separator } from "@/components/ui/separator";
 import { ___showSuccessToastNotification } from "@/lib/sonner";
 import {
     MousePointer2,
-    Pencil,
     Hand,
     ZoomIn,
     ZoomOut,
@@ -287,17 +286,17 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                     </div>
 
                     {/* Área de notas */}
-                    <div className="w-full lg:w-72 xl:w-80 order-3 min-h-0">
+                    <div className="w-full lg:w-72 xl:w-80 order-3 h-full">
                         <Card className="h-full">
-                            <CardHeader className="pb-2">
+                            <CardHeader className="">
                                 <CardTitle className="text-sm">Notas da Imagem</CardTitle>
                             </CardHeader>
-                            <CardContent className="p-2 md:p-3 h-full">
+                            <CardContent className="p-2 md:p-3 h-[300px]">
                                 <Textarea
                                     value={notes?.[selectedImage] || ""}
                                     onChange={(e) => handleNoteChanged?.(selectedImage!, e.target.value)}
                                     placeholder="Anotações gerais para esta imagem..."
-                                    className="h-full min-h-[150px] resize-none"
+                                    className="h-full  resize-none"
                                 />
                             </CardContent>
                         </Card>
@@ -371,15 +370,6 @@ const AnnotationToolbar: React.FC<{
                         className="h-8 w-8 p-0 md:h-9 md:w-auto md:px-3"
                     >
                         <Hand className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant={activeTool === "zoom" ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => onToolChange("zoom")}
-                        title="Zoom"
-                        className="h-8 w-8 p-0 md:h-9 md:w-auto md:px-3"
-                    >
-                        <ZoomIn className="h-4 w-4" />
                     </Button>
                 </div>
 
