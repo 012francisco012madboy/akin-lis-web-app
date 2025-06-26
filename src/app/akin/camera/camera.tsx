@@ -8,21 +8,33 @@ import React, {
   useState,
 } from "react";
 
+interface CapturedImage {
+  id: string;
+  dataUrl: string;
+  timestamp: Date;
+}
+
 interface CameraProps {
   showDevices?: boolean; // Mostrar dispositivos conectados
   showErrors?: boolean; // Mostrar erros
   getAllVideoDevices?: (value: MediaDeviceInfo[]) => void;
   getCapturedImage?: (value: string | null) => void;
+  getCapturedImages?: (value: CapturedImage[]) => void; // Callback para múltiplas imagens
   className?: string; // Classe de estilo personalizada
   videoClassName?: string; // Classe de estilo para o elemento de vídeo
   errorClassName?: string; // Classe de estilo para exibir erros
   setCameraError?: (value: string | null) => void;
+  enableAutoCapture?: boolean; // Habilitar captura automática
+  captureCount?: number; // Número de capturas automáticas
+  intervalSeconds?: number; // Intervalo entre capturas em segundos
 }
 
 const CustomCamera = forwardRef<{
   captureImage?: () => void;
   stopCamera?: () => void;
   restartCamera?: () => void;
+  startAutoCapture?: () => void;
+  stopAutoCapture?: () => void;
 }, CameraProps>(
   (
     {
@@ -30,10 +42,14 @@ const CustomCamera = forwardRef<{
       showErrors = true,
       getAllVideoDevices,
       getCapturedImage,
+      getCapturedImages,
       className,
       videoClassName,
       errorClassName,
       setCameraError,
+      enableAutoCapture = false,
+      captureCount = 5,
+      intervalSeconds = 3,
     },
     ref
   ) => {
@@ -42,6 +58,13 @@ const CustomCamera = forwardRef<{
     const [error, setError] = useState<string | null>(null);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+    // Estados para captura automática
+    const [isCapturing, setIsCapturing] = useState(false);
+    const [capturedImages, setCapturedImages] = useState<CapturedImage[]>([]);
+    const [currentCapture, setCurrentCapture] = useState(0);
+    const [countdown, setCountdown] = useState(0);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     // Buscar dispositivos de vídeo
     useEffect(() => {
@@ -118,6 +141,98 @@ const CustomCamera = forwardRef<{
       }
     }, [selectedDeviceId, stopCamera, startCamera]);
 
+    // Capturar uma foto e armazenar na lista
+    const capturePhoto = useCallback(() => {
+      if (!videoRef.current || !canvasRef.current) return null;
+
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) return null;
+
+      // Definir dimensões do canvas
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      // Desenhar frame atual do vídeo no canvas
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Converter para data URL
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+
+      const newImage: CapturedImage = {
+        id: Date.now().toString(),
+        dataUrl,
+        timestamp: new Date(),
+      };
+
+      setCapturedImages((prev) => {
+        const updatedImages = [...prev, newImage];
+        getCapturedImages?.(updatedImages);
+        return updatedImages;
+      });
+
+      return newImage;
+    }, [getCapturedImages]);
+
+    // Iniciar captura automática
+    const startAutoCapture = useCallback(() => {
+      if (!videoRef.current?.srcObject) {
+        console.warn("Câmera não está ativa");
+        return;
+      }
+
+      setIsCapturing(true);
+      setCurrentCapture(0);
+      setCapturedImages([]);
+
+      let captureIndex = 0;
+      let countdownValue = intervalSeconds;
+
+      const captureInterval = setInterval(() => {
+        if (countdownValue > 0) {
+          setCountdown(countdownValue);
+          countdownValue--;
+        } else {
+          // Capturar foto
+          capturePhoto();
+          captureIndex++;
+          setCurrentCapture(captureIndex);
+
+          if (captureIndex >= captureCount) {
+            clearInterval(captureInterval);
+            setIsCapturing(false);
+            setCountdown(0);
+          } else {
+            countdownValue = intervalSeconds;
+          }
+        }
+      }, 1000);
+
+      intervalRef.current = captureInterval;
+
+      return () => clearInterval(captureInterval);
+    }, [captureCount, intervalSeconds, capturePhoto]);
+
+    // Parar captura automática
+    const stopAutoCapture = useCallback(() => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      setIsCapturing(false);
+      setCountdown(0);
+    }, []);
+
+    // Cleanup ao desmontar componente
+    useEffect(() => {
+      return () => {
+        stopAutoCapture();
+        stopCamera();
+      };
+    }, [stopAutoCapture, stopCamera]);
+
     const captureImage = () => {
       if (!videoRef.current || !canvasRef.current) {
         const captureError =
@@ -151,6 +266,8 @@ const CustomCamera = forwardRef<{
       captureImage,
       stopCamera,
       restartCamera,
+      startAutoCapture,
+      stopAutoCapture,
     }));
 
     return (
@@ -168,19 +285,39 @@ const CustomCamera = forwardRef<{
           </select>
         )}
         <div
-          className={`w-full h-full border rounded-lg overflow-hidden ${videoClassName}`}
+          className={`w-full h-full border rounded-lg overflow-hidden relative ${videoClassName}`}
         >
           {error && showErrors ? (
             <p className={`text-red-500 text-center ${errorClassName}`}>
               {error}
             </p>
           ) : (
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              className="w-full h-full object-cover"
-            ></video>
+            <>
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className="w-full h-full object-cover"
+              ></video>
+
+              {/* Countdown Overlay */}
+              {countdown > 0 && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <div className="text-6xl font-bold mb-2">{countdown}</div>
+                    <div className="text-lg">Capturando em...</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Capture Status Overlay */}
+              {isCapturing && countdown === 0 && (
+                <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  Capturando {currentCapture}/{captureCount}
+                </div>
+              )}
+            </>
           )}
         </div>
         <canvas ref={canvasRef} className="hidden"></canvas>

@@ -8,16 +8,204 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Camera, Download, Play, Square, Settings, Timer, ImageIcon } from "lucide-react"
+import { Camera, Download, Play, Square, Settings, Timer, ImageIcon, Trash2 } from "lucide-react"
+import CustomCamera from "./camera"
 
 
 
 export default function Cameras() {
   return (
     <div className="min-h-screen overflow-y-auto">
-      camera
-      {/* <CustomCamera /> */}
-      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4">
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Custom Camera com Captura Automática</h2>
+          <CustomCameraExample />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Camera Capture Original</h2>
+          <CameraCapture />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CustomCameraExample() {
+  const cameraRef = useRef<{
+    captureImage?: () => void;
+    stopCamera?: () => void;
+    startAutoCapture?: () => void;
+    stopAutoCapture?: () => void;
+  }>(null);
+
+  const [capturedImages, setCapturedImages] = useState<CapturedImage[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [captureCount, setCaptureCount] = useState(5);
+  const [intervalSeconds, setIntervalSeconds] = useState(3);
+  const [isCapturing, setIsCapturing] = useState(false);
+
+  const handleStartAutoCapture = () => {
+    if (cameraRef.current?.startAutoCapture) {
+      setIsCapturing(true);
+      cameraRef.current.startAutoCapture();
+    }
+  };
+
+  const handleStopAutoCapture = () => {
+    if (cameraRef.current?.stopAutoCapture) {
+      setIsCapturing(false);
+      cameraRef.current.stopAutoCapture();
+    }
+  };
+
+  const handleCaptureImage = () => {
+    if (cameraRef.current?.captureImage) {
+      cameraRef.current.captureImage();
+    }
+  };
+
+  const downloadImage = useCallback((image: CapturedImage, index: number) => {
+    const link = document.createElement("a")
+    link.href = image.dataUrl
+    link.download = `custom-camera-${index + 1}-${image.timestamp.toISOString().slice(0, 19).replace(/:/g, "-")}.jpg`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }, []);
+
+  const downloadAllImages = useCallback(() => {
+    capturedImages.forEach((image, index) => {
+      setTimeout(() => downloadImage(image, index), index * 100)
+    })
+  }, [capturedImages, downloadImage]);
+
+  const clearImages = useCallback(() => {
+    setCapturedImages([]);
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Configurações de Captura</CardTitle>
+          <CardDescription>Configure o número de capturas e o intervalo</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="captureCount">Número de Capturas</Label>
+              <Input
+                id="captureCount"
+                type="number"
+                min="1"
+                max="50"
+                value={captureCount}
+                onChange={(e) => setCaptureCount(Number(e.target.value))}
+                disabled={isCapturing}
+              />
+            </div>
+            <div>
+              <Label htmlFor="interval">Intervalo (segundos)</Label>
+              <Input
+                id="interval"
+                type="number"
+                min="1"
+                max="60"
+                value={intervalSeconds}
+                onChange={(e) => setIntervalSeconds(Number(e.target.value))}
+                disabled={isCapturing}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <Button onClick={handleCaptureImage} disabled={isCapturing}>
+              <Camera className="w-4 h-4 mr-2" />
+              Capturar Foto
+            </Button>
+
+            {!isCapturing ? (
+              <Button onClick={handleStartAutoCapture} variant="outline">
+                <Play className="w-4 h-4 mr-2" />
+                Iniciar Captura Automática
+              </Button>
+            ) : (
+              <Button onClick={handleStopAutoCapture} variant="destructive">
+                <Square className="w-4 h-4 mr-2" />
+                Parar Captura
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Câmera</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CustomCamera
+            ref={cameraRef}
+            captureCount={captureCount}
+            intervalSeconds={intervalSeconds}
+            getCapturedImages={setCapturedImages}
+            setCameraError={setError}
+            className="space-y-4"
+            videoClassName="aspect-video"
+          />
+        </CardContent>
+      </Card>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      {capturedImages.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              Imagens Capturadas ({capturedImages.length})
+              <div className="flex gap-2">
+                <Button onClick={downloadAllImages} size="sm" variant="outline">
+                  <Download className="w-4 h-4 mr-2" />
+                  Baixar Todas
+                </Button>
+                <Button onClick={clearImages} size="sm" variant="destructive">
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Limpar
+                </Button>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {capturedImages.map((image, index) => (
+                <div key={image.id} className="relative group">
+                  <img
+                    src={image.dataUrl}
+                    alt={`Captura ${index + 1}`}
+                    className="w-full aspect-video object-cover rounded-lg border"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                    <Button
+                      onClick={() => downloadImage(image, index)}
+                      size="sm"
+                      variant="secondary"
+                    >
+                      <Download className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                    #{index + 1}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
@@ -29,7 +217,7 @@ interface CapturedImage {
   timestamp: Date
 }
 
- function CameraCapture() {
+function CameraCapture() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const streamRef = useRef<MediaStream | null>(null)

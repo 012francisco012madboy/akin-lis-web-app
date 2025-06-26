@@ -1,34 +1,43 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import CustomCamera from "@/app/akin/camera/camera";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { CapturedImages } from "./components/listCaptureImages";
 import { ImageModal } from "./components/selectedCaptureImages";
 import { useMutation } from "@tanstack/react-query";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"; // Import Shadcn modal components
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
 import { processingImageRoute } from "@/Api/Routes/processing-image";
 
+interface CapturedImage {
+  id: string;
+  dataUrl: string;
+  timestamp: Date;
+}
+
 export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen }: { isAutomatedAnalysisOpen: boolean, setIsAutomatedAnalysisOpen: (value: boolean) => void }) {
 
   const cameraRef = useRef<{
-    startCamera: () => Promise<void>;
-    captureImage: () => void;
-    stopCamera: () => void;
+    captureImage?: () => void;
+    stopCamera?: () => void;
+    restartCamera?: () => void;
+    startAutoCapture?: () => void;
+    stopAutoCapture?: () => void;
   }>(null);
 
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Estados para captura automática com o novo CustomCamera
   const [isCapturing, setIsCapturing] = useState(false);
-  const [timer, setTimer] = useState(5);
-  const [capturedImages, setCapturedImages] = useState<string[]>([]);
+  const [intervalSeconds, setIntervalSeconds] = useState(5); // Renomeado de timer para intervalSeconds
+  const [capturedImages, setCapturedImages] = useState<CapturedImage[]>([]); // Usando interface CapturedImage
   const [message, setMessage] = useState("");
-  const [maxCaptures, setMaxCaptures] = useState(20);
+  const [captureCount, setCaptureCount] = useState(20); // Renomeado de maxCaptures para captureCount
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false); // New state to track sending status
@@ -42,6 +51,12 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
       setNotes((prev) => ({ ...prev, [currentImage]: value }));
     }
   };
+
+  // Callback para receber imagens capturadas do CustomCamera
+  const handleCapturedImagesChange = useCallback((images: CapturedImage[]) => {
+    setCapturedImages(images);
+    setIsCapturing(images.length > 0 && images.length < captureCount);
+  }, [captureCount]);
 
   const sendImageToIA = useMutation({
     mutationKey: ["sendImageToIA"],
@@ -65,18 +80,18 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
   })
 
 
-  const handleDeleteImage = (image: string) => {
-    setCapturedImages((prev) => prev.filter((img) => img !== image));
+  const handleDeleteImage = (imageId: string) => {
+    setCapturedImages((prev) => prev.filter((img) => img.id !== imageId));
   };
 
   const validateInputs = () => {
-    if (maxCaptures <= 0) {
+    if (captureCount <= 0) {
       ___showErrorToastNotification({
         message: "O número máximo de capturas deve ser maior que zero.",
       });
       return false;
     }
-    if (timer <= 0) {
+    if (intervalSeconds <= 0) {
       ___showErrorToastNotification({
         message: "O intervalo de captura deve ser maior que zero.",
       });
@@ -97,13 +112,17 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
 
     setError(null);
     setIsCapturing(true);
-    setTimer(timer); // Mantém o valor configurado pelo usuário
-
     setCapturedImages([]);
-    setMessage("Posicione a lâmina corretamente.");
+    setMessage("Iniciando captura automática...");
+
+    // Usar o método startAutoCapture do CustomCamera
+    if (cameraRef.current?.startAutoCapture) {
+      cameraRef.current.startAutoCapture();
+    }
   };
 
-  const handleCaptureImage = React.useCallback(() => {
+  // Simplificada - apenas captura manual, pois a automática é feita pelo CustomCamera
+  const handleCaptureImage = useCallback(() => {
     if (!devices.length) {
       ___showErrorToastNotification({
         message: "Nenhuma câmera detectada. Conecte uma câmera para capturar imagens.",
@@ -111,7 +130,7 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
       setError("Nenhuma câmera detectada. Conecte uma câmera para capturar imagens.");
       return;
     }
-    if (!cameraRef.current) {
+    if (!cameraRef.current?.captureImage) {
       ___showErrorToastNotification({
         message: "Erro ao acessar a câmera. Tente novamente.",
       });
@@ -120,13 +139,8 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
     }
     setError(null);
     cameraRef.current.captureImage();
-
-    if (currentImage) {
-      setCapturedImages((prev) => [...prev, currentImage]);
-      setCurrentImage(null);
-    }
-    setMessage("Posicione a próxima lâmina.");
-  }, [currentImage, devices.length]);
+    setMessage("Imagem capturada manualmente.");
+  }, [devices.length]);
 
   useEffect(() => {
     if (!devices.length) {
@@ -136,45 +150,26 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
     }
   }, [devices]);
 
-  useEffect(() => {
-    if (!isCapturing) return;
-
-    if (capturedImages.length >= maxCaptures) {
-      setIsCapturing(false);
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setTimer((prevTimer) => {
-        if (prevTimer === 1) {
-          handleCaptureImage();
-          return timer; // Mantém o valor configurado pelo usuário
-        }
-        return prevTimer - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isCapturing, capturedImages.length, maxCaptures, handleCaptureImage, timer]);
-
   const [isCameraOn, setIsCameraOn] = useState(true); // Ligada como padrão
-  
+
 
 
   const handleStopCapturing = () => {
     setIsCapturing(false);
     setMessage("Captura finalizada. Escolha como enviar as imagens.");
-    if (cameraRef.current) {
-      cameraRef.current.stopCamera();
-      console.log(" camera fechou");
-    }
 
+    // Parar captura automática usando o método do CustomCamera
+    if (cameraRef.current?.stopAutoCapture) {
+      cameraRef.current.stopAutoCapture();
+    }
   };
 
   const handleCloseModal = () => {
-    if (cameraRef.current) {
-      cameraRef.current.stopCamera()
-      console.log(" camera fechou");
+    if (cameraRef.current?.stopCamera) {
+      cameraRef.current.stopCamera();
+    }
+    if (cameraRef.current?.stopAutoCapture) {
+      cameraRef.current.stopAutoCapture();
     }
   };
 
@@ -186,12 +181,12 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
       return;
     }
 
-    setIsSending(true); // Disable inputs and buttons
+    setIsSending(true);
     const formData = new FormData();
 
     capturedImages.forEach((image, index) => {
-      // Converter a imagem base64 para Blob
-      const byteCharacters = atob(image.split(",")[1]);
+      // Converter a imagem base64 para Blob usando o dataUrl
+      const byteCharacters = atob(image.dataUrl.split(",")[1]);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
         byteNumbers[i] = byteCharacters.charCodeAt(i);
@@ -199,20 +194,18 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
       const byteArray = new Uint8Array(byteNumbers);
       const blob = new Blob([byteArray], { type: "image/png" });
 
-      // Criar um arquivo e adicionar ao FormData
       formData.append("images", blob, `image${index + 1}.png`);
     });
 
     console.log("📌 Enviando FormData para o servidor:", formData);
 
-    // Chamar a mutação corretamente
     sendImageToIA.mutate(formData, {
       onSuccess: (data) => {
         console.log("📌 Resultados da IA:", data);
-        setResults(data); // Store results from backend
-        setIsResultsModalOpen(true); // Open results modal
+        setResults(data);
+        setIsResultsModalOpen(true);
       },
-      onSettled: () => setIsSending(false), // Re-enable inputs and buttons
+      onSettled: () => setIsSending(false),
     });
   };
 
@@ -249,33 +242,32 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
             </div>
 
             <div>
-              <label htmlFor="maxCaptures" className="block text-sm font-medium">
+              <label htmlFor="captureCount" className="block text-sm font-medium">
                 Máximo de Imagens
               </label>
               <input
-                id="maxCaptures"
+                id="captureCount"
                 type="number"
-                value={maxCaptures}
+                value={captureCount}
                 onChange={(e) => {
-                  setMaxCaptures(Number(e.target.value))
-                  console.log("Max. Cap:", maxCaptures);
+                  setCaptureCount(Number(e.target.value))
                 }}
                 className="mt-1 block w-full px-2 py-1 border rounded"
-                disabled={isSending} // Disable while sending
+                disabled={isSending}
               />
             </div>
 
             <div>
-              <label htmlFor="timer" className="block text-sm font-medium">
+              <label htmlFor="intervalSeconds" className="block text-sm font-medium">
                 Intervalo (s)
               </label>
               <input
-                id="timer"
+                id="intervalSeconds"
                 type="number"
-                value={timer}
-                onChange={(e) => setTimer(Number(e.target.value))}
+                value={intervalSeconds}
+                onChange={(e) => setIntervalSeconds(Number(e.target.value))}
                 className="mt-1 block w-full px-2 py-1 border rounded"
-                disabled={isSending} // Disable while sending
+                disabled={isSending}
               />
             </div>
             <Button onClick={handleStartCapturing} disabled={isCapturing || isSending}>
@@ -284,31 +276,86 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
           </header>
           <section className="mt-6 overflow-y-auto h-full max-h-[500px] shadow-md rounded-md pb-10">
             <div className="p-4 flex items-center flex-col lg:flex-row gap-4 max-h-[600px]">
-            {isAutomatedAnalysisOpen && (
-              <CustomCamera
-                ref={cameraRef}
-                getCapturedImage={(img) => setCurrentImage(img)}
-                getAllVideoDevices={setDevices}
-                className="h-full w-full"
-                videoClassName="h-full w-full"
-                showDevices={false}
+              {isAutomatedAnalysisOpen && (
+                <CustomCamera
+                  ref={cameraRef}
+                  getCapturedImage={(img) => setCurrentImage(img)}
+                  getCapturedImages={handleCapturedImagesChange}
+                  getAllVideoDevices={setDevices}
+                  captureCount={captureCount}
+                  intervalSeconds={intervalSeconds}
+                  className="h-full w-full"
+                  videoClassName="h-full w-full"
+                  showDevices={false}
+                />
+              )}
+
+              <Textarea
+                value={currentImage ? notes[currentImage] || "" : ""}
+                onChange={handleNotesChange}
+                placeholder="Escreva suas anotações aqui..."
+                className="w-full h-full max-h-[500px] min-h-[400px]"
               />
-            )}
+            </div>
 
-            <Textarea
-              value={currentImage ? notes[currentImage] || "" : ""}
-              onChange={handleNotesChange}
-              placeholder="Escreva suas anotações aqui..."
-              className="w-full h-full max-h-[500px] min-h-[400px]"
-            />
-          </div>
-
+            {/* Seção de informações das imagens capturadas
+            Essa é feita pelo agent claud
+            */}
+            {/* {capturedImages.length > 0 && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <h3 className="text-lg font-semibold mb-2">
+                  Imagens Capturadas ({capturedImages.length}/{captureCount})
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-40 overflow-y-auto">
+                  {capturedImages.map((image, index) => (
+                    <div key={image.id} className="relative group">
+                      <Image
+                        src={image.dataUrl}
+                        alt={`Captura ${index + 1}`}
+                        width={100}
+                        height={80}
+                        className="w-full h-20 object-cover rounded border cursor-pointer hover:scale-105 transition-transform"
+                        onClick={() => setSelectedImage(image.dataUrl)}
+                        unoptimized
+                      />
+                      <div className="absolute top-1 right-1 bg-black/70 text-white text-xs px-1 rounded">
+                        #{index + 1}
+                      </div>
+                      <div className="absolute bottom-1 left-1 bg-black/70 text-white text-xs px-1 rounded">
+                        {image.timestamp.toLocaleTimeString()}
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="absolute top-1 left-1 w-5 h-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteImage(image.id);
+                        }}
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-2 text-sm text-gray-600">
+                  <p>Última captura: {capturedImages.length > 0 ? capturedImages[capturedImages.length - 1].timestamp.toLocaleString() : 'Nenhuma'}</p>
+                  <p>Intervalo configurado: {intervalSeconds}s</p>
+                </div>
+              </div>
+            )} */}
 
             <CapturedImages
               maxCapturedImage={String(capturedImages.length)}
-              maxCaptures={String(maxCaptures)}
-              capturedImages={capturedImages}
-              handleDeleteImage={handleDeleteImage}
+              maxCaptures={String(captureCount)}
+              capturedImages={capturedImages.map(img => img.dataUrl)} // Converter para array de strings
+              handleDeleteImage={(imageUrl: string) => {
+                // Encontrar a imagem pelo dataUrl e deletar pelo id
+                const imageToDelete = capturedImages.find(img => img.dataUrl === imageUrl);
+                if (imageToDelete) {
+                  handleDeleteImage(imageToDelete.id);
+                }
+              }}
               setSelectedImage={setSelectedImage}
             />
 
@@ -343,8 +390,11 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
           </section>
           {isCapturing && (
             <div className="mt-4 p-4 bg-blue-100 rounded-lg">
-              <p className="text-blue-800">Próxima captura em: {timer} segundos</p>
+              <p className="text-blue-800">Captura automática em andamento...</p>
               <p className="text-blue-600">{message}</p>
+              <p className="text-sm text-blue-500">
+                Capturas: {capturedImages.length}/{captureCount}
+              </p>
             </div>
           )}
         </div>
@@ -356,13 +406,12 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
               onClick={async () => {
                 if (cameraRef.current) {
                   if (isCameraOn) {
-                    cameraRef.current.stopCamera();
+                    cameraRef.current.stopCamera?.();
                     setIsCameraOn(false);
-                    console.log("Câmera desligada");
                   } else {
-                    await cameraRef.current.startCamera();
+                    // Para religar, usar restartCamera
+                    cameraRef.current.restartCamera?.();
                     setIsCameraOn(true);
-                    console.log("Câmera ligada");
                   }
                 }
               }}
@@ -377,7 +426,6 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
               Parar Captura
             </Button>
             <Button type={"button"} disabled={capturedImages.length === 0 || isSending} onClick={() => {
-              console.log("ola");
               handleSendImageToIA();
             }} className="bg-green-500 hover:bg-green-600">
               Finalizar e Enviar à IA
@@ -430,7 +478,7 @@ export default function AutomatedAnalysis({ isAutomatedAnalysisOpen, setIsAutoma
             </div>
             <div className="flex justify-center mt-6">
               <Button
-                className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 "
                 onClick={() => setIsResultsModalOpen(false)}
               >
                 Fechar
