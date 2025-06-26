@@ -10,11 +10,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/sidebarConfig/app-sidebar";
-import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircleMoreIcon, XIcon } from "lucide-react";
-import { useAuthStore } from "@/utils/zustand-store/authStore";
-import {_axios} from "@/Api/axios.config";
-import { iaAgentRoutes } from "@/Api/Routes/IA_Agent/index.routes";
+import { motion } from "framer-motion";
+import { MessageCircleMoreIcon } from "lucide-react";
+import {Chatbot} from "@/components/chatbot/Chatbot";
+
 interface IDashboard {
   children: React.ReactNode;
 }
@@ -37,101 +36,10 @@ export default function Akin({ children }: IDashboard) {
         >
           <MessageCircleMoreIcon size={24} />
         </motion.button>
-
         {/* Chatbot */}
         <Chatbot isChatOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
       </SidebarProvider>
-      </QueryProvider>
-  );
-}
-
-// Componente do Chatbot
-function Chatbot({ isChatOpen, onClose }: { isChatOpen: boolean; onClose: () => void }) {
-  const { user, token } = useAuthStore()
-  const [input, setInput] = useState("");
-  const [resposta, setResposta] = useState("");
-
-  const { data, isPending } = useQuery({
-    queryKey: ['user-data'],
-    queryFn: async () => {
-      return await _axios.get(`/users/${user?.id}`);
-    }
-  });
-
-  const mutation = useMutation({
-   mutationFn: async (texto: string) => {
-  if (!user || !token || !data?.data) {
-    throw new Error("Usuário, token ou dados do usuário ausentes.");
-  }
-
-  return await iaAgentRoutes.sendMessageToAgent({
-    message: texto,
-    user_id: user.id,
-    session_id: token,
-    email: data.data.email,
-    senha: data.data.senha,
-  });
-},
-    onSuccess: (data) => {
-      setResposta(data.resposta || "Sem nenhuma resposta do agente.");
-      setInput("");
-    },
-    onError: (e) => {
-      console.error("Erro ao enviar mensagem:", e);
-      setResposta("Erro ao conectar com o agente.");
-    },
-  });
-
-  const handleEnviar = () => {
-    if (!input.trim()) return;
-    mutation.mutate(input);
-  };
-
-  return (
-    <AnimatePresence>
-      {isChatOpen && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 20 }}
-          transition={{ duration: 0.3 }}
-          className="fixed bottom-20 right-6 z-50 w-80 h-96 bg-white shadow-xl rounded-lg border border-gray-300 flex flex-col"
-        >
-          <header className="flex justify-between items-center p-3 bg-akin-turquoise text-white rounded-t-lg">
-            <h2 className="text-sm font-semibold">Chat-kin</h2>
-            <button onClick={onClose} className="text-white hover:text-gray-200">
-              <XIcon size={20} />
-            </button>
-          </header>
-          <div className="p-4 overflow-y-auto flex-1 space-y-2 text-sm">
-            <p className="text-gray-500">Comece sua conversa...</p>
-            {mutation.isPending ? (
-              <p className="text-gray-400">A carregar resposta...</p>
-            ) : (
-              resposta && <p className="text-gray-700">{resposta}</p>
-            )}
-          </div>
-          <footer className="p-3 border-t border-gray-300 flex">
-            <input
-              type="text"
-              placeholder="Digite uma mensagem..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-0"
-              onKeyDown={(e) => e.key === "Enter" && handleEnviar()}
-              disabled={mutation.isPending}
-            />
-            <button
-              onClick={handleEnviar}
-              className="ml-2 px-3 py-2 bg-akin-turquoise text-white rounded-md hover:bg-akin-turquoise transition-all"
-              disabled={mutation.isPending}
-            >
-              ➤
-            </button>
-          </footer>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    </QueryProvider>
   );
 }
 
