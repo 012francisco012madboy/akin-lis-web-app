@@ -5,6 +5,7 @@ import { ListMode } from "./components/listModePatients";
 import { BlockMode } from "./components/blockModePatients";
 import { GridOrBlockDisplayButton } from "./components/gridOrBlockButtonMode";
 import { Input } from "@/components/ui/input";
+import { ModalNewPatient } from "../schedule/new/components/ModalNewPatient";
 
 interface PatientDisplay {
   patients: PatientType[];
@@ -12,18 +13,35 @@ interface PatientDisplay {
 
 export default function PatientDisplay({ patients }: PatientDisplay) {
   const [filteredPatients, setFilteredPatients] = useState<PatientType[]>(patients);
+  const [allPatients, setAllPatients] = useState<PatientType[]>(patients);
   const [isSearching, setIsSearching] = useState(false);
   const [displayMode, setDisplayMode] = useState<DisplayMode>("list");
-
 
   function handleSearch(searchText: string) {
     setIsSearching(searchText.length > 0);
 
-    const foundPatients = patients.filter((patient) =>
+    const foundPatients = allPatients.filter((patient) =>
       patient.nome_completo.toLowerCase().includes(searchText.toLowerCase())
     );
     setFilteredPatients(foundPatients);
   }
+
+  const handlePatientSaved = (newPatient: PatientType) => {
+    // Adiciona o novo paciente à lista completa
+    const updatedPatients = [...allPatients, newPatient];
+    setAllPatients(updatedPatients);
+
+    // Atualiza a lista filtrada também
+    setFilteredPatients(updatedPatients);
+
+    // Se estava pesquisando, aplica o filtro novamente
+    if (isSearching) {
+      const searchInput = document.querySelector('input[placeholder="Procurar por nome"]') as HTMLInputElement;
+      if (searchInput && searchInput.value) {
+        handleSearch(searchInput.value);
+      }
+    }
+  };
 
   return (
     <div className=" px-6 pt-4 pb-6 shadow-sm rounded-lg">
@@ -38,20 +56,28 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
           />
         </div>
 
-        {/* Campo de busca */}
-        <div className="w-full sm:w-auto">
-          <Input
-            className="w-full sm:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus-visible:ring-0"
-            placeholder="Procurar por nome"
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-          {isSearching && (
-            <p className="mt-2 text-sm text-gray-600 italic">
-              {filteredPatients.length > 0
-                ? `Total de pacientes encontrados: ${filteredPatients.length}`
-                : "Nenhum paciente encontrado"}
-            </p>
-          )}
+        {/* Botão Cadastrar Paciente e Campo de busca */}
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          {/* Botão Cadastrar Paciente */}
+          <div className="flex justify-end">
+            <ModalNewPatient onPatientSaved={handlePatientSaved} />
+          </div>
+
+          {/* Campo de busca */}
+          <div className="w-full sm:w-96">
+            <Input
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-0 focus-visible:ring-0"
+              placeholder="Procurar por nome"
+              onChange={(e) => handleSearch(e.target.value)}
+            />
+            {isSearching && (
+              <p className="mt-2 text-sm text-gray-600 italic">
+                {filteredPatients.length > 0
+                  ? `Total de pacientes encontrados: ${filteredPatients.length}`
+                  : "Nenhum paciente encontrado"}
+              </p>
+            )}
+          </div>
         </div>
       </div>
       {
