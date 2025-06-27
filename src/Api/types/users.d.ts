@@ -1,6 +1,7 @@
 
 
 interface UserData {
+  access_token:string;
   id:string;
   nome: string,
   email: string,
