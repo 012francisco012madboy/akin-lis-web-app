@@ -12,7 +12,7 @@ import { APP_CONFIG } from "@/config/app";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
-import _axios from "@/Api/axios.config";
+import {_axios} from "@/Api/axios.config";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { validateEmail, validatePassword } from "./validation/login-validation";
