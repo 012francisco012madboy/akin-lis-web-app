@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { _axios } from "@/lib/axios";
+import { _axios } from "@/Api/axios.config";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";

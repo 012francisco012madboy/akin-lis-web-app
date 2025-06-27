@@ -2,9 +2,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertSendEmail } from "./alertDialog";
-import { _axios } from "@/lib/axios";
 import { ___showErrorToastNotification } from "@/lib/sonner";
 import React from "react";
+import { _axios } from "@/Api/axios.config";
 
 export default function ForgotPassword() {
   const [isLoading, setIsLoading] = React.useState(false);
