@@ -1,5 +1,4 @@
 
-
 interface User {
   access_token: string;
   id: string;
