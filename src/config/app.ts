@@ -21,7 +21,8 @@ import {
   UserRoundCog,
   Package,
   PackageOpen,
-  PackageSearch
+  PackageSearch,
+  FileText
 } from "lucide-react";
 
 export const APP_CONFIG = {
@@ -33,7 +34,7 @@ export const APP_CONFIG = {
   ROUTES: {
     MENU: [
       {
-        label: "Dashboard",
+        label: "Painel Geral",
         icon: LayoutDashboard,
         path: "/akin/dashboard",
         access: ["CHEFE", "TECNICO"]
@@ -60,8 +61,13 @@ export const APP_CONFIG = {
         icon: SquareActivity,
         path: "/akin/lab-exams",
         access: ["RECEPCIONISTA", "CHEFE", "TECNICO"]
-      }
-      ,
+      },
+      {
+        label: "Gestão de Laudo",
+        icon: FileText,
+        path: "/akin/report",
+        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"]
+      },
       {
         label: "Gestão Equipe",
         icon: UserRoundCog,

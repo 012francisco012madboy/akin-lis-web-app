@@ -1,7 +1,6 @@
 "use client";
 import { Suspense, useState } from "react";
 import Loading from "../loading";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import QueryProvider from "@/config/tanstack-query/queryClientProvider";
 import {
   SidebarInset,
