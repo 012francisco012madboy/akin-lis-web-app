@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,7 +20,7 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Stage, Layer, Rect, Circle, Line, Text, Transformer } from "react-konva";
+import { Stage, Layer, Rect, Circle, Line } from "react-konva";
 import Konva from "konva";
 import { ___showSuccessToastNotification } from "@/lib/sonner";
 import {

@@ -24,15 +24,11 @@ import { ___showSuccessToastNotification } from "@/lib/sonner";
 import {
     MousePointer2,
     Hand,
-    ZoomIn,
-    ZoomOut,
     Square,
     Circle as CircleIcon,
     Minus,
     Type,
     ArrowRight,
-    Download,
-    RotateCcw,
     X,
     Save,
     Edit,
@@ -213,7 +209,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
 
     return (
         <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-            <DialogContent className="max-w-[98vw] w-full h-[98vh] p-2 md:p-4 overflow-hidden">
+            <DialogContent className="max-w-[99vw] w-full h-[99vh] p-2 md:p-4 overflow-hidden">
                 <DialogHeader className="pb-2">
                     <DialogTitle className="text-base md:text-lg xl:text-xl">Sistema de Anotação de Imagens</DialogTitle>
                 </DialogHeader>
