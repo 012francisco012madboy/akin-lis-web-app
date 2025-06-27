@@ -11,7 +11,6 @@ import {
 import Item from "./item";
 import { APP_CONFIG } from "@/config/app";
 import { MenuIcon } from "lucide-react";
-import { _axios } from "@/lib/axios";
 import { filterRoutesByAccess } from "@/config/filteredAcessRoutes";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
