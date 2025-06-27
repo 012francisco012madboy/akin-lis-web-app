@@ -17,7 +17,6 @@ import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { validateEmail, validatePassword } from "./validation/login-validation";
 import { Eye, EyeOff } from "lucide-react";
-import { UserData } from "@/app/akin/profile/page";
 import Cookies from "js-cookie";
 import { authRoutes } from "@/Api/Routes/Auth";
 import { userRoutes } from "@/Api/Routes/User";
