@@ -47,7 +47,7 @@ export default function PreviewLaudoPage() {
         allowTaint: true,
         backgroundColor: "#ffffff",
       })
-
+//@ts-ignore
       const imgData = canvas.getDataURL("image/png")
       const pdf = new jsPDF("p", "mm", "a4")
 
