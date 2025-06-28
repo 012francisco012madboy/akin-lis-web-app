@@ -1,3 +1,4 @@
+import ReactShareButton from "@/app/akin/camera/share/reactShare";
 import { Button } from "@/components/ui/button";
 
 const getStatusColor = (status: string) => {
@@ -13,7 +14,7 @@ const getStatusColor = (status: string) => {
   }
 };
 // : React.FC<Exam[]>
-export const ExamCard = ({ data }:{ data:any[]}) => (
+export const ExamCard = ({ data }: { data: any[] }) => (
   data.map((exame) => (
     <div key={exame.id} className="border rounded-lg p-4 shadow-sm bg-gray-50 hover:bg-gray-100 transition">
       <h3 className="text-lg font-medium text-gray-800 mb-2">{exame.Tipo_Exame.nome}</h3>
@@ -60,8 +61,11 @@ export const ExamCard = ({ data }:{ data:any[]}) => (
         </span>
       </p>
 
-      <Button className="h-8 w-full mt-5 bg-akin-turquoise hover:bg-akin-turquoise/80">Reenviar laudo</Button>
+      <ReactShareButton>
+        <Button className="h-8 w-full mt-5 bg-akin-turquoise hover:bg-akin-turquoise/80">
+          Enviar laudo
+        </Button>
+      </ReactShareButton>
     </div>
   ))
-
 );

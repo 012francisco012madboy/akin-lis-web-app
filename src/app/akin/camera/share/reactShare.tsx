@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Facebook, Twitter, Linkedin, Mail, MessageCircle, Share2, Copy } from "lucide-react";
 
-export default function ReactShareButton() {
+export default function ReactShareButton({ children }: { children?: React.ReactNode }) {
   const [url, setUrl] = useState("");
 
   useEffect(() => {
@@ -21,10 +21,7 @@ export default function ReactShareButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">
-          <Share2 className="mr-2 w-5 h-5" />
-          React share
-        </Button>
+        {children || <Share2 className="mr-2 w-5 h-5" />}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem asChild>
