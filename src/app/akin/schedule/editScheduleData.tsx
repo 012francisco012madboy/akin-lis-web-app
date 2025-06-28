@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Combobox } from "@/components/combobox/comboboxExam";
 import { useEffect, useState } from "react";
-import { LabTechnician } from "./tecnico";
+import { ILabTechnician } from "./tecnico";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { _axios } from "@/Api/axios.config";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
@@ -38,21 +38,35 @@ export function EditScheduleFormModal({
   );
   const [isProcessing, setIsProcessing] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+
   const [selectedTechnicians, setSelectedTechnicians] = useState<
     Record<string, any[]>
   >({});
+  const [selectedChiefs, setSelectedChiefs] = useState<Record<string, any[]>>({});
 
   const queryClient = useQueryClient();
   const userRole = getAllDataInCookies().userRole;
   const chefe = "CHEFE";
+  const recepcionista = "RECEPCIONISTA";
+
+  // Fetch dos chefes de laboratório
+  const chief = useQuery({
+    queryKey: ["lab-chiefs"],
+    queryFn: async () => {
+      const response = await _axios.get<ILabTechnician[]>("lab-chiefs");
+      return response.data;
+    },
+    refetchInterval: 30000 * 5, // Atualiza a cada 5 minutos
+  });
 
   // Fetch dos técnicos
   const technicians = useQuery({
     queryKey: ["lab-techs"],
     queryFn: async () => {
-      const response = await _axios.get<LabTechnician[]>("lab-technicians");
+      const response = await _axios.get<ILabTechnician[]>("lab-technicians");
       return response.data;
     },
+    refetchInterval: 30000 * 5, // Atualiza a cada 5 minutos
   });
 
   // Fetch dos exames
@@ -62,6 +76,7 @@ export function EditScheduleFormModal({
       const response = await _axios.get("/exam-types");
       return response;
     },
+    refetchInterval: 30000 * 5, // Atualiza a cada 5 minutos
   });
 
   // Mutação para salvar os dados
@@ -94,11 +109,46 @@ export function EditScheduleFormModal({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleTechnicianSelection = (examId: number, technician: LabTechnician) => {
-    setSelectedTechnicians((prev) => ({
-      ...prev,
-      [examId]: [technician], // Permita apenas um técnico por exame
-    }));
+  const handleTechnicianSelection = (examId: number, technician: ILabTechnician) => {
+    setSelectedTechnicians((prev) => {
+      const currentSelection = prev[examId] || [];
+      const isAlreadySelected = currentSelection.some((tech) => tech.id === technician.id);
+
+      if (isAlreadySelected) {
+        // Desselecionar o técnico
+        return {
+          ...prev,
+          [examId]: [],
+        };
+      } else {
+        // Selecionar o técnico (apenas um por exame)
+        return {
+          ...prev,
+          [examId]: [technician],
+        };
+      }
+    });
+  };
+
+  const handleChiefSelection = (examId: number, chief: ILabTechnician) => {
+    setSelectedChiefs((prev) => {
+      const currentSelection = prev[examId] || [];
+      const isAlreadySelected = currentSelection.some((ch) => ch.id === chief.id);
+
+      if (isAlreadySelected) {
+        // Desselecionar o chefe
+        return {
+          ...prev,
+          [examId]: [],
+        };
+      } else {
+        // Selecionar o chefe (apenas um por exame)
+        return {
+          ...prev,
+          [examId]: [chief],
+        };
+      }
+    });
   };
 
   const handleExamSelection = (selectedExam: any) => {
@@ -121,6 +171,13 @@ export function EditScheduleFormModal({
     )
     : [];
 
+  const filteredChiefs = Array.isArray(chief.data)
+    ? chief.data.filter(
+      (chief) =>
+        chief.nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        chief.tipo.toLowerCase().includes(searchTerm.toLowerCase())
+    ) : [];
+
   const handleSave = () => {
     const currentDate = new Date();
     const selectedDate = new Date(formData.date);
@@ -132,15 +189,21 @@ export function EditScheduleFormModal({
 
     const formattedValue: Record<string, any> = {};
 
-    // if (formData.date !== exam.date) {
     formattedValue.data_agendamento = formData.date;
-    // }
-    // if (formData.time !== exam.time) {
     formattedValue.hora_agendamento = formData.time;
-    // }
-    if (selectedTechnicians[examId]?.[0]?.id !== formData.technicianId) {
-      formattedValue.id_tecnico_alocado = selectedTechnicians[examId]?.[0]?.id || formData.technicianId;
+
+    // Só atualiza o técnico se houver um selecionado, senão mantém o original
+    const selectedTech = selectedTechnicians[examId]?.[0];
+    if (selectedTech) {
+      formattedValue.id_tecnico_alocado = selectedTech.id;
     }
+
+    // Só atualiza o chefe se houver um selecionado, senão mantém o original
+    const selectedChief = selectedChiefs[examId]?.[0];
+    if (selectedChief) {
+      formattedValue.id_chefe_alocado = selectedChief.id;
+    }
+
     if (formData.status !== exam.status) {
       formattedValue.status = formData.status || "PENDENTE";
     }
@@ -164,7 +227,54 @@ export function EditScheduleFormModal({
         {/* Formulário */}
         {
           userRole === chefe ? (
-            <></>
+            <>
+              {/* Alocação de Tecnico de laboratório */}
+              <div className="card gap-3 w-full">
+                <label htmlFor="technicianId" className="font-bold block mb-2">
+                  Técnico de Laboratório Alocado
+                </label>
+                <Input
+                  id="technicianId"
+                  name="technicianId"
+                  value={techName}
+                  placeholder="Nome do técnico"
+                  className="w-full h-12 px-4 bg-gray-50 text-black placeholder:text-black disabled:text-black  focus-visible:ring-0 ring-0 font-semibold text-xl "
+                  disabled
+                />
+              </div>
+
+              <div className="w-full">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Alocar novo Tecnico de laboratório</label>
+                <Input
+                  placeholder="Pesquise por nome ou cargo"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="mb-2"
+                />
+                <ScrollArea className="max-h-40 border rounded-md p-2 overflow-auto">
+                  {filteredTechnicians.map((technician) => (
+                    <div
+                      key={technician.id}
+                      className={`flex flex-col items-start md:flex-row justify-between p-2 rounded-md my-1 cursor-pointer ${selectedTechnicians[exam?.id]?.some((tech) => tech.id === technician.id)
+                        ? "bg-blue-100"
+                        : "hover:bg-gray-100"
+                        }`}
+                      onClick={() => handleTechnicianSelection(exam.id, technician)}
+                    >
+                      <div>
+                        <p className="text-sm font-medium">{technician.nome}</p>
+                        <p className="text-xs text-gray-600">{technician.tipo}</p>
+                      </div>
+                      {selectedTechnicians[exam?.id]?.some((tech) => tech.id === technician.id) && (
+                        <Badge variant="secondary" className="text-xs">
+                          Selecionado
+                        </Badge>
+                      )}
+                    </div>
+                  ))}
+                </ScrollArea>
+              </div>
+            </>
           ) : (
             <>
               <div className="card gap-3 w-full">
@@ -227,52 +337,59 @@ export function EditScheduleFormModal({
           )
         }
 
-        <div className="card gap-3 w-full">
-          <label htmlFor="technicianId" className="font-bold block mb-2">
-            Chefe de Laboratório Alocado
-          </label>
-          <Input
-            id="technicianId"
-            name="technicianId"
-            value={techName}
-            placeholder="Nome do técnico"
-            className="w-full h-12 px-4 bg-gray-50 text-black placeholder:text-black disabled:text-black  focus-visible:ring-0 ring-0 font-semibold text-xl "
-            disabled
-          />
-        </div>
-
-        {/* Alocação de chefe de laboratório */}
-        <div className="w-full">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Alocar novo chefe de laboratório</label>
-          <Input
-            placeholder="Pesquise por nome ou cargo"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="mb-2"
-          />
-          <ScrollArea className="max-h-40 border rounded-md p-2 overflow-auto">
-            {filteredTechnicians.map((technician) => (
-              <div
-                key={technician.id}
-                className={`flex flex-col items-start md:flex-row justify-between p-2 rounded-md my-1 cursor-pointer ${selectedTechnicians[exam?.id]?.some((tech) => tech.id === technician.id)
-                  ? "bg-blue-100"
-                  : "hover:bg-gray-100"
-                  }`}
-                onClick={() => handleTechnicianSelection(exam.id, technician)}
-              >
-                <div>
-                  <p className="text-sm font-medium">{technician.nome}</p>
-                  <p className="text-xs text-gray-600">{technician.tipo}</p>
-                </div>
-                {selectedTechnicians[exam?.id]?.some((tech) => tech.id === technician.id) && (
-                  <Badge variant="secondary" className="text-xs">
-                    Selecionado
-                  </Badge>
-                )}
+        {
+          (recepcionista === userRole) && (
+            <>
+              {/* Alocação de Chefe de laboratório */}
+              <div className="card gap-3 w-full">
+                <label htmlFor="chiefId" className="font-bold block mb-2">
+                  Chefe de Laboratório Alocado
+                </label>
+                <Input
+                  id="chiefId"
+                  name="chiefId"
+                  value={techName}
+                  placeholder="Nome do Chefe de Laboratório"
+                  className="w-full h-12 px-4 bg-gray-50 text-black placeholder:text-black disabled:text-black  focus-visible:ring-0 ring-0 font-semibold text-xl "
+                  disabled
+                />
               </div>
-            ))}
-          </ScrollArea>
-        </div>
+
+              <div className="w-full">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Alocar novo chefe de laboratório</label>
+                <Input
+                  placeholder="Pesquise por nome ou cargo"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="mb-2"
+                />
+                <ScrollArea className="max-h-40 border rounded-md p-2 overflow-auto">
+                  {filteredChiefs.map((chief) => (
+                    <div
+                      key={chief.id}
+                      className={`flex flex-col items-start md:flex-row justify-between p-2 rounded-md my-1 cursor-pointer ${selectedChiefs[exam?.id]?.some((tech) => tech.id === chief.id)
+                        ? "bg-blue-100"
+                        : "hover:bg-gray-100"
+                        }`}
+                      onClick={() => { handleChiefSelection(exam.id, chief) }}
+                    >
+                      <div>
+                        <p className="text-sm font-medium">{chief.nome}</p>
+                        <p className="text-xs text-gray-600">{chief.tipo}</p>
+                      </div>
+                      {selectedChiefs[exam?.id]?.some((tech) => tech.id === chief.id) && (
+                        <Badge variant="secondary" className="text-xs">
+                          Selecionado
+                        </Badge>
+                      )}
+                    </div>
+                  ))}
+                </ScrollArea>
+              </div>
+            </>
+          )
+        }
+
         {/* Botões */}
         <DialogFooter>
           <DialogClose asChild>

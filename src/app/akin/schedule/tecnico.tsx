@@ -22,7 +22,7 @@ import { LabChief, labChiefRoutes } from "@/Api/Routes/lab-chief";
 
 
 
-export interface LabTechnician {
+export interface ILabTechnician {
   id: string;
   nome_completo?: string;
   nome:string;
@@ -38,7 +38,7 @@ export interface LabTechnician {
 
 interface AllocateTechniciansModalProps {
   children?: React.ReactNode;
-  technicians: LabTechnician[];
+  technicians: ILabTechnician[];
   exams: Exam[];
   onAllocate?: (allocations: { examId: number; id_tecnico_alocado: string[] }[]) => void;
   isLabChief?: boolean;
@@ -53,14 +53,14 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
   isLabChief = false,
   labChiefs,
 }) => {
-  const [selectedTechnicians, setSelectedTechnicians] = useState<{ [key: number]: LabTechnician[] }>({});
+  const [selectedTechnicians, setSelectedTechnicians] = useState<{ [key: number]: ILabTechnician[] }>({});
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const [errors, setErrors] = useState<{ [key: number]: string }>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSucess, setIsSucess] = useState<boolean>(false);
 
-  const handleTechnicianSelection = (examId: number, technician: LabTechnician) => {
+  const handleTechnicianSelection = (examId: number, technician: ILabTechnician) => {
     setSelectedTechnicians((prev) => {
       const currentSelection = prev[examId] || [];
       const isAlreadySelected = currentSelection.some((tech) => tech.id === technician.id);
@@ -97,7 +97,6 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
       examId: Number(examId),
       id_tecnico_alocado: technicians.map((tech) => tech.id),
     }));
-    console.log("Alocações:", allocations);
 
     if (allocations.length === 0) {
       ___showErrorToastNotification({

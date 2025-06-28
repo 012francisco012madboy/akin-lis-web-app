@@ -4,7 +4,7 @@ import { AlerDialogNextExam } from "./_alertDialog";
 import { MedicalMaterialsModal } from "./_materialModal";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { LabTechnician } from "@/app/akin/schedule/tecnico";
+import { ILabTechnician } from "@/app/akin/schedule/tecnico";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { UserData } from "@/app/akin/profile/page";
 import { Pencil } from "lucide-react";
@@ -33,7 +33,7 @@ export const ExamCard = ({ data, name_patient }: ResponseData & { name_patient: 
   const techLab = useQuery({
     queryKey: ["tech-lab"],
     queryFn: async () => {
-      return await _axios.get<LabTechnician[]>("/lab-technicians");
+      return await _axios.get<ILabTechnician[]>("/lab-technicians");
     }
   });
 
@@ -66,6 +66,7 @@ export const ExamCard = ({ data, name_patient }: ResponseData & { name_patient: 
                   date: exam.data_agendamento,
                   time: exam.hora_agendamento,
                   technicianId: exam.id_tecnico_alocado,
+                  chiefId: exam.Agendamento?.id_chefe_alocado,
                   status: exam.status,
                 })}
               />
@@ -76,6 +77,7 @@ export const ExamCard = ({ data, name_patient }: ResponseData & { name_patient: 
                   date: exam.data_agendamento,
                   time: exam.hora_agendamento,
                   technicianId: exam.id_tecnico_alocado,
+                  chiefId: exam.Agendamento?.id_chefe_alocado,
                   status: exam.status,
                 })}
               >
@@ -87,6 +89,7 @@ export const ExamCard = ({ data, name_patient }: ResponseData & { name_patient: 
                 exam={selectedExam[exam.id]}
                 examId={exam.id}
                 techName={getNameTech(exam.id_tecnico_alocado)}
+                chiefName={getNameTech(exam.Agendamento?.id_chefe_alocado)}
                 onClose={() => setIsModalOpen((prev) => ({ ...prev, [exam.id]: false }))}
                 onSave={() => {
                   setIsModalOpen((prev) => ({ ...prev, [exam.id]: false }));
@@ -102,6 +105,18 @@ export const ExamCard = ({ data, name_patient }: ResponseData & { name_patient: 
           <p className="text-gray-700 flex items-center gap-1">
             <span className="font-medium">
               Chefe de Laboratorio Alocado: {" "}
+            </span>
+            {
+              techLab.isLoading ? (
+                <span className="animate-pulse bg-gray-200 h-5 w-20 inline-block"></span>
+              ) : (
+                getNameTech(exam.Agendamento?.id_chefe_alocado)
+              )
+            }
+          </p>
+          <p className="text-gray-700 flex items-center gap-1">
+            <span className="font-medium">
+              Técnico de Laboratorio Alocado: {" "}
             </span>
             {
               techLab.isLoading ? (

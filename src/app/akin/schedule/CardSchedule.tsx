@@ -5,7 +5,7 @@ import Image from "next/image";
 import Primary from "@/components/button/primary";
 import { View } from "@/components/view";
 import { Trash, CheckCircle, Pencil } from "lucide-react";
-import { AllocateTechniciansModal, LabTechnician } from "./tecnico";
+import { AllocateTechniciansModal, ILabTechnician } from "./tecnico";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/Api/axios.config";
@@ -34,7 +34,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
   const tecnico = useQuery({
     queryKey: ["lab-tech"],
     queryFn: async () => {
-      return await _axios.get<LabTechnician[]>("lab-technicians");
+      return await _axios.get<ILabTechnician[]>("lab-technicians");
     },
   });
 
