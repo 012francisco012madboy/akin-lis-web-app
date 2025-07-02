@@ -1,43 +1,43 @@
 "use client";
 import React from "react";
-import { APP_CONFIG } from "@/config/app";
-import { usePathname } from "next/navigation";
+// import { APP_CONFIG } from "@/config/app";
+// import { usePathname } from "next/navigation";
 import { View } from "@/components/view";
-import CustomBreadcrumb from "@/components/custom-breadcrumb";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Link from "next/link";
+// import CustomBreadcrumb from "@/components/custom-breadcrumb";
+// import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import Link from "next/link";
 import { _axios } from "@/Api/axios.config";
-import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
+// import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 interface ISchedule {
   children: React.ReactNode;
 }
 
-const breadcrumbItems = [
-  {
-    label: "Agendamento",
-  },
-];
+// const breadcrumbItems = [
+//   {
+//     label: "Agendamento",
+//   },
+// ];
 
-const filterScheduleByAccess = (schedule: string) => {
-  return APP_CONFIG.ROUTES.SCHEDULE.filter((route) =>
-    route.access?.includes(schedule)
-  );
-};
+// const filterScheduleByAccess = (schedule: string) => {
+//   return APP_CONFIG.ROUTES.SCHEDULE.filter((route) =>
+//     route.access?.includes(schedule)
+//   );
+// };
 
 export default function Schedule({ children }: ISchedule) {
-  const pathname = usePathname();
-  const userRole = getAllDataInCookies().userRole;
-  const routes = filterScheduleByAccess(userRole);
+  // const pathname = usePathname();
+  // const routes = filterScheduleByAccess(userRole);
+  // const userRole = getAllDataInCookies().userRole;
 
-  const activeTab = routes.find((item) => pathname === item.path)?.path || routes[0]?.path;
+  // const activeTab = routes.find((item) => pathname === item.path)?.path || routes[0]?.path;
 
   return (
     <View.Vertical className="gap-4 h-screen">
       <div className="flex flex-col md:flex-row justify-start w-full md:justify-between md:items-center">
-        <CustomBreadcrumb items={breadcrumbItems} />
+        {/* <CustomBreadcrumb items={breadcrumbItems} /> */}
 
-        <Tabs defaultValue={activeTab} className="w-[400px] flex md:justify-end">
+        {/* <Tabs defaultValue={activeTab} className="w-[400px] flex md:justify-end">
           <TabsList>
             {routes.map((item) => (
               <Link href={item.path} key={item.path}>
@@ -50,9 +50,8 @@ export default function Schedule({ children }: ISchedule) {
               </Link>
             ))}
           </TabsList>
-        </Tabs>
+        </Tabs> */}
       </div>
-      <hr />
       <View.Scroll>{children}</View.Scroll>
     </View.Vertical>
   );

@@ -18,7 +18,15 @@
   - Mantém a funcionalidade do chatbot flutuante
   - Preserva todas as outras funcionalidades existentes
 
-### 3. Hook de Estado Personalizado
+### 4. Breadcrumbs Dinâmicos
+- **Arquivo**: `src/app/akin/layout.tsx`
+- **Funcionalidades**:
+  - Geração automática de breadcrumbs baseada na URL atual
+  - Integração com a estrutura do menu para nomes corretos
+  - Cache com useMemo para performance
+  - Estilização consistente com o tema AKIN
+
+### 5. Hook de Estado Personalizado
 - **Arquivo**: `src/hooks/use-sidebar-state.tsx`
 - **Funcionalidades**:
   - Gerenciamento de estado da sidebar com localStorage
@@ -26,7 +34,7 @@
   - Funções otimizadas com useCallback
   - Limpeza de estado quando necessário
 
-### 4. Layout Opcional Expandível
+### 6. Layout Opcional Expandível
 - **Arquivo**: `src/components/layout/sidebarConfig/expandable-sidebar-layout.tsx`
 - **Funcionalidades**:
   - Layout alternativo que pode ser usado em páginas específicas
@@ -34,6 +42,12 @@
   - Header responsivo com trigger da sidebar
 
 ## Características da Nova Sidebar
+
+### Breadcrumbs Dinâmicos
+- **Geração Automática**: Baseado na URL atual e estrutura do menu
+- **Navegação Inteligente**: Links funcionais para navegação rápida
+- **Performance**: Cache com useMemo para evitar recálculos
+- **Integração**: Usa os dados do APP_CONFIG.ROUTES.MENU
 
 ### Persistência de Estado
 - **LocalStorage**: O estado da sidebar é salvo automaticamente no localStorage
@@ -54,7 +68,25 @@
 5. **Estado Ativo**: Destaque automático do item/submenu atual
 6. **Auto-Expansão**: Se a URL atual for um submenu, expande automaticamente
 
-### Estrutura de Dados
+### Estrutura de Breadcrumbs
+
+### Exemplos de Breadcrumbs por Rota:
+
+| Rota | Breadcrumbs Gerados |
+|------|-------------------|
+| `/akin/dashboard` | Sistema AKIN > Painel |
+| `/akin/patient` | Sistema AKIN > Pacientes |
+| `/akin/schedule/new` | Sistema AKIN > Agendamentos > Novo |
+| `/akin/stock-control/product` | Sistema AKIN > Gestão de stock > Productos |
+| `/akin/team-management` | Sistema AKIN > Gestão Equipe |
+
+### Lógica dos Breadcrumbs:
+1. **Primeiro item**: Sempre "Sistema AKIN" (link para dashboard)
+2. **Itens intermediários**: Baseados na estrutura do menu
+3. **Último item**: Página atual (não clicável)
+4. **Fallback**: Se não encontrar no menu, formata o nome da URL
+
+## Estrutura de Dados
 ```typescript
 interface MenuItem {
   id: string
@@ -84,6 +116,18 @@ interface MenuItem {
 1. Usuário cola a URL `/akin/team-management` na barra de endereços
 2. Sidebar posiciona no item "Gestão Equipe" (sem expandir, pois não tem submenus)
 3. Item fica destacado automaticamente
+
+### Cenário 4: Breadcrumbs dinâmicos
+1. Usuário navega para `/akin/stock-control/product`
+2. Breadcrumbs mostram: `Sistema AKIN > Gestão de stock > Productos`
+3. Cada item é clicável para navegação rápida
+4. O último item (atual) não é clicável
+
+### Cenário 5: Navegação por breadcrumbs
+1. Usuário está em uma página profunda como `/akin/schedule/new`
+2. Breadcrumbs: `Sistema AKIN > Agendamentos > Novo`
+3. Usuário clica em "Agendamentos" nos breadcrumbs
+4. Navega para `/akin/schedule` e sidebar se ajusta automaticamente
 
 ### Uso do Hook Personalizado
 ```typescript

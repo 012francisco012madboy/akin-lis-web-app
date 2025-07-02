@@ -99,9 +99,9 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
     <section className="space-y-6">
       {/* Header */}
       <header className="flex flex-col lg:flex-row items-start lg:items-center justify-between">
-        <h1 className="text-3xl font-semibold">
+        {/* <h1 className="text-3xl font-semibold">
           {title} <span className="text-sm text-gray-600">({schedule.length})</span>
-        </h1>
+        </h1> */}
 
         <div className="flex flex-col lg:flex-row items-center space-y-2 lg:space-y-0 lg:space-x-4 mt-1">
           <Input

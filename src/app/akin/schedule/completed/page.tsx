@@ -31,6 +31,9 @@ export default function Completed() {
 
   return (
     <div className="h-max w-full px-6 pb-6">
+      <h1 className="text-2xl font-semibold mb-4">Agendamentos Concluídos</h1>
+      <hr />
+
       <CardScheduleContainer
         isLoading={isPending}
         title="Agendamentos Concluídos"
