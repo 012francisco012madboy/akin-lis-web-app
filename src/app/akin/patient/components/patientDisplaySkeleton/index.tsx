@@ -1,19 +1,12 @@
-import CustomBreadcrumb from "@/components/custom-breadcrumb"
 import { Skeleton } from "@/components/ui/skeleton"
 import { View } from "@/components/view"
 import { AlignJustify, Grid } from "lucide-react"
 import { InputText } from "primereact/inputtext"
 
-const breadcrumbItems = [
-  {
-    label: "Paciente",
-  }
-]
 
 export const PatientDisplaySkeleton = () => {
   return (
     <View.Vertical className="h-screen">
-      <CustomBreadcrumb items={breadcrumbItems} borderB />
       <View.Scroll>
         <div className="w-full flex flex-row  p-5 items-center justify-between">
           <div>

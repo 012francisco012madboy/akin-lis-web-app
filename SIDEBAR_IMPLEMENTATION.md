@@ -74,17 +74,21 @@
 
 | Rota | Breadcrumbs Gerados |
 |------|-------------------|
-| `/akin/dashboard` | Sistema AKIN > Painel |
-| `/akin/patient` | Sistema AKIN > Pacientes |
-| `/akin/schedule/new` | Sistema AKIN > Agendamentos > Novo |
-| `/akin/stock-control/product` | Sistema AKIN > Gestão de stock > Productos |
-| `/akin/team-management` | Sistema AKIN > Gestão Equipe |
+| `/akin/dashboard` | Painel Geral |
+| `/akin/patient` | Pacientes |
+| `/akin/schedule/new` | Agendamentos > Novo |
+| `/akin/schedule/request` | Agendamentos > Solicitações |
+| `/akin/stock-control/dashboard` | Gestão de stock > Painel |
+| `/akin/stock-control/product` | Gestão de stock > Productos |
+| `/akin/team-management` | Gestão Equipe |
+| `/akin/patient/123` | Pacientes > 123 |
 
 ### Lógica dos Breadcrumbs:
-1. **Primeiro item**: Sempre "Sistema AKIN" (link para dashboard)
-2. **Itens intermediários**: Baseados na estrutura do menu
-3. **Último item**: Página atual (não clicável)
-4. **Fallback**: Se não encontrar no menu, formata o nome da URL
+1. **Item único**: Para páginas principais sem subItems (ex: Pacientes)
+2. **Item principal > SubItem**: Para páginas de submenus (ex: Agendamentos > Novo)
+3. **Hierarquia profunda**: Para subpáginas não mapeadas (ex: Pacientes > ID do paciente)
+4. **Melhor correspondência**: Usa o path mais específico para determinar a hierarquia
+5. **Fallback inteligente**: Formata nomes baseado na URL quando não encontra no menu
 
 ## Estrutura de Dados
 ```typescript
@@ -119,15 +123,20 @@ interface MenuItem {
 
 ### Cenário 4: Breadcrumbs dinâmicos
 1. Usuário navega para `/akin/stock-control/product`
-2. Breadcrumbs mostram: `Sistema AKIN > Gestão de stock > Productos`
-3. Cada item é clicável para navegação rápida
-4. O último item (atual) não é clicável
+2. Breadcrumbs mostram: `Gestão de stock > Productos`
+3. "Gestão de stock" é clicável para navegação rápida
+4. "Productos" é a página atual (não clicável)
 
 ### Cenário 5: Navegação por breadcrumbs
-1. Usuário está em uma página profunda como `/akin/schedule/new`
-2. Breadcrumbs: `Sistema AKIN > Agendamentos > Novo`
+1. Usuário está em uma página como `/akin/schedule/new`
+2. Breadcrumbs: `Agendamentos > Novo`
 3. Usuário clica em "Agendamentos" nos breadcrumbs
-4. Navega para `/akin/schedule` e sidebar se ajusta automaticamente
+4. Navega para `/akin/schedule/new` (path padrão do menu principal)
+
+### Cenário 6: Páginas sem submenus
+1. Usuário acessa `/akin/patient`
+2. Breadcrumbs mostram apenas: `Pacientes`
+3. Não há item pai, então mostra apenas o nome da seção atual
 
 ### Uso do Hook Personalizado
 ```typescript

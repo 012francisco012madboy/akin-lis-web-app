@@ -27,77 +27,135 @@ import { useMemo } from "react";
 
 // Função para gerar breadcrumbs dinamicamente baseado no path
 function generateBreadcrumbs(pathname: string) {
-  const breadcrumbs = [
-    {
-      label: "Sistema AKIN",
-      href: "/akin/dashboard",
-      isCurrentPage: false
-    }
-  ];
-
   // Se estamos na raiz do sistema
   if (!pathname || pathname === "/akin" || pathname === "/akin/" || pathname === "/akin/dashboard") {
-    breadcrumbs.push({
-      label: "Painel",
-      href: "/akin/dashboard",
-      isCurrentPage: true
-    });
-    return breadcrumbs;
+    return [
+      {
+        label: "Painel Geral",
+        href: "/akin/dashboard",
+        isCurrentPage: true
+      }
+    ];
   }
 
   // Encontrar o item do menu correspondente ao path atual
-  let currentMenuItem = null;
-  let currentSubItem = null;
+  let bestMatch = null;
+  let matchedSubItem = null;
+  let bestMatchLength = 0;
 
-  // Procurar nos itens principais e subitens
+  // Procurar a melhor correspondência nos itens principais e subitens
   for (const menuItem of APP_CONFIG.ROUTES.MENU) {
-    // Verificar se é um item principal
-    if (pathname.startsWith(menuItem.path)) {
-      currentMenuItem = menuItem;
+    // Verificar correspondência com item principal
+    if (pathname.startsWith(menuItem.path) && menuItem.path.length > bestMatchLength) {
+      bestMatch = menuItem;
+      matchedSubItem = null;
+      bestMatchLength = menuItem.path.length;
+    }
 
-      // Se tem subitens, procurar o subitem correspondente
-      if (menuItem.subItems) {
-        for (const subItem of menuItem.subItems) {
-          if (pathname.startsWith(subItem.path)) {
-            currentSubItem = subItem;
-            break;
-          }
+    // Se tem subitens, verificar correspondência com subitens
+    if (menuItem.subItems) {
+      for (const subItem of menuItem.subItems) {
+        if (pathname.startsWith(subItem.path) && subItem.path.length > bestMatchLength) {
+          bestMatch = menuItem;
+          matchedSubItem = subItem;
+          bestMatchLength = subItem.path.length;
         }
       }
-      break;
     }
   }
 
-  if (currentMenuItem) {
-    // Se encontrou um item principal
-    if (currentSubItem) {
+  const breadcrumbs = [];
+
+  if (bestMatch) {
+    if (matchedSubItem) {
       // Se está em um subitem
-      breadcrumbs.push({
-        label: currentMenuItem.label,
-        href: currentMenuItem.path,
-        isCurrentPage: false
-      });
-      breadcrumbs.push({
-        label: currentSubItem.label,
-        href: currentSubItem.path,
-        isCurrentPage: true
-      });
+      // Verificar se o path atual é exatamente igual ao path do subitem
+      if (pathname === matchedSubItem.path) {
+        // Mostrar: MenuPrincipal > SubItem
+        breadcrumbs.push({
+          label: bestMatch.label,
+          href: bestMatch.path,
+          isCurrentPage: false
+        });
+        breadcrumbs.push({
+          label: matchedSubItem.label,
+          href: matchedSubItem.path,
+          isCurrentPage: true
+        });
+      } else {
+        // Se está numa subpágina do subitem, mostrar: MenuPrincipal > SubItem > PáginaAtual
+        breadcrumbs.push({
+          label: bestMatch.label,
+          href: bestMatch.path,
+          isCurrentPage: false
+        });
+        breadcrumbs.push({
+          label: matchedSubItem.label,
+          href: matchedSubItem.path,
+          isCurrentPage: false
+        });
+
+        // Adicionar o último segmento como página atual
+        const segments = pathname.split('/').filter(Boolean);
+        const lastSegment = segments[segments.length - 1];
+        const formattedLabel = lastSegment
+          .split('-')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+
+        breadcrumbs.push({
+          label: formattedLabel,
+          href: pathname,
+          isCurrentPage: true
+        });
+      }
     } else {
-      // Se está no item principal
-      breadcrumbs.push({
-        label: currentMenuItem.label,
-        href: currentMenuItem.path,
-        isCurrentPage: true
-      });
+      // Se está no item principal ou numa subpágina do item principal
+      if (pathname === bestMatch.path) {
+        // Exatamente no item principal
+        breadcrumbs.push({
+          label: bestMatch.label,
+          href: bestMatch.path,
+          isCurrentPage: true
+        });
+      } else {
+        // Numa subpágina do item principal
+        breadcrumbs.push({
+          label: bestMatch.label,
+          href: bestMatch.path,
+          isCurrentPage: false
+        });
+
+        // Adicionar segmentos adicionais se houver
+        const itemPathSegments = bestMatch.path.split('/').filter(Boolean);
+        const currentPathSegments = pathname.split('/').filter(Boolean);
+
+        // Adicionar segmentos que vêm depois do path do item
+        for (let i = itemPathSegments.length; i < currentPathSegments.length; i++) {
+          const isLast = i === currentPathSegments.length - 1;
+          const segmentPath = '/' + currentPathSegments.slice(0, i + 1).join('/');
+
+          const formattedLabel = currentPathSegments[i]
+            .split('-')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+          breadcrumbs.push({
+            label: formattedLabel,
+            href: segmentPath,
+            isCurrentPage: isLast
+          });
+        }
+      }
     }
   } else {
     // Se não encontrou no menu, gerar baseado nos segmentos da URL
     const segments = pathname.split('/').filter(Boolean);
-    let currentPath = "";
 
-    for (let i = 1; i < segments.length; i++) { // Começar de 1 para pular 'akin'
-      currentPath += `/${segments[i]}`;
+    // Começar do segundo segmento (após 'akin')
+    for (let i = 1; i < segments.length; i++) {
       const isLast = i === segments.length - 1;
+      const segmentPath = '/' + segments.slice(0, i + 1).join('/');
 
       const formattedLabel = segments[i]
         .split('-')
@@ -106,7 +164,7 @@ function generateBreadcrumbs(pathname: string) {
 
       breadcrumbs.push({
         label: formattedLabel,
-        href: `/akin${currentPath}`,
+        href: segmentPath,
         isCurrentPage: isLast
       });
     }

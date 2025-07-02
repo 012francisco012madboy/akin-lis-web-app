@@ -11,7 +11,6 @@ import { CalendarIcon, FlaskConical } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import CustomBreadcrumb from "@/components/custom-breadcrumb";
 
 
 type LabExam = {
@@ -20,12 +19,6 @@ type LabExam = {
   examType: string;
   scheduledAt: string;
 };
-
-const breadcrumbItems = [
-  {
-    label: "Exames a Realizar",
-  },
-];
 
 
 const mockExams: LabExam[] = [
@@ -67,9 +60,6 @@ export default function LabExamsPage() {
 
   return (
     <div className="h-full mb-3 p-0 space-y-6 ">
-      <div>
-         <CustomBreadcrumb items={breadcrumbItems} borderB />
-      </div>
 
       {/* Filtros */}
       <Card className="p-4 space-y-4">

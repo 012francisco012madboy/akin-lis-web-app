@@ -1,7 +1,6 @@
 "use client";
 import { View } from "@/components/view";
 import { PatientResumeInfo } from "../components/patientResumeInfo";
-import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ResponseData } from "./next-exam/types";
 import { Exam } from "./exam-history/useExamHookData";
@@ -15,15 +14,6 @@ interface IPatientById {
     id: string;
   };
 }
-const breadcrumbItems = [
-  {
-    label: "Paciente",
-    href: "/akin/patient"
-  },
-  {
-    label: "Perfil do paciente"
-  }
-];
 
 export default function PatientByIdProfile({ params }: IPatientById) {
 
@@ -61,7 +51,6 @@ export default function PatientByIdProfile({ params }: IPatientById) {
   if (isPending || getBasicExamHistory.isPending || getPatientInfo.isPending || userRole.isPending) {
     return (
       <View.Vertical className="h-screen pb-10">
-        <CustomBreadcrumb items={breadcrumbItems} borderB />
         <PatientByIdProfileSkeleton />
       </View.Vertical>
     )
@@ -77,7 +66,6 @@ export default function PatientByIdProfile({ params }: IPatientById) {
 
   return (
     <View.Vertical className="h-screen">
-      <CustomBreadcrumb items={breadcrumbItems} borderB />
 
       <div className="flex gap-4 bg-red px-2 md:px-0 md:pr-2 text-akin-white-smoke p-0 rounded-lg w-full h-full">
         <PatientResumeInfo

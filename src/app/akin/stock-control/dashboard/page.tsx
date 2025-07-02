@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import StockControlDashboardGeneral from "./pages-on-tabs/general/page";
 import StockControlDashboardNotifications from "./pages-on-tabs/notifications/page";
 import StockControlDashboardReports from "./pages-on-tabs/reports/page";
 import StockControlDashboardConsumption from "./pages-on-tabs/consumption/page";
 
-const breadcrumbItems = [{ label: "Painel " }];
 
 export default function StockControlDashboard() {
   const [activeTab, setActiveTab] = useState("general");
@@ -28,7 +26,6 @@ export default function StockControlDashboard() {
   return (
     <main className="w-full h-full p-4 text-white font-semibold text-lg overflow-y-auto [&::-webkit-scrollbar]:hidden">
       <div className="flex flex-col md:flex-row justify-start w-full md:justify-between md:items-center ">
-        <CustomBreadcrumb items={breadcrumbItems} />
         <Tabs defaultValue="general" className="mx-auto md:mx-0 md:mr-2" onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger

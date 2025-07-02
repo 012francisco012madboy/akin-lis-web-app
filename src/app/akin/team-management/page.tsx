@@ -4,17 +4,12 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
-import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { FormModal } from "./formModalToCreate";
 import TechnicianCardGrid from "@/app/akin/team-management/technician-card-grid";
-import LoadingState from "@/app/akin/team-management/loading-state";
 import TechnicianDialog from "./technician-dialog";
 import { teamManagementRoutes } from "@/Api/Routes/Team-management";
 
-const breadcrumbItems = [
-  { label: "Gestão de Equipe", link: "/team-management" },
-];
 
 export default function TeamManagement() {
   const [technicians, setTechnicians] = useState<ITeamManagement[]>();
@@ -86,22 +81,9 @@ export default function TeamManagement() {
     setFormModalOpen(false);
   };
 
-  if (TeamManagement.isLoading) {
-    return (
-      <LoadingState
-        breadcrumbItems={breadcrumbItems}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        filterStatus={filterStatus}
-        setFilterStatus={setFilterStatus}
-        setFormModalOpen={setFormModalOpen}
-      />
-    );
-  }
-
   return (
     <div>
-      <CustomBreadcrumb items={breadcrumbItems} borderB />
+      {/* <CustomBreadcrumb items={breadcrumbItems} borderB /> */}
 
       <div className="mt-3 flex flex-col md:flex-row md:items-center gap-4">
         <Input

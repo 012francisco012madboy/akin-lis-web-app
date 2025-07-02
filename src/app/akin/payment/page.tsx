@@ -1,5 +1,4 @@
 "use client"
-import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { View } from "@/components/view";
@@ -7,18 +6,12 @@ import { useState } from "react";
 
 interface IPayment {}
 
-const breadcrumbItems = [
-  {
-    label: "Pagamento",
-  },
-];
 export default function Payment({ }: IPayment) {
   const [open, setOpen] = useState(false);
 
   return (
     <View.Vertical className="h-screen px-6 py-4 bg-gray-50">
       {/* Breadcrumb Section */}
-      <CustomBreadcrumb items={breadcrumbItems} borderB />
 
       {/* Payment Header */}
       <div className="flex flex-col items-center mt-6">

@@ -8,11 +8,6 @@ import { labTechniciansRoutes } from "@/Api/Routes/lab-technicians";
 import { patientRoutes } from "@/Api/Routes/patients";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
-const breadcrumbItems = [
-  {
-    label: "Paciente",
-  }
-]
 
 export default function Patient() {
   const userRole = getAllDataInCookies().userRole;
@@ -34,7 +29,6 @@ export default function Patient() {
 
   return (
     <View.Vertical className="h-screen">
-      <CustomBreadcrumb items={breadcrumbItems} borderB />
       <View.Scroll>
         <p></p>
         <PatientDisplay patients={patientsQuery.data} />

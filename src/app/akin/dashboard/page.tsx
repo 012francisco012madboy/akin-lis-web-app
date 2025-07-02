@@ -3,7 +3,6 @@ import { View } from "@/components/view";
 import { CalendarArrowDown, ClockArrowDown, TrendingUp, UserRound } from "lucide-react";
 import VerticalBarChart from "./chart-a";
 import DoughnutChart from "./chart-b";
-import CustomBreadcrumb from "@/components/custom-breadcrumb";
 
 const MOCK_RESUME = [
   { id: 58, label: "Solicitações Pendentes", value: 6, icon: UserRound },
@@ -12,18 +11,11 @@ const MOCK_RESUME = [
   { id: 64, label: "Agendamentos", value: 4, icon: CalendarArrowDown },
 ];
 
-const breadcrumbItems = [
-  {
-    label: "Painel",
-  },
-];
 
 export default function Dashboard() {
 
   return (
     <View.Vertical className="min-h-max  space-y-4 px-1 py-0">
-      {/* Cabeçalho com Breadcrumb */}
-      <CustomBreadcrumb items={breadcrumbItems} borderB />
 
       {/* Cartões de Resumo */}
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
