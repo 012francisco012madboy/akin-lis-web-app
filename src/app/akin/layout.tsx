@@ -8,10 +8,10 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/sidebarConfig/app-sidebar";
+import { ExpandableAppSidebar } from "@/components/layout/sidebarConfig/expandable-app-sidebar";
 import { motion } from "framer-motion";
 import { MessageCircleMoreIcon } from "lucide-react";
-import {Chatbot} from "@/components/chatbot/Chatbot";
+import { Chatbot } from "@/components/chatbot/Chatbot";
 
 interface IDashboard {
   children: React.ReactNode;
@@ -23,7 +23,7 @@ export default function Akin({ children }: IDashboard) {
   return (
     <QueryProvider>
       <SidebarProvider>
-        <AppSidebar />
+        <ExpandableAppSidebar />
         <SidebarContentWrapper>{children}</SidebarContentWrapper>
 
         {/* Floating Chatbot Button */}
