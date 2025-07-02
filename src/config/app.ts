@@ -42,9 +42,10 @@ export const APP_CONFIG = {
       {
         label: "Agendamentos",
         icon: CalendarCheck,
-        path: "/akin/schedule/new",
+        path: "/akin/schedule/dashboard",
         access: ["RECEPCIONISTA", "CHEFE"],
         subItems: [
+          { label: "Painel", icon: LayoutDashboard, path: "/akin/schedule/dashboard", access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] },
           { label: "Novo", icon: CalendarPlus2, path: "/akin/schedule/new", access: ["RECEPCIONISTA"] },
           { label: "Solicitações", icon: CalendarSearch, path: "/akin/schedule/request", access: ["RECEPCIONISTA"] },
           { label: "Confirmados", icon: CalendarCheck2, path: "/akin/schedule/completed", access: ["CHEFE", "RECEPCIONISTA"] }
@@ -53,8 +54,12 @@ export const APP_CONFIG = {
       {
         label: "Pacientes",
         icon: UsersRound,
-        path: "/akin/patient",
-        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"]
+        path: "/akin/patient/dashboard",
+        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"],
+        subItems: [
+          { label: "Painel", icon: LayoutDashboard, path: "/akin/patient/dashboard", access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] },
+          { label: "Lista de Pacientes", icon: UsersRound, path: "/akin/patient/list", access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] },
+        ]
       },
       {
         label: "Exames Laboratoriais",

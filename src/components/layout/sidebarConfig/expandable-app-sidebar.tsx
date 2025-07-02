@@ -248,8 +248,8 @@ export function ExpandableAppSidebar({ ...props }: ExpandableAppSidebarProps) {
 
   return (
     <Sidebar collapsible="icon" {...props} className={cn(
-      "bg-akin-turquoise border-r-akin-turquoise",
-      state === "collapsed" ? "max-w-[60px]" : "max-w-[300px]"
+      "bg-akin-turquoise border-r-akin-turquoise p-0 m-0",
+      state === "collapsed" ? "max-w-[60px]" : "max-w-[245px]",
     )}>
       <SidebarHeader className="bg-akin-turquoise text-white">
         <TeamSwitcher teams={data.teams} />
@@ -350,7 +350,7 @@ export function ExpandableAppSidebar({ ...props }: ExpandableAppSidebarProps) {
                             "w-full gap-3 rounded-md",
                             isCollapsed 
                               ? "justify-center px-2 py-3 hover:bg-white/10 hover:text-white" 
-                              : "justify-between px-6 py-3 hover:bg-white/10 hover:text-white",
+                              : "justify-between px-4 py-3 hover:bg-white/10 hover:text-white",
                             isActive && "bg-sidebar-accent/80 text-black hover:bg-sidebar-accent hover:text-black",
                           )}
                         >

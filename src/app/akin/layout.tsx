@@ -212,8 +212,8 @@ function SidebarContentWrapper({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   return (
-    <SidebarInset className={`flex-1 flex flex-col transition-all duration-300`}>
-      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-white">
+    <SidebarInset className={`flex-1 flex flex-col transition-all duration-300 gap-3`}>
+      <header className="flex h-[51px] shrink-0 items-center gap-2 border-b px-4 bg-white">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>

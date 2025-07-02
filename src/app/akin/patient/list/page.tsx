@@ -1,9 +1,9 @@
 "use client"
 import { View } from "@/components/view";
-import PatientDisplay from "./patient-display";
+import PatientDisplay from "../patient-display";
 import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { useQuery } from "@tanstack/react-query";
-import { PatientDisplaySkeleton } from "./components/patientDisplaySkeleton";
+import { PatientDisplaySkeleton } from "../components/patientDisplaySkeleton";
 import { labTechniciansRoutes } from "@/Api/Routes/lab-technicians";
 import { patientRoutes } from "@/Api/Routes/patients";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
