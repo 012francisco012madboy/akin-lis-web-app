@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { ResponseData } from '../next-exam/types';
@@ -14,22 +14,25 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Toggle } from '@/components/ui/toggle';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
-import { 
-  Calendar, 
-  Clock, 
-  DollarSign, 
-  User, 
-  UserCheck, 
-  Pencil, 
-  Play, 
-  Search, 
-  Grid3X3, 
+import {
+  Calendar,
+  Clock,
+  DollarSign,
+  User,
+  UserCheck,
+  Pencil,
+  Play,
+  Search,
+  Grid3X3,
   List,
   BadgeIcon
 } from 'lucide-react';
 import { ILabTechnician } from '@/app/akin/schedule/tecnico';
 import { useAuthStore } from '@/utils/zustand-store/authStore';
 import { UserData } from '@/app/akin/profile/page';
+import { AlerDialogNextExam } from './_alertDialog';
+import { MedicalMaterialsModal } from './_materialModal';
+import { EditScheduleFormModal } from '@/app/akin/schedule/editScheduleData';
 
 // Função auxiliar para formatar status em português
 const getStatusInPortuguese = (status: string) => {
@@ -108,6 +111,8 @@ const ExamCardModern = ({
   techName,
   chiefName,
   isLoadingTechData = false,
+  patientName,
+  onExamSaved,
 }: {
   exam: any;
   onEdit: (exam: any) => void;
@@ -116,7 +121,35 @@ const ExamCardModern = ({
   techName: string;
   chiefName: string;
   isLoadingTechData?: boolean;
+  patientName: string;
+  onExamSaved?: () => void;
 }) => {
+  const [isNextExamOpen, setIsNextExamOpen] = useState(false);
+  const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const handleEditClick = () => {
+    const examData = {
+      id: exam.id,
+      name: exam.Tipo_Exame?.nome,
+      date: exam.data_agendamento,
+      time: exam.hora_agendamento,
+      technicianId: exam.id_tecnico_alocado,
+      chiefId: exam.Agendamento?.id_chefe_alocado,
+      status: exam.status,
+    };
+    onEdit(examData);
+    setIsEditModalOpen(true);
+  };
+
+  const handleStartExam = () => {
+    setIsNextExamOpen(true);
+  };
+
+  const handleIgnoreProtocol = () => {
+    setIsNextExamOpen(false);
+    setIsMaterialsModalOpen(true);
+  };
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pendente":
@@ -149,83 +182,127 @@ const ExamCardModern = ({
   };
 
   return (
-    <Card className="mb-4 hover:shadow-md transition-shadow">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <h3 className="text-lg font-semibold text-gray-900">{exam.Tipo_Exame.nome}</h3>
-            <Button variant="ghost" size="sm" onClick={() => onEdit(exam)} className="h-8 w-8 p-0">
-              <Pencil className="h-4 w-4" />
-            </Button>
+    <>
+      <Card className="mb-4 hover:shadow-md transition-shadow">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <h3 className="text-lg font-semibold text-gray-900">{exam.Tipo_Exame.nome}</h3>
+              <div className="relative group">
+                <Button variant="ghost" size="sm" onClick={handleEditClick} className="h-8 w-8 p-0">
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <span className="absolute cursor-pointer -left-8 top-8 mt-0 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                  Editar
+                </span>
+              </div>
+            </div>
+            <Badge className={getStatusColor(exam.status)}>{getStatusInPortuguese(exam.status)}</Badge>
           </div>
-          <Badge className={getStatusColor(exam.status)}>{getStatusInPortuguese(exam.status)}</Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-3">
-            <div className="flex items-center space-x-2 text-sm">
-              <Calendar className="h-4 w-4 text-gray-500" />
-              <span className="font-medium">Data:</span>
-              <span>{formatDate(exam.data_agendamento)}</span>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2 text-sm">
+                <Calendar className="h-4 w-4 text-gray-500" />
+                <span className="font-medium">Data:</span>
+                <span>{formatDate(exam.data_agendamento)}</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm">
+                <Clock className="h-4 w-4 text-gray-500" />
+                <span className="font-medium">Horário:</span>
+                <span>{exam.hora_agendamento}</span>
+              </div>
+              <div className="flex items-center space-x-2 text-sm">
+                <DollarSign className="h-4 w-4 text-gray-500" />
+                <span className="font-medium">Preço:</span>
+                <span className="font-semibold">
+                  {exam.Tipo_Exame.preco.toLocaleString("pt-ao", {
+                    style: "currency",
+                    currency: "AOA",
+                  })}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center space-x-2 text-sm">
-              <Clock className="h-4 w-4 text-gray-500" />
-              <span className="font-medium">Horário:</span>
-              <span>{exam.hora_agendamento}</span>
-            </div>
-            <div className="flex items-center space-x-2 text-sm">
-              <DollarSign className="h-4 w-4 text-gray-500" />
-              <span className="font-medium">Preço:</span>
-              <span className="font-semibold">
-                {exam.Tipo_Exame.preco.toLocaleString("pt-ao", {
-                  style: "currency",
-                  currency: "AOA",
-                })}
-              </span>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2 text-sm">
+                <BadgeIcon className="h-4 w-4 text-gray-500" />
+                <span className="font-medium">Pagamento:</span>
+                <Badge variant="outline" className={getPaymentStatusColor(exam.status_pagamento)}>
+                  {getStatusInPortuguese(exam.status_pagamento)}
+                </Badge>
+              </div>
+              <div className="flex items-center space-x-2 text-sm">
+                <UserCheck className="h-4 w-4 text-gray-500" />
+                <span className="font-medium">Chefe:</span>
+                {isLoadingTechData ? (
+                  <Skeleton className="h-4 w-24" />
+                ) : (
+                  <span className="truncate">{chiefName}</span>
+                )}
+              </div>
+              <div className="flex items-center space-x-2 text-sm">
+                <User className="h-4 w-4 text-gray-500" />
+                <span className="font-medium">Técnico:</span>
+                {isLoadingTechData ? (
+                  <Skeleton className="h-4 w-24" />
+                ) : (
+                  <span className="truncate">{techName}</span>
+                )}
+              </div>
             </div>
           </div>
-          <div className="space-y-3">
-            <div className="flex items-center space-x-2 text-sm">
-              <BadgeIcon className="h-4 w-4 text-gray-500" />
-              <span className="font-medium">Pagamento:</span>
-              <Badge variant="outline" className={getPaymentStatusColor(exam.status_pagamento)}>
-                {getStatusInPortuguese(exam.status_pagamento)}
-              </Badge>
-            </div>
-            <div className="flex items-center space-x-2 text-sm">
-              <UserCheck className="h-4 w-4 text-gray-500" />
-              <span className="font-medium">Chefe:</span>
-              {isLoadingTechData ? (
-                <Skeleton className="h-4 w-24" />
-              ) : (
-                <span className="truncate">{chiefName}</span>
-              )}
-            </div>
-            <div className="flex items-center space-x-2 text-sm">
-              <User className="h-4 w-4 text-gray-500" />
-              <span className="font-medium">Técnico:</span>
-              {isLoadingTechData ? (
-                <Skeleton className="h-4 w-24" />
-              ) : (
-                <span className="truncate">{techName}</span>
-              )}
-            </div>
-          </div>
-        </div>
 
-        <Separator />
+          <Separator />
 
-        <div className="flex justify-end">
-          {canStart && (
-            <Button onClick={() => onStart(exam.id)} className="bg-teal-600 hover:bg-teal-700">
-              <Play className="h-4 w-4 mr-2" />
-              Começar
-            </Button>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+          <div className="flex justify-end">
+            {canStart && (
+              <Button onClick={handleStartExam} className="bg-teal-600 hover:bg-teal-700">
+                <Play className="h-4 w-4 mr-2" />
+                Começar
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Modais */}
+      <AlerDialogNextExam
+        isOpen={isNextExamOpen}
+        onClose={() => setIsNextExamOpen(false)}
+        onIgnore={handleIgnoreProtocol}
+      />
+
+      <MedicalMaterialsModal
+        isOpen={isMaterialsModalOpen}
+        onClose={() => setIsMaterialsModalOpen(false)}
+        exam_id={String(exam.id_tipo_exame)}
+        patient_name={patientName}
+        exam_name={exam.Tipo_Exame.nome}
+      />
+
+      <EditScheduleFormModal
+        open={isEditModalOpen}
+        exam={{
+          id: exam.id,
+          name: exam.Tipo_Exame?.nome,
+          date: exam.data_agendamento,
+          time: exam.hora_agendamento,
+          technicianId: exam.id_tecnico_alocado,
+          chiefId: exam.Agendamento?.id_chefe_alocado,
+          status: exam.status,
+        }}
+        examId={exam.id}
+        techName={techName}
+        chiefName={chiefName}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={() => {
+          setIsEditModalOpen(false);
+          onExamSaved?.();
+        }}
+        active
+      />
+    </>
   );
 };
 
@@ -237,6 +314,8 @@ const ExamListItem = ({
   techName,
   chiefName,
   isLoadingTechData = false,
+  patientName,
+  onExamSaved,
 }: {
   exam: any;
   onEdit: (exam: any) => void;
@@ -245,7 +324,35 @@ const ExamListItem = ({
   techName: string;
   chiefName: string;
   isLoadingTechData?: boolean;
+  patientName: string;
+  onExamSaved?: () => void;
 }) => {
+  const [isNextExamOpen, setIsNextExamOpen] = useState(false);
+  const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const handleEditClick = () => {
+    const examData = {
+      id: exam.id,
+      name: exam.Tipo_Exame?.nome,
+      date: exam.data_agendamento,
+      time: exam.hora_agendamento,
+      technicianId: exam.id_tecnico_alocado,
+      chiefId: exam.Agendamento?.id_chefe_alocado,
+      status: exam.status,
+    };
+    onEdit(examData);
+    setIsEditModalOpen(true);
+  };
+
+  const handleStartExam = () => {
+    setIsNextExamOpen(true);
+  };
+
+  const handleIgnoreProtocol = () => {
+    setIsNextExamOpen(false);
+    setIsMaterialsModalOpen(true);
+  };
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pendente":
@@ -264,39 +371,83 @@ const ExamListItem = ({
   };
 
   return (
-    <Card className="mb-2 hover:shadow-sm transition-shadow">
-      <CardContent className="py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-6">
-            <div className="min-w-0 flex-1">
-              <h4 className="font-medium text-gray-900 truncate">{exam.Tipo_Exame.nome}</h4>
+    <>
+      <Card className="mb-2 hover:shadow-sm transition-shadow">
+        <CardContent className="py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="min-w-0 flex-1">
+                <h4 className="font-medium text-gray-900 truncate">{exam.Tipo_Exame.nome}</h4>
+              </div>
+              <div className="flex items-center space-x-4 text-sm text-gray-600">
+                <span>{formatDate(exam.data_agendamento)}</span>
+                <span>{exam.hora_agendamento}</span>
+                <span className="font-medium">
+                  {exam.Tipo_Exame.preco.toLocaleString("pt-ao", {
+                    style: "currency",
+                    currency: "AOA",
+                  })}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center space-x-4 text-sm text-gray-600">
-              <span>{formatDate(exam.data_agendamento)}</span>
-              <span>{exam.hora_agendamento}</span>
-              <span className="font-medium">
-                {exam.Tipo_Exame.preco.toLocaleString("pt-ao", {
-                  style: "currency",
-                  currency: "AOA",
-                })}
-              </span>
+            <div className="flex items-center space-x-2">
+              <Badge className={getStatusColor(exam.status)}>{getStatusInPortuguese(exam.status)}</Badge>
+              <div className="relative group">
+                <Button variant="ghost" size="sm" onClick={handleEditClick} className="h-8 w-8 p-0">
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <span className="absolute cursor-pointer -left-8 top-8 mt-0 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                  Editar
+                </span>
+              </div>
+              {canStart && (
+                <Button size="sm" onClick={handleStartExam} className="bg-teal-600 hover:bg-teal-700">
+                  <Play className="h-4 w-4 mr-1" />
+                  Começar
+                </Button>
+              )}
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <Badge className={getStatusColor(exam.status)}>{getStatusInPortuguese(exam.status)}</Badge>
-            <Button variant="ghost" size="sm" onClick={() => onEdit(exam)} className="h-8 w-8 p-0">
-              <Pencil className="h-4 w-4" />
-            </Button>
-            {canStart && (
-              <Button size="sm" onClick={() => onStart(exam.id)} className="bg-teal-600 hover:bg-teal-700">
-                <Play className="h-4 w-4 mr-1" />
-                Começar
-              </Button>
-            )}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      {/* Modais */}
+      <AlerDialogNextExam
+        isOpen={isNextExamOpen}
+        onClose={() => setIsNextExamOpen(false)}
+        onIgnore={handleIgnoreProtocol}
+      />
+
+      <MedicalMaterialsModal
+        isOpen={isMaterialsModalOpen}
+        onClose={() => setIsMaterialsModalOpen(false)}
+        exam_id={String(exam.id_tipo_exame)}
+        patient_name={patientName}
+        exam_name={exam.Tipo_Exame.nome}
+      />
+
+      <EditScheduleFormModal
+        open={isEditModalOpen}
+        exam={{
+          id: exam.id,
+          name: exam.Tipo_Exame?.nome,
+          date: exam.data_agendamento,
+          time: exam.hora_agendamento,
+          technicianId: exam.id_tecnico_alocado,
+          chiefId: exam.Agendamento?.id_chefe_alocado,
+          status: exam.status,
+        }}
+        examId={exam.id}
+        techName={techName}
+        chiefName={chiefName}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={() => {
+          setIsEditModalOpen(false);
+          onExamSaved?.();
+        }}
+        active
+      />
+    </>
   );
 };
 
@@ -306,6 +457,7 @@ const UpcomingExams = () => {
   const [filter, setFilter] = useState('');
   const [viewMode, setViewMode] = useState<"card" | "list">("card");
   const { user } = useAuthStore();
+  const queryClient = useQueryClient();
 
   const { data, isPending } = useQuery({
     queryKey: ["next-exam"],
@@ -313,7 +465,7 @@ const UpcomingExams = () => {
       return await _axios.get<ResponseData>(`/exams/next/${id}`);
     }
   });
-  
+
   const userName = useQuery({
     queryKey: ["user-name"],
     queryFn: async () => {
@@ -343,18 +495,25 @@ const UpcomingExams = () => {
 
   const filteredData = filter
     ? data?.data.data.filter((exam) =>
-        exam.Tipo_Exame.nome.toLowerCase().includes(filter.toLowerCase())
-      )
+      exam.Tipo_Exame.nome.toLowerCase().includes(filter.toLowerCase())
+    )
     : data?.data.data;
 
   const handleEdit = (exam: any) => {
     console.log("Edit exam:", exam);
     // Aqui você pode implementar a lógica de edição
+    // O modal será aberto pelos componentes individuais
   };
 
   const handleStart = (examId: string) => {
     console.log("Start exam:", examId);
     // Aqui você pode implementar a lógica para começar o exame
+  };
+
+  const handleExamSaved = () => {
+    // Invalidar cache para recarregar os dados após edição
+    queryClient.invalidateQueries({ queryKey: ["next-exam"] });
+    queryClient.invalidateQueries({ queryKey: ["tech-lab"] });
   };
 
   const getInitials = (name: string) => {
@@ -460,6 +619,8 @@ const UpcomingExams = () => {
                     techName={techLab.isLoading ? "Carregando..." : getNameTech(exam.id_tecnico_alocado)}
                     chiefName={techLab.isLoading ? "Carregando..." : getNameTech(exam.Agendamento?.id_chefe_alocado)}
                     isLoadingTechData={techLab.isLoading}
+                    patientName={userName.data?.data.nome_completo || ""}
+                    onExamSaved={handleExamSaved}
                   />
                 ) : (
                   <ExamListItem
@@ -471,6 +632,8 @@ const UpcomingExams = () => {
                     techName={techLab.isLoading ? "Carregando..." : getNameTech(exam.id_tecnico_alocado)}
                     chiefName={techLab.isLoading ? "Carregando..." : getNameTech(exam.Agendamento?.id_chefe_alocado)}
                     isLoadingTechData={techLab.isLoading}
+                    patientName={userName.data?.data.nome_completo || ""}
+                    onExamSaved={handleExamSaved}
                   />
                 ),
               )}

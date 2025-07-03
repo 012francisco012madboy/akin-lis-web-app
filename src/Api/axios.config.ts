@@ -28,8 +28,7 @@ _axios.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-
-    // Verifica se o erro é relacionado à autenticação (token expirado)
+    
     if (
       error.response &&
       error.response.status === 401 &&
