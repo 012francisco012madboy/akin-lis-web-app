@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-
 import {
   Sidebar,
   SidebarContent,
@@ -46,7 +45,6 @@ interface MenuItem {
   items?: SubMenuItem[]
 }
 
-// Transform APP_CONFIG.ROUTES.MENU to expandable format
 const transformMenuData = (menuItems: any[], userRole: string): MenuItem[] => {
   return menuItems
     .filter((item) => item.access.includes(userRole))
@@ -83,7 +81,7 @@ interface ExpandableAppSidebarProps extends React.ComponentProps<typeof Sidebar>
 export function ExpandableAppSidebar({ ...props }: ExpandableAppSidebarProps) {
   const userRole = getAllDataInCookies().userRole
   const pathname = usePathname()
-  const { state } = useSidebar() // Para detectar se está colapsada
+  const { state } = useSidebar()
   const {
     expandedMenu,
     selectedItem,
@@ -95,43 +93,6 @@ export function ExpandableAppSidebar({ ...props }: ExpandableAppSidebarProps) {
     transformMenuData(APP_CONFIG.ROUTES.MENU, userRole),
     [userRole]
   )
-
-  // Initialize sidebar state on first load based on current URL
-  React.useEffect(() => {
-    // Only run this effect once on mount when we have menuData
-    if (menuData.length > 0 && pathname) {
-      const currentItem = menuData.find(item =>
-        pathname.startsWith(item.path) ||
-        (item.items && item.items.some((subItem: SubMenuItem) => pathname.startsWith(subItem.path)))
-      )
-
-      if (currentItem) {
-        // Check if we're currently in a submenu based on URL
-        if (currentItem.items) {
-          const currentSubItem = currentItem.items.find((subItem: SubMenuItem) =>
-            pathname.startsWith(subItem.path)
-          )
-
-          if (currentSubItem) {
-            // We're in a submenu - expand parent and select submenu
-            updateSidebarState({
-              selectedItem: currentItem.id,
-              expandedMenu: currentItem.id,
-              selectedSubItem: currentSubItem.id
-            })
-            return
-          }
-        }
-
-        // We're in a main menu item or not in submenu
-        updateSidebarState({
-          selectedItem: currentItem.id,
-          expandedMenu: null,
-          selectedSubItem: null
-        })
-      }
-    }
-  }, [menuData, pathname, updateSidebarState]) // Include all dependencies
 
   // Auto-select current menu based on pathname and expand if in submenu
   React.useEffect(() => {
@@ -194,7 +155,7 @@ export function ExpandableAppSidebar({ ...props }: ExpandableAppSidebarProps) {
     if (state === "collapsed") {
       if (hasSubItems) {
         // Para itens com submenus, navega para a página principal do menu
-        window.location.href = path
+        return
       }
       return
     }
@@ -224,24 +185,21 @@ export function ExpandableAppSidebar({ ...props }: ExpandableAppSidebarProps) {
     }
   }
 
-  const handleSubMenuClick = (subItemId: string) => {
+  const handleSubMenuClick = (subItemId: string, e?: React.MouseEvent) => {
+    // Apenas atualizar o estado, não prevenir navegação
     updateSidebarState({
       selectedSubItem: subItemId
     })
   }
 
-  const handleBackClick = () => {
+  const handleBackClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
     updateSidebarState({
       expandedMenu: null,
       selectedSubItem: null
     })
-
-    // If we have a parent menu item, navigate to it
-    const currentExpandedItem = menuData.find(item => item.id === expandedMenu)
-    if (currentExpandedItem && !pathname?.startsWith(currentExpandedItem.path)) {
-      // Only navigate if we're not already at the parent path
-      window.location.href = currentExpandedItem.path
-    }
+    // Não fazer navegação automática - apenas fechar o menu expandido
   }
 
   const expandedMenuData = expandedMenu ? menuData.find((item) => item.id === expandedMenu) : null
@@ -260,20 +218,12 @@ export function ExpandableAppSidebar({ ...props }: ExpandableAppSidebarProps) {
           // Expanded submenu view
           <div className="flex flex-col">
             <SidebarSeparator className="bg-white/20" />
-            
+
             {/* Back button */}
             <SidebarGroup>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuItem>
-                    {/* <SidebarMenuButton
-                      onClick={handleBackClick}
-                      className="w-full justify-start gap-3 px-6 py-3 bg-akin-turquoise/80 text-white hover:bg-akin-turquoise/60 rounded-md"
-                    >
-                      <ArrowLeft className="h-5 w-5" />
-                      <span>Voltar</span>
-                    </SidebarMenuButton> */}
-
                     <SidebarMenuButton
                       className="w-full justify-start gap-3 py-3 bg-akin-turquoise/50 text-white hover:bg-akin-turquoise/60 rounded-md hover:text-white "
                     >
@@ -282,7 +232,6 @@ export function ExpandableAppSidebar({ ...props }: ExpandableAppSidebarProps) {
                         {expandedMenuData?.title}
                       </div>
                     </SidebarMenuButton>
-
                   </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>
@@ -292,16 +241,13 @@ export function ExpandableAppSidebar({ ...props }: ExpandableAppSidebarProps) {
 
             {/* Current menu header and subitems */}
             <SidebarGroup>
-              {/* <SidebarGroupLabel className="px-6 py-2 text-white font-semibold  mb-1">
-                <div className="flex items-center gap-2">
-                  {expandedMenuData?.icon && <expandedMenuData.icon className="h-5 w-5" />}
-                  {expandedMenuData?.title}
-                </div>
-              </SidebarGroupLabel> */}
-              <SidebarGroupLabel onClick={handleBackClick} className=" py-2 text-white font-semibold cursor-pointer hover:bg-slate-600/50  mb-1 space-x-2">
+              <button
+                onClick={handleBackClick}
+                className="w-full flex items-center gap-2 py-2 px-3 text-white font-semibold cursor-pointer hover:bg-slate-600/50 mb-1 rounded-md transition-colors"
+              >
                 <ChevronLeft className="h-6 w-6 font-bold" />
                 <span className="text-[14px]">Voltar</span>
-              </SidebarGroupLabel>
+              </button>
 
               <SidebarGroupContent>
                 <SidebarMenu>
@@ -311,13 +257,16 @@ export function ExpandableAppSidebar({ ...props }: ExpandableAppSidebarProps) {
                       <SidebarMenuItem key={subItem.id}>
                         <SidebarMenuButton
                           asChild
-                          onClick={() => handleSubMenuClick(subItem.id)}
                           className={cn(
                             "w-full justify-start gap-3 px-8 py-3 hover:bg-white/10 hover:text-black rounded-md",
                             isSubActive && "bg-sidebar-accent/80 text-black font-medium",
                           )}
                         >
-                          <Link href={subItem.path} className="flex items-center gap-3">
+                          <Link
+                            href={subItem.path}
+                            className="flex items-center gap-3"
+                            onClick={() => handleSubMenuClick(subItem.id)}
+                          >
                             {subItem.icon && <subItem.icon className="h-5 w-5" />}
                             <span>{subItem.title}</span>
                           </Link>
@@ -344,12 +293,16 @@ export function ExpandableAppSidebar({ ...props }: ExpandableAppSidebarProps) {
                       <Collapsible>
                         <SidebarMenuButton
                           asChild={!hasSubItems}
-                          onClick={() => handleMenuClick(item.id, hasSubItems, item.path)}
+                          onClick={hasSubItems ? (e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            handleMenuClick(item.id, hasSubItems, item.path)
+                          } : undefined}
                           tooltip={item.title}
                           className={cn(
                             "w-full gap-3 rounded-md",
-                            isCollapsed 
-                              ? "justify-center px-2 py-3 hover:bg-white/10 hover:text-white" 
+                            isCollapsed
+                              ? "justify-center px-2 py-3 hover:bg-white/10 hover:text-white"
                               : "justify-between px-4 py-3 hover:bg-white/10 hover:text-white",
                             isActive && "bg-sidebar-accent/80 text-black hover:bg-sidebar-accent hover:text-black",
                           )}
