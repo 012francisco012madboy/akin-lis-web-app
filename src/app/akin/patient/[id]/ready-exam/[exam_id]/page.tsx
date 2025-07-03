@@ -1,7 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import AutomatedAnalysis from "../modalAutomatiImage";
@@ -10,6 +13,30 @@ import { ImageModal, Shape } from "../components/selectedCaptureImages";
 import { CapturedImages } from "../components/listCaptureImages";
 import { LaudoModal } from "../laudo";
 import { _axios } from "@/Api/axios.config";
+import {
+  User,
+  Calendar,
+  FileText,
+  Camera,
+  Bot,
+  Images,
+  ClipboardList
+} from "lucide-react";
+
+interface PatientType {
+  id: string;
+  numero_identificacao: string;
+  nome_completo: string;
+  data_nascimento: string;
+  contacto_telefonico: string;
+  data_registro: string;
+  data_ultima_visita: string;
+  id_sexo: number;
+  id_usuario: string;
+  sexo: {
+    nome: string;
+  };
+}
 
 
 export default function SampleVisualizationPage() {
@@ -19,6 +46,7 @@ export default function SampleVisualizationPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen] = useState(false);
   const [imageAnnotations, setImageAnnotations] = useState<Record<string, Shape[]>>({});
+  const [laudoModalOpen, setLaudoModalOpen] = useState(false);
 
   //@ts-ignore
   const { id, exam_id } = useParams();
@@ -29,12 +57,33 @@ export default function SampleVisualizationPage() {
       return await _axios.get<PatientType>(`/pacients/${id}`);
     }
   })
+
   const getExamById = useQuery({
     queryKey: ['Exam-Info', exam_id],
     queryFn: async () => {
       return await _axios.get(`/exam-types/${exam_id}`);
     }
   })
+
+  // Helper functions
+  const getInitials = (name: string) => {
+    if (!name) return "P";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('pt-BR');
+    } catch {
+      return dateString;
+    }
+  };
 
   const handleDeleteImage = (image: string) => {
     setCapturedImages((prev) => prev.filter((img) => img !== image));
@@ -52,9 +101,6 @@ export default function SampleVisualizationPage() {
   const handleAutomatedAnalysisOpen = () => {
     setIsAutomatedAnalysisOpen(true);
   };
-
-  // Laudo Modal
-  const [laudoModalOpen, setLaudoModalOpen] = useState(false);
 
   const handleClickOnGenerateLaudo = () => {
     setLaudoModalOpen(true);
@@ -83,39 +129,153 @@ export default function SampleVisualizationPage() {
   };
 
   return (
-    <div className="min-h-screen overflow-y-auto pb-2">
-      {getPatientInfo.isLoading || getExamById.isLoading ? (
-        <div className="flex items-center justify-center h-screen">
-          <div className="animate-pulse space-y-4">
-            <div className="h-6 bg-gray-400 rounded w-3/4"></div>
-            <div className="h-6 bg-gray-400 rounded w-1/2"></div>
-            <div className="h-6 bg-gray-400 rounded w-full"></div>
-            <div className="h-6 bg-gray-400 rounded w-5/6"></div>
-          </div>
-        </div>
-      ) : (
-        <>
-          {/* Header */}
-          <div className="bg-white shadow rounded-md p-6 space-y-4">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800">Paciente: {getPatientInfo.data?.data.nome_completo}</h2>
-                <p className="text-gray-600">Exame: {getExamById.data?.data.data.nome}</p>
-              </div>
-              <div className="flex gap-2">
-                <Button onClick={() => setIsModalOpen(true)} className="bg-blue-600 hover:bg-blue-700">
-                  Análise Manual
-                </Button>
-                <Button onClick={handleAutomatedAnalysisOpen} className="bg-gray-600 hover:bg-gray-700">
-                  Análise Automática
-                </Button>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {getPatientInfo.isLoading || getExamById.isLoading ? (
+          /* Loading State */
+          <div className="space-y-6">
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center space-x-4">
+                  <Skeleton className="h-12 w-12 rounded-full" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-6 w-48" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-2">
+                  <Skeleton className="h-10 w-32" />
+                  <Skeleton className="h-10 w-32" />
+                </div>
+              </CardContent>
+            </Card>
 
-          {/* Automated Analysis Section */}
-          {
-            isAutomatedAnalysisOpen && (
+            <Card>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <Skeleton className="h-6 w-40" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[...Array(3)].map((_, i) => (
+                      <Skeleton key={i} className="h-64 w-full rounded-lg" />
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          <>
+            {/* Header Card */}
+            <Card className="border-0 shadow-md">
+              <CardHeader className="pb-4">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                  {/* Patient Info */}
+                  <div className="flex items-center space-x-4">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage src="/placeholder-user.jpg" />
+                      <AvatarFallback className="bg-blue-100 text-blue-700 text-lg font-semibold">
+                        {getInitials(getPatientInfo.data?.data.nome_completo || "")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <User className="h-4 w-4 text-gray-500" />
+                        <h2 className="text-xl font-semibold text-gray-900">
+                          {getPatientInfo.data?.data.nome_completo}
+                        </h2>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <FileText className="h-4 w-4 text-gray-500" />
+                        <p className="text-gray-600 font-medium">
+                          {getExamById.data?.data.data.nome}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Calendar className="h-4 w-4 text-gray-500" />
+                        <p className="text-sm text-gray-500">
+                          {formatDate(new Date().toISOString())}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button
+                      onClick={() => setIsModalOpen(true)}
+                      className="bg-blue-600 hover:bg-blue-700 shadow-sm"
+                      size="lg"
+                    >
+                      <Camera className="h-4 w-4 mr-2" />
+                      Análise Manual
+                    </Button>
+                    <Button
+                      onClick={handleAutomatedAnalysisOpen}
+                      variant="outline"
+                      className="border-gray-300 hover:bg-gray-50"
+                      size="lg"
+                    >
+                      <Bot className="h-4 w-4 mr-2" />
+                      Análise Automática
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+
+            {/* Status Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="border-0 shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <Images className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Imagens Capturadas</p>
+                      <p className="text-2xl font-bold text-gray-900">{capturedImages.length}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-green-100 rounded-lg">
+                      <ClipboardList className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Anotações</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {Object.keys(notes).filter(key => notes[key]).length}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-purple-100 rounded-lg">
+                      <FileText className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Status</p>
+                      <Badge className="mt-1 bg-yellow-100 text-yellow-800 border-yellow-200">
+                        Em Andamento
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Automated Analysis Modal */}
+            {isAutomatedAnalysisOpen && (
               <div id="modal" className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                 <div className="max-w-7xl w-full h-full lg:h-[96%] bg-white rounded-lg overflow-y-auto shadow-lg">
                   <AutomatedAnalysis
@@ -124,71 +284,79 @@ export default function SampleVisualizationPage() {
                   />
                 </div>
               </div>
-            )
-          }
+            )}
 
-          {/* Modal for Visualization */}
-          {isModalOpen && (
-            <ManualExam
-              setIsModalOpen={setIsModalOpen}
+            {/* Manual Exam Modal */}
+            {isModalOpen && (
+              <ManualExam
+                setIsModalOpen={setIsModalOpen}
+                onCaptureImage={(images) => {
+                  setCapturedImages((prevImages) => {
+                    const newImages = images.filter((image) => !prevImages.includes(image));
+                    return [...prevImages, ...newImages];
+                  });
+                }}
+              />
+            )}
+
+            {/* Images Section */}
+            <CapturedImages
+              capturedImages={capturedImages}
+              setSelectedImage={setSelectedImage}
+              handleDeleteImage={handleDeleteImage}
               onCaptureImage={(images) => {
                 setCapturedImages((prevImages) => {
-                  // Filtrar imagens novas que não estão na lista atual
                   const newImages = images.filter((image) => !prevImages.includes(image));
                   return [...prevImages, ...newImages];
                 });
               }}
             />
-          )}
 
-          <CapturedImages
-            capturedImages={capturedImages}
-            setSelectedImage={setSelectedImage}
-            handleDeleteImage={handleDeleteImage}
-            onCaptureImage={(images) => {
-              setCapturedImages((prevImages) => {
-                // Filtrar imagens novas que não estão na lista atual
-                const newImages = images.filter((image) => !prevImages.includes(image));
-                return [...prevImages, ...newImages];
-              });
-            }}
-          />
+            {/* Image Modal */}
+            <ImageModal
+              selectedImage={selectedImage}
+              setSelectedImage={setSelectedImage}
+              notes={notes}
+              handleNoteChanged={handleNoteChange}
+              setImageAnnotations={setImageAnnotations}
+              moreFuncIsShow={true}
+            />
 
-          <ImageModal
-            selectedImage={selectedImage}
-            setSelectedImage={setSelectedImage}
-            notes={notes}
-            handleNoteChanged={handleNoteChange}
-            setImageAnnotations={setImageAnnotations}
-            moreFuncIsShow={true}
-          />
-          {/*
-          <ImageModal
-            selectedImage={selectedImage}
-            setSelectedImage={setSelectedImage}
-            notes={notes}
-            handleNoteChange={(image, value) => setNotes((prev) => ({ ...prev, [image]: value }))}
-            setImageAnnotations={setImageAnnotations} // Passa para armazenar formas e notas das formas
-            moreFuncIsShow={true}
-          /> */}
+            {/* Generate Report Section */}
+            {capturedImages.length > 0 && (
+              <Card className="border-0 shadow-md">
+                <CardContent className="p-6">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-semibold text-gray-900">Finalizar Análise</h3>
+                      <p className="text-sm text-gray-600">
+                        Gere o laudo médico com base nas análises realizadas
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        handleClickOnGenerateLaudo();
+                        handleGenerateReport();
+                      }}
+                      className="bg-green-600 hover:bg-green-700 shadow-sm"
+                      size="lg"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Gerar Laudo
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-          {/* Generate Report Button */}
-          {capturedImages.length > 0 && (
-            <div className="mt-6 flex justify-end gap-3">
-              <Button onClick={() => {
-                handleClickOnGenerateLaudo();
-                handleGenerateReport();
-              }} className="bg-green-600 hover:bg-green-700">
-                Gerar Laudo
-              </Button>
-            </div>
-          )}
-          <LaudoModal
-            laudoModalOpen={laudoModalOpen}
-            setLaudoModalOpen={setLaudoModalOpen}
-          />
-        </>
-      )}
-    </div >
+            {/* Laudo Modal */}
+            <LaudoModal
+              laudoModalOpen={laudoModalOpen}
+              setLaudoModalOpen={setLaudoModalOpen}
+            />
+          </>
+        )}
+      </div>
+    </div>
   );
 };
