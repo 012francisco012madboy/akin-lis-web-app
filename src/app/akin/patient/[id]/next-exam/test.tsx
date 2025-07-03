@@ -1,58 +1,55 @@
-"use client";
+"use client"
 
-import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'next/navigation';
-import React, { useState } from 'react';
-import { ResponseData } from '../next-exam/types';
-import { _axios } from '@/Api/axios.config';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Toggle } from '@/components/ui/toggle';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
-import { 
-  Calendar, 
-  Clock, 
-  DollarSign, 
-  User, 
-  UserCheck, 
-  Pencil, 
-  Play, 
-  Search, 
-  Grid3X3, 
+import { useQuery } from "@tanstack/react-query"
+import { useParams } from "next/navigation"
+import { useState } from "react"
+import {
+  Search,
+  Calendar,
+  Clock,
+  DollarSign,
+  User,
+  UserCheck,
+  Grid3X3,
   List,
-  BadgeIcon
-} from 'lucide-react';
-import { ILabTechnician } from '@/app/akin/schedule/tecnico';
-import { useAuthStore } from '@/utils/zustand-store/authStore';
-import { UserData } from '@/app/akin/profile/page';
+  Pencil,
+  Play,
+  BadgeIcon,
+} from "lucide-react"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Toggle } from "@/components/ui/toggle"
+import { Label } from "@/components/ui/label"
 
-// Função auxiliar para formatar status em português
-const getStatusInPortuguese = (status: string) => {
-  const statusMap: { [key: string]: string } = {
-    'PENDENTE': 'Pendente',
-    'EM_ANDAMENTO': 'Em Andamento',
-    'CONCLUIDO': 'Concluído',
-    'CANCELADO': 'Cancelado',
-    'PAGO': 'Pago',
-    'NAO_PAGO': 'Não Pago'
-  };
-  return statusMap[status.toUpperCase()] || status;
-};
+interface ExamType {
+  nome: string
+  preco: number
+}
 
-// Função para formatar data
-const formatDate = (dateString: string) => {
-  try {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR');
-  } catch {
-    return dateString;
-  }
-};
+interface Agendamento {
+  id_chefe_alocado: string
+}
+
+interface ExamData {
+  id: string
+  data_agendamento: string
+  hora_agendamento: string
+  status: string
+  status_pagamento: string
+  id_tecnico_alocado: string
+  id_tipo_exame: string
+  Tipo_Exame: ExamType
+  Agendamento?: Agendamento
+}
+
+interface ResponseData {
+  data: ExamData[]
+}
 
 const SkeletonCard = () => (
   <Card className="mb-4">
@@ -80,7 +77,7 @@ const SkeletonCard = () => (
       </div>
     </CardContent>
   </Card>
-);
+)
 
 const SkeletonList = () => (
   <Card className="mb-2">
@@ -98,55 +95,46 @@ const SkeletonList = () => (
       </div>
     </CardContent>
   </Card>
-);
+)
 
-const ExamCardModern = ({
+const ExamCard = ({
   exam,
   onEdit,
   onStart,
   canStart,
   techName,
   chiefName,
-  isLoadingTechData = false,
 }: {
-  exam: any;
-  onEdit: (exam: any) => void;
-  onStart: (examId: string) => void;
-  canStart: boolean;
-  techName: string;
-  chiefName: string;
-  isLoadingTechData?: boolean;
+  exam: ExamData
+  onEdit: (exam: any) => void
+  onStart: (examId: string) => void
+  canStart: boolean
+  techName: string
+  chiefName: string
 }) => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pendente":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+        return "bg-yellow-100 text-yellow-800 border-yellow-200"
       case "concluido":
-      case "concluído":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-green-100 text-green-800 border-green-200"
       case "em_andamento":
-      case "em andamento":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "cancelado":
-        return "bg-red-100 text-red-800 border-red-200";
+        return "bg-blue-100 text-blue-800 border-blue-200"
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-gray-100 text-gray-800 border-gray-200"
     }
-  };
+  }
 
   const getPaymentStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pago":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-green-100 text-green-800 border-green-200"
       case "pendente":
-        return "bg-orange-100 text-orange-800 border-orange-200";
-      case "nao_pago":
-      case "não pago":
-        return "bg-red-100 text-red-800 border-red-200";
+        return "bg-orange-100 text-orange-800 border-orange-200"
       default:
-        return "bg-red-100 text-red-800 border-red-200";
+        return "bg-red-100 text-red-800 border-red-200"
     }
-  };
+  }
 
   return (
     <Card className="mb-4 hover:shadow-md transition-shadow">
@@ -158,7 +146,7 @@ const ExamCardModern = ({
               <Pencil className="h-4 w-4" />
             </Button>
           </div>
-          <Badge className={getStatusColor(exam.status)}>{getStatusInPortuguese(exam.status)}</Badge>
+          <Badge className={getStatusColor(exam.status)}>{exam.status}</Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -167,7 +155,7 @@ const ExamCardModern = ({
             <div className="flex items-center space-x-2 text-sm">
               <Calendar className="h-4 w-4 text-gray-500" />
               <span className="font-medium">Data:</span>
-              <span>{formatDate(exam.data_agendamento)}</span>
+              <span>{exam.data_agendamento}</span>
             </div>
             <div className="flex items-center space-x-2 text-sm">
               <Clock className="h-4 w-4 text-gray-500" />
@@ -190,26 +178,18 @@ const ExamCardModern = ({
               <BadgeIcon className="h-4 w-4 text-gray-500" />
               <span className="font-medium">Pagamento:</span>
               <Badge variant="outline" className={getPaymentStatusColor(exam.status_pagamento)}>
-                {getStatusInPortuguese(exam.status_pagamento)}
+                {exam.status_pagamento}
               </Badge>
             </div>
             <div className="flex items-center space-x-2 text-sm">
               <UserCheck className="h-4 w-4 text-gray-500" />
               <span className="font-medium">Chefe:</span>
-              {isLoadingTechData ? (
-                <Skeleton className="h-4 w-24" />
-              ) : (
-                <span className="truncate">{chiefName}</span>
-              )}
+              <span className="truncate">{chiefName}</span>
             </div>
             <div className="flex items-center space-x-2 text-sm">
               <User className="h-4 w-4 text-gray-500" />
               <span className="font-medium">Técnico:</span>
-              {isLoadingTechData ? (
-                <Skeleton className="h-4 w-24" />
-              ) : (
-                <span className="truncate">{techName}</span>
-              )}
+              <span className="truncate">{techName}</span>
             </div>
           </div>
         </div>
@@ -226,8 +206,8 @@ const ExamCardModern = ({
         </div>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
 const ExamListItem = ({
   exam,
@@ -236,32 +216,26 @@ const ExamListItem = ({
   canStart,
   techName,
   chiefName,
-  isLoadingTechData = false,
 }: {
-  exam: any;
-  onEdit: (exam: any) => void;
-  onStart: (examId: string) => void;
-  canStart: boolean;
-  techName: string;
-  chiefName: string;
-  isLoadingTechData?: boolean;
+  exam: ExamData
+  onEdit: (exam: any) => void
+  onStart: (examId: string) => void
+  canStart: boolean
+  techName: string
+  chiefName: string
 }) => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pendente":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+        return "bg-yellow-100 text-yellow-800 border-yellow-200"
       case "concluido":
-      case "concluído":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-green-100 text-green-800 border-green-200"
       case "em_andamento":
-      case "em andamento":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "cancelado":
-        return "bg-red-100 text-red-800 border-red-200";
+        return "bg-blue-100 text-blue-800 border-blue-200"
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-gray-100 text-gray-800 border-gray-200"
     }
-  };
+  }
 
   return (
     <Card className="mb-2 hover:shadow-sm transition-shadow">
@@ -272,7 +246,7 @@ const ExamListItem = ({
               <h4 className="font-medium text-gray-900 truncate">{exam.Tipo_Exame.nome}</h4>
             </div>
             <div className="flex items-center space-x-4 text-sm text-gray-600">
-              <span>{formatDate(exam.data_agendamento)}</span>
+              <span>{exam.data_agendamento}</span>
               <span>{exam.hora_agendamento}</span>
               <span className="font-medium">
                 {exam.Tipo_Exame.preco.toLocaleString("pt-ao", {
@@ -283,7 +257,7 @@ const ExamListItem = ({
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <Badge className={getStatusColor(exam.status)}>{getStatusInPortuguese(exam.status)}</Badge>
+            <Badge className={getStatusColor(exam.status)}>{exam.status}</Badge>
             <Button variant="ghost" size="sm" onClick={() => onEdit(exam)} className="h-8 w-8 p-0">
               <Pencil className="h-4 w-4" />
             </Button>
@@ -297,79 +271,75 @@ const ExamListItem = ({
         </div>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
 const UpcomingExams = () => {
-  //@ts-ignore
-  const { id } = useParams();
-  const [filter, setFilter] = useState('');
-  const [viewMode, setViewMode] = useState<"card" | "list">("card");
-  const { user } = useAuthStore();
+  const { id } = useParams()
+  const [filter, setFilter] = useState("")
+  const [viewMode, setViewMode] = useState<"card" | "list">("card")
 
+  // Mock queries - replace with your actual queries
   const { data, isPending } = useQuery({
     queryKey: ["next-exam"],
     queryFn: async () => {
-      return await _axios.get<ResponseData>(`/exams/next/${id}`);
-    }
-  });
-  
+      // Mock data
+      return {
+        data: {
+          data: [
+            {
+              id: "1",
+              data_agendamento: "2024-01-15",
+              hora_agendamento: "09:00",
+              status: "PENDENTE",
+              status_pagamento: "PAGO",
+              id_tecnico_alocado: "tech1",
+              id_tipo_exame: "exam1",
+              Tipo_Exame: {
+                nome: "Hemograma Completo",
+                preco: 15000,
+              },
+              Agendamento: {
+                id_chefe_alocado: "chief1",
+              },
+            },
+          ],
+        },
+      }
+    },
+  })
+
   const userName = useQuery({
     queryKey: ["user-name"],
     queryFn: async () => {
-      return await _axios.get(`/pacients/${id}`);
-    }
-  });
-
-  const { data: userData } = useQuery({
-    queryKey: ['user-data'],
-    queryFn: async () => {
-      return await _axios.get<UserData>(`/users/${user?.id}`);
+      return {
+        data: {
+          nome_completo: "João Silva Santos",
+        },
+      }
     },
-  });
-
-  const techLab = useQuery({
-    queryKey: ["tech-lab"],
-    queryFn: async () => {
-      return await _axios.get<ILabTechnician[]>("/lab-technicians");
-    }
-  });
-
-  const getNameTech = (id: string | null) => {
-    if (id === null) return 'Não atribuído';
-    const tech = techLab.data?.data.find((tech) => tech.id === id);
-    return tech?.nome || 'Nome não encontrado';
-  };
+  })
 
   const filteredData = filter
-    ? data?.data.data.filter((exam) =>
-        exam.Tipo_Exame.nome.toLowerCase().includes(filter.toLowerCase())
-      )
-    : data?.data.data;
+    ? data?.data.data.filter((exam) => exam.Tipo_Exame.nome.toLowerCase().includes(filter.toLowerCase()))
+    : data?.data.data
 
   const handleEdit = (exam: any) => {
-    console.log("Edit exam:", exam);
-    // Aqui você pode implementar a lógica de edição
-  };
+    console.log("Edit exam:", exam)
+  }
 
   const handleStart = (examId: string) => {
-    console.log("Start exam:", examId);
-    // Aqui você pode implementar a lógica para começar o exame
-  };
+    console.log("Start exam:", examId)
+  }
 
   const getInitials = (name: string) => {
-    if (!name) return "P";
     return name
       .split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .slice(0, 2);
-  };
-
-  const canUserStartExam = () => {
-    return userData?.data?.tipo !== 'TECNICO' && userData?.data?.tipo !== 'RECEPCIONISTA';
-  };
+      .slice(0, 2)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -383,17 +353,13 @@ const UpcomingExams = () => {
                 <Avatar className="h-12 w-12">
                   <AvatarImage src="/placeholder-user.jpg" />
                   <AvatarFallback className="bg-teal-100 text-teal-700">
-                    {getInitials(userName.data?.data.nome_completo || "")}
+                    {userName.data?.data.nome_completo ? getInitials(userName.data.data.nome_completo) : "PA"}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <Label className="text-sm font-medium text-gray-600">Paciente</Label>
                   <p className="text-lg font-semibold text-gray-900">
-                    {userName.isLoading ? (
-                      <Skeleton className="h-6 w-48" />
-                    ) : (
-                      userName.data?.data.nome_completo || "Nome não encontrado"
-                    )}
+                    {userName.data?.data.nome_completo || "Carregando..."}
                   </p>
                 </div>
               </div>
@@ -443,23 +409,20 @@ const UpcomingExams = () => {
 
           {isPending ? (
             <div className="space-y-4">
-              {[...Array(3)].map((_, i) => (
-                viewMode === "card" ? <SkeletonCard key={i} /> : <SkeletonList key={i} />
-              ))}
+              {[...Array(3)].map((_, i) => (viewMode === "card" ? <SkeletonCard key={i} /> : <SkeletonList key={i} />))}
             </div>
           ) : (
             <div className="space-y-2">
               {filteredData?.map((exam) =>
                 viewMode === "card" ? (
-                  <ExamCardModern
+                  <ExamCard
                     key={exam.id}
                     exam={exam}
                     onEdit={handleEdit}
                     onStart={handleStart}
-                    canStart={exam.status === "PENDENTE" && canUserStartExam()}
-                    techName={techLab.isLoading ? "Carregando..." : getNameTech(exam.id_tecnico_alocado)}
-                    chiefName={techLab.isLoading ? "Carregando..." : getNameTech(exam.Agendamento?.id_chefe_alocado)}
-                    isLoadingTechData={techLab.isLoading}
+                    canStart={true}
+                    techName="Dr. Maria Silva"
+                    chiefName="Dr. João Santos"
                   />
                 ) : (
                   <ExamListItem
@@ -467,10 +430,9 @@ const UpcomingExams = () => {
                     exam={exam}
                     onEdit={handleEdit}
                     onStart={handleStart}
-                    canStart={exam.status === "PENDENTE" && canUserStartExam()}
-                    techName={techLab.isLoading ? "Carregando..." : getNameTech(exam.id_tecnico_alocado)}
-                    chiefName={techLab.isLoading ? "Carregando..." : getNameTech(exam.Agendamento?.id_chefe_alocado)}
-                    isLoadingTechData={techLab.isLoading}
+                    canStart={true}
+                    techName="Dr. Maria Silva"
+                    chiefName="Dr. João Santos"
                   />
                 ),
               )}
@@ -491,7 +453,7 @@ const UpcomingExams = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UpcomingExams;
+export default UpcomingExams
