@@ -10,7 +10,6 @@ import { Calendar, TrendingUp, Users, UserCheck, UserX, Activity, AlertTriangle,
 import { Chart } from "primereact/chart";
 import { useEffect } from "react";
 
-// Dados fictícios para o dashboard
 const TEAM_STATS = {
   overview: [
     {
