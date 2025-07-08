@@ -5,11 +5,13 @@ import { useCallback, useEffect, useState } from "react";
 import CardSchedule from "./CardSchedule";
 import { isWithinInterval } from "date-fns";
 import { DateRange } from "react-day-picker";
+import { DatePickerWithRange } from "@/components/ui/date-picker";
 
 interface ICardScheduleContainer {
   schedule: ScheduleType[];
   title: string;
   isLoading: boolean;
+  showOnlyPending?: boolean;
 }
 
 const ITEMS_PER_PAGE = 9;
@@ -18,18 +20,18 @@ const all = "all";
 const allocated = "allocated";
 const notAllocated = "notAllocated";
 
-export default function CardScheduleContainer({ schedule, title, isLoading }: ICardScheduleContainer) {
+export default function CardScheduleContainer({ schedule, title, isLoading, showOnlyPending = true }: ICardScheduleContainer) {
   const [filteredSchedule, setFilteredSchedule] = useState<ScheduleType[]>(
     schedule.map((s) => ({
       ...s,
-      Exame: s.Exame?.filter((exame) => exame.status === "PENDENTE"), 
+      Exame: showOnlyPending ? s.Exame?.filter((exame) => exame.status === "PENDENTE") : s.Exame,
     })).filter((s) => s.Exame && s.Exame.length > 0)
   );
   const [isSearching, setIsSearching] = useState(false);
   const [filterByTechnician, setFilterByTechnician] = useState<typeof all | typeof allocated | typeof notAllocated>(all);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedDateRange, setSelectedDateRange] = useState<DateRange | undefined>(undefined);
-  const [isDateFilterEnabled, setIsDateFilterEnabled] = useState(true);
+  const [isDateFilterEnabled, setIsDateFilterEnabled] = useState(false);
 
   const totalItems = filteredSchedule.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -52,11 +54,11 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
 
   const applyFilters = useCallback((baseSchedule: ScheduleType[]) => {
     let filtered = baseSchedule;
-    // Filtrar apenas exames pendentes
+    // Filtrar exames baseado no prop showOnlyPending
     filtered = filtered.map((schedule) => ({
       ...schedule,
-      Exame: schedule.Exame?.filter((exame) => exame.status === "PENDENTE"), // Excluir exames realizados
-    })).filter((schedule) => schedule.Exame && schedule.Exame.length > 0); // Excluir cards sem exames pendentes
+      Exame: showOnlyPending ? schedule.Exame?.filter((exame) => exame.status === "PENDENTE") : schedule.Exame,
+    })).filter((schedule) => schedule.Exame && schedule.Exame.length > 0);
 
     if (filterByTechnician === allocated) {
       filtered = filtered.filter((s) =>
@@ -80,7 +82,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
     }
 
     setFilteredSchedule(filtered);
-  }, [filterByTechnician, isDateFilterEnabled, selectedDateRange]);
+  }, [filterByTechnician, isDateFilterEnabled, selectedDateRange, showOnlyPending]);
 
   useEffect(() => {
     applyFilters(schedule);
@@ -109,15 +111,17 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
             placeholder="Procurar por paciente"
             onChange={(e) => handleSearch(e.target.value)}
           />
-          {/*<div className="flex flex-col md:flex-row items-center gap-2 w-full">
+          <div className="flex flex-col md:flex-row items-center gap-2 w-full">
             <DatePickerWithRange
               enableRange={true}
               enableDateFilter={true} // Sempre permitir a filtragem de data
+              defaultDate={undefined} // Não definir data padrão
+              placeholderText="Selecionar intervalo de datas"
               //@ts-ignore
               onDateChange={handleDateChange}
               setEnableDateFilter={setIsDateFilterEnabled} // Passa a função de ativação de filtragem
             />
-          </div>*/}
+          </div>
           <select
             className="flex h-10 w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-base ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-neutral-950 placeholder:text-neutral-500 focus-visible:outline-nonefocus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:border-neutral-800 dark:bg-neutral-950 dark:ring-offset-neutral-950 dark:file:text-neutral-50 dark:placeholder:text-neutral-400 dark:focus-visible:ring-neutral-300"
             value={filterByTechnician}
@@ -145,7 +149,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
       ) : (
         <div>
           {currentItems.length > 0 ? (
-            <div className="flex flex-col sm:flex-row gap-6 space-x-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
               {currentItems.map((data, index) => {
                 // Filtrar exames no nível do card com base no filtro aplicado
                 const filteredExams = data.Exame?.filter((exame) => {
@@ -169,7 +173,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading }: IC
                 }
 
                 return (
-                  <Card key={index} className="p-4 min-w-max ">
+                  <Card key={index} className="p-4 w-full">
                     <CardSchedule data={{ ...data, Exame: filteredExams }} />
                   </Card>
                 );

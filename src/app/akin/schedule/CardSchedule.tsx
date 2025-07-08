@@ -87,17 +87,17 @@ export default function CardSchedule({ data }: ICardSchedule) {
 
   //[&::-webkit-scrollbar]:hidden 
   return (
-    <div className="card min-w-max  shadow-xl border border-gray-300 rounded-lg flex flex-col items-center bg-white min-h-[400px] max-h-[250px]  transition-all duration-300 hover:scale-105">
+    <div className="card w-full max-w-sm mx-auto shadow-xl border border-gray-300 rounded-lg flex flex-col items-center bg-white min-h-[400px] transition-all duration-300 hover:scale-105">
       {/* Exame Information */}
       {showExams ? (
-        <div className="flex-1 rounded-t-lg w-full overflow-y-scroll [&::-webkit-scrollbar]:hidden space-y-4 p-4 h-[19.2rem]">
-          <View.Scroll className="min-w-max max-h-full pl-4 overflow-y-auto space-y-2 ">
+        <div className="flex-1 rounded-t-lg w-full overflow-y-scroll [&::-webkit-scrollbar]:hidden space-y-4 p-4 max-h-[19.2rem]">
+          <View.Scroll className="w-full max-h-full pl-4 overflow-y-auto space-y-2">
             {data.Exame.map((exame) => (
-              <div key={exame.id} className="min-w-max w-full pb-4 border-b border-gray-200 ">
-                <p className="font-semibold text-xl flex justify-between items-center mr-3">
-                  {exame.Tipo_Exame.nome || "Nome não disponível"}
+              <div key={exame.id} className="w-full pb-4 border-b border-gray-200">
+                <div className="font-semibold text-lg flex justify-between items-start gap-2 mr-3">
+                  <span className="break-words flex-1">{exame.Tipo_Exame.nome || "Nome não disponível"}</span>
                   {/* <EditScheduleFormModal> */}
-                  <div className="relative group">
+                  <div className="relative group flex-shrink-0">
                     {/* {
                       userRole.data?.data.tipo !== "RECEPCIONISTA" ? (
                         <></>
@@ -115,7 +115,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
                           technicianId: exame.id_tecnico_alocado,
                         })}
                       />
-                      <span className="absolute cursor-pointer -left-8 top-5 mt-0 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                      <span className="absolute cursor-pointer -left-8 top-5 mt-0 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10"
                         onClick={() => handleEditClick({
                           // @ts-ignore
                           id: exame.id,
@@ -145,50 +145,42 @@ export default function CardSchedule({ data }: ICardSchedule) {
                     />
                   </div>
                   {/* </EditScheduleFormModal> */}
-                </p>
+                </div>
 
-                <p className="pl-6  text-gray-500 text-sm font-semibold">
-                  Estado:{" "}
-                  <span
-
-                    className={` text-xs font-medium  ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
-                      }`}
-                  >
-                    {exame.status}
-                  </span>
-                </p>
-                <p className="pl-6  text-gray-500 text-sm font-semibold">
-                  Data de Agendamento:{" "}
-                  <span
-
-                    className={` text-xs font-medium  ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
-                      }`}
-                  >
-                    {exame.data_agendamento}
-                  </span>
-                </p>
-                <p className="pl-6  text-gray-500 text-sm font-semibold">
-                  Hora de Agendamento:{" "}
-                  <span
-
-                    className={` text-xs font-medium  ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
-                      }`}
-                  >
-                    {exame.hora_agendamento}
-                  </span>
-                </p>
-                <p className="pl-6  text-gray-500 text-sm font-semibold">
-                  Técnicos Alocados:{" "}
-                  <span
-
-                    className={` text-xs font-medium  ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"
-                      }`}
-                  >
-                    {
-                      getTecnicoNome(exame.id_tecnico_alocado)
-                    }
-                  </span>
-                </p>
+                <div className="space-y-1 mt-2">
+                  <p className="pl-6 text-gray-500 text-sm font-semibold">
+                    Estado:{" "}
+                    <span
+                      className={`text-xs font-medium ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"}`}
+                    >
+                      {exame.status}
+                    </span>
+                  </p>
+                  <p className="pl-6 text-gray-500 text-sm font-semibold">
+                    Data de Agendamento:{" "}
+                    <span
+                      className={`text-xs font-medium ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"}`}
+                    >
+                      {exame.data_agendamento}
+                    </span>
+                  </p>
+                  <p className="pl-6 text-gray-500 text-sm font-semibold">
+                    Hora de Agendamento:{" "}
+                    <span
+                      className={`text-xs font-medium ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"}`}
+                    >
+                      {exame.hora_agendamento}
+                    </span>
+                  </p>
+                  <p className="pl-6 text-gray-500 text-sm font-semibold">
+                    Técnicos Alocados:{" "}
+                    <span
+                      className={`text-xs font-medium break-words ${exame.status === "ATIVO" ? "text-green-500" : "text-red-500"}`}
+                    >
+                      {getTecnicoNome(exame.id_tecnico_alocado)}
+                    </span>
+                  </p>
+                </div>
               </div>
             ))}
           </View.Scroll>
@@ -196,7 +188,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
       ) : (
         <>
           {/* Image and Actions */}
-          <div className="min-w-[280px] w-full relative h-48">
+          <div className="w-full relative h-48">
             <Image
               className="bg-center object-cover rounded-t-lg"
               src="/images/exam/Plasmodium.png"
@@ -204,12 +196,12 @@ export default function CardSchedule({ data }: ICardSchedule) {
               fill
             />
             {data.status === "PENDENTE" && (
-              <div className="absolute top-2 right-2 bg-black/60 p-2 rounded-lg flex space-x-2">
-                <button className="text-red-300 hover:text-red-100 flex items-center space-x-1">
-                  <Trash size={15} /> <span>Rejeitar</span>
+              <div className="absolute top-2 right-2 bg-black/60 p-2 rounded-lg flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2">
+                <button className="text-red-300 hover:text-red-100 flex items-center justify-center space-x-1 text-xs">
+                  <Trash size={12} /> <span>Rejeitar</span>
                 </button>
-                <button className="text-green-300 hover:text-green-100 flex items-center space-x-1">
-                  <CheckCircle size={15} /> <span>Aceitar</span>
+                <button className="text-green-300 hover:text-green-100 flex items-center justify-center space-x-1 text-xs">
+                  <CheckCircle size={12} /> <span>Aceitar</span>
                 </button>
               </div>
             )}
@@ -217,8 +209,8 @@ export default function CardSchedule({ data }: ICardSchedule) {
 
           {/* Patient Information */}
           <div className="w-full px-4 py-2 space-y-1.5 flex flex-col mt-2 text-gray-800">
-            <h1 className="text-xl font-semibold">{data.Paciente?.nome_completo} </h1>
-            <span className="text-sm text-gray-500">BI: {data.Paciente?.numero_identificacao}</span>
+            <h1 className="text-lg font-semibold break-words">{data.Paciente?.nome_completo}</h1>
+            <span className="text-sm text-gray-500 break-all">BI: {data.Paciente?.numero_identificacao}</span>
             <span className="text-sm text-gray-500">Sexo: {data.Paciente?.id_sexo === 1 ? "Masculino" : "Feminino"}</span>
             <span className="text-sm text-gray-500">Idade: {age}</span>
           </div>
@@ -226,9 +218,9 @@ export default function CardSchedule({ data }: ICardSchedule) {
       )}
 
       {/* Toggle Button */}
-      <div className="w-full flex flex-col lg:flex-row  gap-3 px-4  pb-2 text-sm">
+      <div className="w-full flex flex-col gap-3 px-4 pb-2 text-sm">
         <Primary
-          className=" min-w-max w-full h-full flex justify-center bg-cyan-600 text-white font-semibold py-2 rounded-b-lg  transition-all duration-300 hover:bg-cyan-500 outline-none"
+          className="w-full h-full flex justify-center bg-cyan-600 text-white font-semibold py-2 rounded-lg transition-all duration-300 hover:bg-cyan-500 outline-none"
           onClick={() => setShowExams((prev) => !prev)}
           label={showExams ? "Agendamento" : "Ver Exame"}
         />
@@ -243,9 +235,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
             className="w-full h-full"
             onClick={handleGroupExams}
           >
-            {
-              userRole === role ? "Alocar Chefe" : "Alocar Técnicos"
-            }
+            {userRole === role ? "Alocar Chefe" : "Alocar Técnicos"}
           </Button>
         </AllocateTechniciansModal>
       </div>

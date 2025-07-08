@@ -17,8 +17,6 @@ import {
   User,
   Calendar,
   FileText,
-  Camera,
-  Bot,
   Images,
   ClipboardList
 } from "lucide-react";
@@ -208,7 +206,6 @@ export default function SampleVisualizationPage() {
                       className="bg-blue-600 hover:bg-blue-700 shadow-sm"
                       size="lg"
                     >
-                      <Camera className="h-4 w-4 mr-2" />
                       Análise Manual
                     </Button>
                     <Button
@@ -217,7 +214,6 @@ export default function SampleVisualizationPage() {
                       className="border-gray-300 hover:bg-gray-50"
                       size="lg"
                     >
-                      <Bot className="h-4 w-4 mr-2" />
                       Análise Automática
                     </Button>
                   </div>

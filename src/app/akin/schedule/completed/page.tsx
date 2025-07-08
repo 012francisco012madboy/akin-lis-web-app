@@ -38,6 +38,7 @@ export default function Completed() {
         isLoading={isPending}
         title="Agendamentos Concluídos"
         schedule={groupedSchedulesArray}
+        showOnlyPending={false} // Mostrar todos os exames, não apenas pendentes
       />
     </div>
   );

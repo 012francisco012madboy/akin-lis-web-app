@@ -27,10 +27,7 @@ interface DatePickerWithRangeProps
 
 export function DatePickerWithRange({
   className,
-  defaultDate = {
-    from: new Date(),
-    to: new Date(),
-  },
+  defaultDate,
   dateFormat = "LLL dd, y",
   placeholderText = "Selecione uma data",
   enableRange = true, // Ativo por padrão
@@ -39,7 +36,7 @@ export function DatePickerWithRange({
   setEnableDateFilter, // Adicione esta linha para passar a função de ativação de filtragem
 }: DatePickerWithRangeProps) {
   const [date, setDate] = React.useState<DateRange | Date | undefined>(
-    enableRange ? defaultDate : (defaultDate as DateRange)?.from
+    defaultDate ? (enableRange ? defaultDate : (defaultDate as DateRange)?.from) : undefined
   );
 
   const handleDateChange = (
