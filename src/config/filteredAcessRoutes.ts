@@ -1,4 +1,4 @@
-import { APP_CONFIG } from "./app";
+import { APP_CONFIG } from "../components/layout/app";
 
 
 export const filterRoutesByAccess = (userRole: string) => {
@@ -16,9 +16,9 @@ export const filterSheduleByAccess = (schedule: string): boolean => {
   );
 };
 
-  // const hasAccess = filterSheduleByAccess(data!.data.tipo);
- // if (!hasAccess) {
-  //   return redirect("/akin/schedule/completed");
-  // } else{
-  //   console.log(!hasAccess)
-  // }
+// const hasAccess = filterSheduleByAccess(data!.data.tipo);
+// if (!hasAccess) {
+//   return redirect("/akin/schedule/completed");
+// } else{
+//   console.log(!hasAccess)
+// }

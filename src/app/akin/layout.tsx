@@ -22,7 +22,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { usePathname } from "next/navigation";
-import { APP_CONFIG } from "@/config/app";
+import { APP_CONFIG } from "@/components/layout/app";
 import { useMemo } from "react";
 
 // Função para gerar breadcrumbs dinamicamente baseado no path

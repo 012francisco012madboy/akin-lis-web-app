@@ -9,7 +9,7 @@ import {
   SheetHeader,
 } from "@/components/ui/sheet";
 import Item from "./item";
-import { APP_CONFIG } from "@/config/app";
+import { APP_CONFIG } from "@/components/layout/app";
 import { MenuIcon } from "lucide-react";
 import { filterRoutesByAccess } from "@/config/filteredAcessRoutes";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";

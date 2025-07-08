@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { APP_CONFIG } from "@/config/app";
+import { APP_CONFIG } from "@/components/layout/app";
 
 export default function Loading() {
   return (

@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { APP_CONFIG } from "@/config/app";
+import { APP_CONFIG } from "@/components/layout/app";
 import { useState } from "react";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
 import { Eye, EyeOff } from "lucide-react";
@@ -24,7 +24,7 @@ export const Register = () => {
     senha: "",
     confirmarSenha: "",
     status: "ATIVO",
-    contacto_telefonico: "", 
+    contacto_telefonico: "",
   });
   const [errors, setErrors] = useState({
     tipo: "",
@@ -38,11 +38,11 @@ export const Register = () => {
 
   const validate = () => {
     let tempErrors = { tipo: "", id_unidade_saude: "", nome: "", email: "", senha: "", confirmarSenha: "", contacto_telefonico: "" };
-    if (!formData.nome) tempErrors.nome = "Nome é obrigatório."; 
+    if (!formData.nome) tempErrors.nome = "Nome é obrigatório.";
     if (!formData.email) tempErrors.email = "Email é obrigatório.";
     if (!/\S+@\S+\.\S+/.test(formData.email)) tempErrors.email = "Email inválido.";
     if (!formData.senha) tempErrors.senha = "Senha é obrigatória.";
-  if (!formData.confirmarSenha) tempErrors.confirmarSenha = "Confirme sua senha.";
+    if (!formData.confirmarSenha) tempErrors.confirmarSenha = "Confirme sua senha.";
     if (formData.senha.length < 6) tempErrors.senha = "Senha deve ter pelo menos 6 caracteres.";
     if (!formData.tipo) tempErrors.tipo = "Cargo é obrigatório.";
     if (!formData.id_unidade_saude) tempErrors.id_unidade_saude = "Referência é obrigatória.";

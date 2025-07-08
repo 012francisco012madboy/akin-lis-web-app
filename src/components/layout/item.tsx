@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { APP_CONFIG } from "@/config/app";
+import { APP_CONFIG } from "@/components/layout/app";
 import { cn } from "@/lib/utils";
 
 type IItem = {

@@ -1,4 +1,4 @@
-import { APP_CONFIG } from "@/config/app";
+import { APP_CONFIG } from "@/components/layout/app";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -13,14 +13,14 @@ export default function Header({ avatar, name, email }: IHeader) {
       <strong>BEM-VINDO AO {APP_CONFIG.APP_NAME}</strong>
 
       {/* <Link href={APP_CONFIG.ROUTES.ALTERNATIVE.PROFILE.path} className="flex gap-x-1.5 cursor-pointer hover:bg-akin-yellow-light/10 px-2 py-1 rounded-lg group transition ease-in-out "> */}
-        {/* <div className="size-14 group-hover:bg-akin-yellow-light rounded-full border border-dashed"> */}
-          {/* <Image className="rounded-full" src={avatar} alt="avatar" width={150} height={150} /> */}
-        {/* </div> */}
-{/*  */}
-        {/* <div className="flex flex-col"> */}
-          {/* <p>{name}</p> */}
-          {/* <span className="text-sm font-normal">{email}</span> */}
-        {/* </div> */}
+      {/* <div className="size-14 group-hover:bg-akin-yellow-light rounded-full border border-dashed"> */}
+      {/* <Image className="rounded-full" src={avatar} alt="avatar" width={150} height={150} /> */}
+      {/* </div> */}
+      {/*  */}
+      {/* <div className="flex flex-col"> */}
+      {/* <p>{name}</p> */}
+      {/* <span className="text-sm font-normal">{email}</span> */}
+      {/* </div> */}
       {/* </Link> */}
     </header>
   );

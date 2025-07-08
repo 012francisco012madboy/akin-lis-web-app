@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { APP_CONFIG } from "@/config/app";
+import { APP_CONFIG } from "@/components/layout/app";
 import Link from "next/link";
 import Image from "next/image";
 import { getAgeText } from "@/utils/get-yearUser";
@@ -94,8 +94,8 @@ export function BlockMode({ patientList }: { patientList: PatientType[] }) {
             <button
               key={idx}
               className={`px-3 py-1 text-sm font-medium border rounded ${currentPage === idx + 1
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-500 hover:bg-gray-100"
+                ? "bg-blue-600 text-white"
+                : "bg-white text-gray-500 hover:bg-gray-100"
                 }`}
               onClick={() => handlePageChange(idx + 1)}
             >

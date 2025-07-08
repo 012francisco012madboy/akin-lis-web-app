@@ -17,6 +17,12 @@ interface ITeamManagement {
   status?: string;
   nome?: string;
   usuario?: ITeamManagementToEdit;
+  // Novos campos para o dashboard
+  especialidade?: string;
+  turno?: string;
+  exames_realizados?: number;
+  eficiencia?: number;
+  ultimo_acesso?: string;
 }
 
 interface ITeamManagementToEdit extends ITeamManagement {

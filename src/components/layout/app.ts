@@ -76,8 +76,12 @@ export const APP_CONFIG = {
       {
         label: "Gestão Equipe",
         icon: UserRoundCog,
-        path: "/akin/team-management",
-        access: ["CHEFE"]
+        path: "/akin/team-management/dashboard",
+        access: ["CHEFE"],
+        subItems: [
+          { label: "Painel", icon: LayoutDashboard, path: "/akin/team-management/dashboard", access: ["CHEFE"] },
+          { label: "Lista de Equipe", icon: UsersRound, path: "/akin/team-management/list", access: ["CHEFE"] },
+        ]
       },
       {
         label: "Gestão de stock",

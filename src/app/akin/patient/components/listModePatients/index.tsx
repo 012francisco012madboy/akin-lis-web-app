@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { APP_CONFIG } from "@/config/app";
+import { APP_CONFIG } from "@/components/layout/app";
 import Link from "next/link";
 import { getAgeText } from "@/utils/get-yearUser";
 
