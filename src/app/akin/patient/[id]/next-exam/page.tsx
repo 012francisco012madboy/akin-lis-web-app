@@ -27,7 +27,6 @@ import {
   List,
   BadgeIcon
 } from 'lucide-react';
-import { ILabTechnician } from '@/app/akin/schedule/tecnico';
 import { useAuthStore } from '@/utils/zustand-store/authStore';
 import { UserData } from '@/app/akin/profile/page';
 import { AlerDialogNextExam } from './_alertDialog';
