@@ -30,29 +30,3 @@ interface AvaliableExamsType {
   descricao: string;
   preco: number;
 }
-
-
-// "Exame": [
-//   {
-//     "id": 10,
-//     // "id_tecnico_alocado": null,
-//     // "status": "PENDENTE",
-//     // "data_agendamento": "2024-12-24",
-//     // "hora_agendamento": "14:30",
-//     // "data_formatada": "2024-12-24T14:30:00.000Z",
-//     // "status_pagamento": "PENDENTE",
-//     // "criado_aos": "2024-11-28T13:26:47.324Z",
-//     // "atualizado_aos": "2024-11-28T13:26:47.324Z",
-//     // "id_agendamento": 9,
-//     // "id_tipo_exame": 1,
-//     "Tipo_Exame": {
-//       "id": 1,
-//       "nome": "Covid-19",
-//       "descricao": "...",
-//       "preco": 5000,
-//       "status": "DISPONIVEL",
-//       "criado_aos": "2024-11-27T21:42:31.792Z",
-//       "atualizado_aos": "2024-11-27T21:42:31.792Z"
-//     }
-//   }
-// ]

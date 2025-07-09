@@ -4,8 +4,8 @@ import CardScheduleContainer from "../CardScheduleContainer";
 import { _axios } from "@/Api/axios.config";
 import { ___showErrorToastNotification } from "@/lib/sonner";
 import { useQuery } from "@tanstack/react-query";
-import { groupSchedulesByPatient } from "./_groupSchedulesByPatient";
-import { sortExamsByDate } from "./_sortExamsByDate";
+import { groupSchedulesByPatient } from "../../../../utils/scheduling-utils/_groupSchedulesByPatient";
+import { sortExamsByDate } from "../../../../utils/exams-utils/sortExamsByDate";
 
 export default function Completed() {
   const { data, isPending } = useQuery({
@@ -30,9 +30,7 @@ export default function Completed() {
   }));
 
   return (
-    <div className="h-max w-full px-6 pb-6">
-      <h1 className="text-2xl font-semibold mb-4">Agendamentos Concluídos</h1>
-      <hr />
+    <div className="h-max w-full px-6 pb-6 overflow-hidden">
 
       <CardScheduleContainer
         isLoading={isPending}

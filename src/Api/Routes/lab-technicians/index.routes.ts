@@ -3,7 +3,7 @@ import { _axios } from "@/Api/axios.config";
 
 class LabTechniciansRoutes {
   async getAllLabTechnicians() {
-    return _axios.get('/lab-technicians');
+    return _axios.get<ILabTechnician[]>('/lab-technicians');
   }
 
   async allocateLabTechnician(examId: string, labTechnicianId: string) {

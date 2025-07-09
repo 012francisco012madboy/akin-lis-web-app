@@ -4,7 +4,8 @@
 
 
 body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari e Opera */
+  display: none;
+  /* Chrome, Safari e Opera */
 }
 
 
@@ -15,9 +16,12 @@ body::-webkit-scrollbar {
   transition: background-color .3s;
   transition: opacity .3s;
 
-  scrollbar-width: none; /* Firefox: Oculta a barra de rolagem */
-  -ms-overflow-style: none; /* IE e Edge: Oculta a barra de rolagem */
-  display: none; /* Chrome, Safari e Opera: Oculta a barra de rolagem */
+  scrollbar-width: none;
+  /* Firefox: Oculta a barra de rolagem */
+  -ms-overflow-style: none;
+  /* IE e Edge: Oculta a barra de rolagem */
+  display: none;
+  /* Chrome, Safari e Opera: Oculta a barra de rolagem */
 
 }
 
@@ -32,13 +36,13 @@ body::-webkit-scrollbar {
 
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* Remove as setas no Firefox */
 input[type="number"] {
-    -moz-appearance: textfield;
+  -moz-appearance: textfield;
 }
 
 
@@ -85,6 +89,7 @@ body {
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
   .dark {
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -113,4 +118,43 @@ body {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+}
+
+/* Estilos customizados para scroll nos cards */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Utilitário para truncar texto */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+/* Animações suaves */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }

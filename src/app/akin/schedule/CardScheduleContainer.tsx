@@ -40,7 +40,6 @@ export default function CardScheduleContainer({ schedule, title, isLoading, show
     setIsSearching(!!searchText);
 
     if (schedule) {
-      console.log("schedule for:", schedule);
       const filtered = schedule.filter((s) =>
         s.Paciente?.nome_completo?.toLowerCase().includes(searchText.toLowerCase())
       );
@@ -90,6 +89,7 @@ export default function CardScheduleContainer({ schedule, title, isLoading, show
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentItems = filteredSchedule.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  console.log("Filtered Schedule:", filteredSchedule);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {

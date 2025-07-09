@@ -5,7 +5,7 @@ import Image from "next/image";
 import Primary from "@/components/button/primary";
 import { View } from "@/components/view";
 import { Trash, CheckCircle, Pencil } from "lucide-react";
-import { AllocateTechniciansModal, ILabTechnician } from "./tecnico";
+import { AllocateTechniciansModal } from "./tecnico";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/Api/axios.config";
@@ -13,6 +13,7 @@ import { Exam } from "../patient/[id]/exam-history/useExamHookData";
 import { EditScheduleFormModal } from "./editScheduleData";
 import { labChiefRoutes } from "@/Api/Routes/lab-chief";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
+import { labTechniciansRoutes } from "@/Api/Routes/lab-technicians/index.routes";
 
 interface ICardSchedule {
   data: ScheduleType;
@@ -26,6 +27,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
   const userRole = getAllDataInCookies().userRole;
   const role = "RECEPCIONISTA";
 
+
   const handleEditClick = (exam: Exam) => {
     setSelectedExam(exam);
     setIsModalOpen(true);
@@ -34,7 +36,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
   const tecnico = useQuery({
     queryKey: ["lab-tech"],
     queryFn: async () => {
-      return await _axios.get<ILabTechnician[]>("lab-technicians");
+      return await labTechniciansRoutes.getAllLabTechnicians();
     },
   });
 
@@ -46,13 +48,13 @@ export default function CardSchedule({ data }: ICardSchedule) {
   });
 
   if (labChiefs.isLoading) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
   const handleGroupExams = () => {
     if (data?.Exame?.length > 0) {
       const exams = data.Exame
-        .filter((exame) => !exame.id_tecnico_alocado) // Excluir exames com técnicos alocados
+        .filter((exame) => !exame.id_tecnico_alocado)
         .map((exame) => ({
           id: exame.id,
           name: exame.Tipo_Exame?.nome || "Nome não disponível",
@@ -62,6 +64,7 @@ export default function CardSchedule({ data }: ICardSchedule) {
         }));
       // @ts-ignore
       setGroupedExams(exams);
+      console.log("Grouped Exams:", exams);
     }
   };
 
@@ -85,7 +88,6 @@ export default function CardSchedule({ data }: ICardSchedule) {
     data?.Paciente?.data_nascimento &&
     new Date().getFullYear() - new Date(data.Paciente.data_nascimento).getFullYear();
 
-  //[&::-webkit-scrollbar]:hidden 
   return (
     <div className="card w-full max-w-sm mx-auto shadow-xl border border-gray-300 rounded-lg flex flex-col items-center bg-white min-h-[400px] transition-all duration-300 hover:scale-105">
       {/* Exame Information */}
@@ -98,11 +100,6 @@ export default function CardSchedule({ data }: ICardSchedule) {
                   <span className="break-words flex-1">{exame.Tipo_Exame.nome || "Nome não disponível"}</span>
                   {/* <EditScheduleFormModal> */}
                   <div className="relative group flex-shrink-0">
-                    {/* {
-                      userRole.data?.data.tipo !== "RECEPCIONISTA" ? (
-                        <></>
-                      ) : ( */}
-
                     <>
                       <Pencil size={18}
                         className="cursor-pointer text-gray-500"
@@ -128,8 +125,6 @@ export default function CardSchedule({ data }: ICardSchedule) {
                         Editar
                       </span>
                     </>
-                    {/* )
-                    } */}
                     <EditScheduleFormModal
                       active
                       open={isModalOpen}
@@ -144,7 +139,6 @@ export default function CardSchedule({ data }: ICardSchedule) {
                       }}
                     />
                   </div>
-                  {/* </EditScheduleFormModal> */}
                 </div>
 
                 <div className="space-y-1 mt-2">

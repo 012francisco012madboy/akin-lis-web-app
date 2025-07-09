@@ -21,21 +21,6 @@ import { ___showErrorToastNotification, ___showSuccessToastNotification } from "
 import { LabChief, labChiefRoutes } from "@/Api/Routes/lab-chief";
 
 
-
-export interface ILabTechnician {
-  id: string;
-  nome_completo?: string;
-  nome:string;
-  numero_identificacao: string;
-  data_nascimento: string;
-  tipo: string;
-  contacto_telefonico: string;
-  criado_aos: string;
-  atualizado_aos: string;
-  id_sexo: number;
-  id_usuario: string;
-}
-
 interface AllocateTechniciansModalProps {
   children?: React.ReactNode;
   technicians: ILabTechnician[];
@@ -172,6 +157,8 @@ export const AllocateTechniciansModal: React.FC<AllocateTechniciansModalProps> =
                       <p className="text-sm text-gray-600">Hora: {exam.hourSchedule}</p>
                       {/* @ts-ignore */}
                       <p className="text-sm text-gray-600">Técnico Alocado: {exam.id_tecnico_alocado != null ? "1 alocado" : "0 alocado"}</p>
+
+                      {/* <p className="text-sm text-gray-600">Chefe Alocado: {exam. != null ? "1 alocado" : "0 alocado"}</p> */}
 
                       {/* @ts-ignore */}
                       {errors[exam.id] && (

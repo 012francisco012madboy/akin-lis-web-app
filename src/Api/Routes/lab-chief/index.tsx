@@ -34,7 +34,7 @@ class LabChiefRoutes {
   }
 
   async allocateLabChief(examId: number, labChiefId: string) {
-    const response = await _axios.post(`/exams/lab-chief/set/${examId}`, {
+    const response = await _axios.post(`/schedulings/lab-chief/${examId}`, {
       id_chefe_alocado: labChiefId,
     });
     return response.data;
