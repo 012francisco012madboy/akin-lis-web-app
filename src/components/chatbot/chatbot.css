@@ -1,0 +1,99 @@
+/* Estilos personalizados para o Chatbot */
+
+.chatbot-container {
+  --chatbot-primary: theme('colors.akin-turquoise');
+  --chatbot-primary-hover: theme('colors.akin-turquoise/80');
+  --chatbot-background: white;
+  --chatbot-border: theme('colors.gray.200');
+  --chatbot-shadow: theme('boxShadow.2xl');
+}
+
+.chatbot-message-user {
+  @apply bg-akin-turquoise text-white;
+  border-radius: 18px 18px 4px 18px;
+}
+
+.chatbot-message-agent {
+  @apply bg-gray-100 text-gray-900;
+  border-radius: 18px 18px 18px 4px;
+}
+
+.chatbot-typing-animation {
+  @apply flex items-center gap-1;
+}
+
+.chatbot-typing-dot {
+  @apply w-2 h-2 bg-gray-400 rounded-full animate-pulse;
+  animation-delay: var(--delay, 0ms);
+}
+
+.chatbot-typing-dot:nth-child(2) {
+  --delay: 150ms;
+}
+
+.chatbot-typing-dot:nth-child(3) {
+  --delay: 300ms;
+}
+
+.chatbot-audio-controls {
+  @apply max-w-full h-8;
+}
+
+.chatbot-audio-controls::-webkit-media-controls-panel {
+  @apply bg-transparent;
+}
+
+.chatbot-recording-pulse {
+  @apply animate-pulse;
+  animation-duration: 1s;
+}
+
+.chatbot-gradient-header {
+  background: linear-gradient(135deg, theme('colors.akin-turquoise') 0%, theme('colors.akin-turquoise/80') 100%);
+}
+
+.chatbot-scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.gray.300') transparent;
+}
+
+.chatbot-scroll-area::-webkit-scrollbar {
+  width: 4px;
+}
+
+.chatbot-scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chatbot-scroll-area::-webkit-scrollbar-thumb {
+  background-color: theme('colors.gray.300');
+  border-radius: 2px;
+}
+
+.chatbot-scroll-area::-webkit-scrollbar-thumb:hover {
+  background-color: theme('colors.gray.400');
+}
+
+/* Animação de entrada das mensagens */
+.chatbot-message-enter {
+  @apply opacity-0 translate-y-2;
+  animation: chatbot-message-slide-in 0.3s ease-out forwards;
+}
+
+@keyframes chatbot-message-slide-in {
+  to {
+    @apply opacity-100 translate-y-0;
+  }
+}
+
+/* Estilo para modo escuro (opcional) */
+@media (prefers-color-scheme: dark) {
+  .chatbot-container {
+    --chatbot-background: theme('colors.gray.900');
+    --chatbot-border: theme('colors.gray.700');
+  }
+
+  .chatbot-message-agent {
+    @apply bg-gray-800 text-gray-100;
+  }
+}

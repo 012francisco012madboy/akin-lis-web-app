@@ -36,9 +36,8 @@ export const Chatbot: React.FC<ChatbotProps> = ({ isChatOpen, onClose }) => {
         user_id: user.id,
         session_id: token,
         email: data.data.email,
-        senha: data.data.senha,
-        tipo: tipo
-      });
+        senha: data.data.senha
+      }, tipo);
     },
     onSuccess: (data) => {
       setMessages((prev) => [

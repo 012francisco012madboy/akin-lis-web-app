@@ -11,7 +11,7 @@ import {
 import { ExpandableAppSidebar } from "@/components/layout/sidebarConfig/expandable-app-sidebar";
 import { motion } from "framer-motion";
 import { MessageCircleMoreIcon } from "lucide-react";
-import { Chatbot } from "@/components/chatbot/Chatbot";
+import { Chatbot } from "@/components/chatbot/ChatbotImproved";
 import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
