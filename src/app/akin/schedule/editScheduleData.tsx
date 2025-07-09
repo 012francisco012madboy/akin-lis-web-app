@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Combobox } from "@/components/combobox/comboboxExam";
 import { useEffect, useState } from "react";
-import { ILabTechnician } from "./tecnico";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { _axios } from "@/Api/axios.config";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";

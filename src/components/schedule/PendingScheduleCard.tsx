@@ -94,7 +94,7 @@ export function PendingScheduleCard({ schedule }: PendingScheduleCardProps) {
         <div className="flex flex-col lg:flex-row gap-2 items-center justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className="h-12 w-12 ring-2 ring-blue-200">
-              <AvatarImage src="/images/avatar.png" />
+              <AvatarImage src="" />
               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold">
                 {getPatientInitials()}
               </AvatarFallback>

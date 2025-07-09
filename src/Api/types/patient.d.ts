@@ -1,6 +1,7 @@
 interface PatientType {
   id: string;
   numero_identificacao: string;
+  email?: string | null;
   nome_completo: string;
   data_nascimento: string;
   contacto_telefonico: string;
