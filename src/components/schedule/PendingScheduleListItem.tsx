@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { CalendarDays, Clock, User, Phone, CreditCard, Stethoscope, CheckCircle, XCircle, AlertCircle, ChevronDown, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { scheduleRoutes } from "@/Api/Routes/schedule";
+import { scheduleRoutes } from "@/Api/Routes/schedule/index.routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 

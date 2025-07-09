@@ -30,3 +30,13 @@ interface AvaliableExamsType {
   descricao: string;
   preco: number;
 }
+
+
+interface EditableExam {
+  id: number;
+  status: string;
+  data_agendamento: string;
+  hora_agendamento: string;
+  status_pagamento: string;
+  id_tecnico_alocado: string | null;
+}

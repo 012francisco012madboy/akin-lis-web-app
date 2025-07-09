@@ -51,6 +51,9 @@ import {
   ___showErrorToastNotification
 } from "@/lib/sonner";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
+import { labTechniciansRoutes } from "@/Api/Routes/lab-technicians/index.routes";
+import { labChiefRoutes } from "@/Api/Routes/lab-chief/index.routes";
+import { examRoutes } from "@/Api/Routes/Exam/index.route";
 
 interface CompletedScheduleDetailsModalProps {
   schedule: CompletedScheduleType | null;
@@ -58,14 +61,6 @@ interface CompletedScheduleDetailsModalProps {
   onClose: () => void;
 }
 
-interface EditableExam {
-  id: number;
-  status: string;
-  data_agendamento: string;
-  hora_agendamento: string;
-  status_pagamento: string;
-  id_tecnico_alocado: string | null;
-}
 
 export function CompletedScheduleDetailsModal({
   schedule,
@@ -87,7 +82,7 @@ export function CompletedScheduleDetailsModal({
   const { data: technicians, isLoading: loadingTechnicians } = useQuery({
     queryKey: ["lab-technicians"],
     queryFn: async () => {
-      const response = await _axios.get<ILabTechnician[]>("lab-technicians");
+      const response = await labTechniciansRoutes.getAllLabTechnicians();
       return response.data;
     },
     enabled: isLabChief,
@@ -97,17 +92,17 @@ export function CompletedScheduleDetailsModal({
   const { data: labChiefs, isLoading: loadingChiefs } = useQuery({
     queryKey: ["lab-chiefs"],
     queryFn: async () => {
-      const response = await _axios.get<ILabTechnician[]>("lab-chiefs");
-      return response.data;
+      const response = await labChiefRoutes.getAllLabChief();
+      return response;
     },
     enabled: isReceptionist,
   });
 
   // Mutação para atualizar exame
   const updateExamMutation = useMutation({
-    mutationFn: async (data: { examId: number; updates: Partial<EditableExam> }) => {
-      const response = await _axios.patch(`/exams/${data.examId}`, data.updates);
-      return response.data;
+    mutationFn: async (data: { examId: number; updates: EditableExam }) => {
+      const response = await examRoutes.editExam(data.examId, data.updates);
+      return response;
     },
     onSuccess: () => {
       ___showSuccessToastNotification({
@@ -149,10 +144,15 @@ export function CompletedScheduleDetailsModal({
   // Mutação para alocar chefe
   const allocateChiefMutation = useMutation({
     mutationFn: async (data: { scheduleId: number; chiefId: string }) => {
-      const response = await _axios.patch(`/schedulings/${data.scheduleId}`, {
-        id_chefe_alocado: data.chiefId,
-      });
-      return response.data;
+        const response = await labChiefRoutes.allocateLabChief(
+          data.scheduleId,
+          data.chiefId,
+        )
+
+      // const response = await _axios.patch(`/schedulings/${data.scheduleId}`, {
+      //   id_chefe_alocado: data.chiefId,
+      // });
+      // return response.data;
     },
     onSuccess: () => {
       ___showSuccessToastNotification({
@@ -256,6 +256,8 @@ export function CompletedScheduleDetailsModal({
     updateExamMutation.mutate({
       examId: editedExam.id,
       updates: {
+        id: editedExam.id,
+        id_tecnico_alocado: editedExam.id_tecnico_alocado,
         status: editedExam.status,
         data_agendamento: editedExam.data_agendamento,
         hora_agendamento: editedExam.hora_agendamento,

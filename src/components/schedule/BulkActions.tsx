@@ -19,7 +19,7 @@ import {
   Stethoscope,
   CreditCard
 } from "lucide-react";
-import { scheduleRoutes } from "@/Api/Routes/schedule";
+import { scheduleRoutes } from "@/Api/Routes/schedule/index.routes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface BulkActionsProps {

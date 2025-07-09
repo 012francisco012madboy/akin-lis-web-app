@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { _axios } from "@/Api/axios.config";
 import { Exam } from "../patient/[id]/exam-history/useExamHookData";
 import { EditScheduleFormModal } from "./editScheduleData";
-import { labChiefRoutes } from "@/Api/Routes/lab-chief";
+import { labChiefRoutes } from "@/Api/Routes/lab-chief/index.routes";
 import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 import { labTechniciansRoutes } from "@/Api/Routes/lab-technicians/index.routes";
 

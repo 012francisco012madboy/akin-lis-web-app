@@ -18,7 +18,7 @@ import { ChevronDown, ChevronUp, Loader } from "lucide-react";
 import { Exam } from "../patient/[id]/exam-history/useExamHookData";
 import { _axios } from "@/Api/axios.config";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";
-import { LabChief, labChiefRoutes } from "@/Api/Routes/lab-chief";
+import { LabChief, labChiefRoutes } from "@/Api/Routes/lab-chief/index.routes";
 
 
 interface AllocateTechniciansModalProps {

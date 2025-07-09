@@ -21,7 +21,7 @@ import {
   TrendingUp,
   BarChart3,
 } from "lucide-react";
-import { scheduleRoutes } from "@/Api/Routes/schedule";
+import { scheduleRoutes } from "@/Api/Routes/schedule/index.routes";
 import { PendingScheduleCard } from "@/components/schedule/PendingScheduleCard";
 import { PendingScheduleTable } from "@/components/schedule/PendingScheduleTable";
 import { ScheduleFilters } from "@/components/schedule/ScheduleFilters";
