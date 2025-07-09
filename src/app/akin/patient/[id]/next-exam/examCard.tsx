@@ -4,7 +4,6 @@ import { AlerDialogNextExam } from "./_alertDialog";
 import { MedicalMaterialsModal } from "./_materialModal";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ILabTechnician } from "@/app/akin/schedule/tecnico";
 import { useAuthStore } from "@/utils/zustand-store/authStore";
 import { UserData } from "@/app/akin/profile/page";
 import { Pencil } from "lucide-react";
