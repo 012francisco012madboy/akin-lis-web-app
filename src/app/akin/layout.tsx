@@ -24,6 +24,7 @@ import {
 import { usePathname } from "next/navigation";
 import { APP_CONFIG } from "@/components/layout/app";
 import { useMemo } from "react";
+import { NotificationIndicator } from "@/components/notifications/NotificationIndicator";
 
 // Função para gerar breadcrumbs dinamicamente baseado no path
 function generateBreadcrumbs(pathname: string) {
@@ -237,9 +238,14 @@ function SidebarContentWrapper({ children }: { children: ReactNode }) {
             ))}
           </BreadcrumbList>
         </Breadcrumb>
+
+        {/* Indicador de notificações */}
+        <div className="w-full flex justify-end pr-6">
+          <NotificationIndicator />
+        </div>
       </header>
       <main className="flex-1 overflow-auto">
-        <Suspense fallback={<Loading />}>{children}</Suspense>
+        <Suspense fallback={< Loading />}>{children}</Suspense>
       </main>
     </SidebarInset>
   );

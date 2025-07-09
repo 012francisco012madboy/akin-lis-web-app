@@ -22,7 +22,8 @@ import {
   Package,
   PackageOpen,
   PackageSearch,
-  FileText
+  FileText,
+  Bell
 } from "lucide-react";
 
 export const APP_CONFIG = {
@@ -104,6 +105,12 @@ export const APP_CONFIG = {
         label: "Mensagens",
         icon: MessageSquareMore,
         path: "/akin/message",
+        access: ["RECEPCIONISTA", "TECNICO", "CHEFE"]
+      },
+      {
+        label: "Notificações",
+        icon: Bell,
+        path: "/akin/notifications",
         access: ["RECEPCIONISTA", "TECNICO", "CHEFE"]
       },
       {
