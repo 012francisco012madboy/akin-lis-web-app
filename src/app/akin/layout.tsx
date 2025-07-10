@@ -217,8 +217,8 @@ function SidebarContentWrapper({ children }: { children: ReactNode }) {
       <header className="flex h-[51px] shrink-0 items-center gap-2 border-b px-4 bg-white">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
-        <Breadcrumb>
-          <BreadcrumbList>
+        <Breadcrumb className="w-full">
+          <BreadcrumbList className="w-full flex flex-nowrap">
             {breadcrumbs.map((breadcrumb, index) => (
               <div key={breadcrumb.href} className="flex items-center">
                 {index > 0 && <BreadcrumbSeparator className="hidden md:block" />}
@@ -228,7 +228,7 @@ function SidebarContentWrapper({ children }: { children: ReactNode }) {
                   ) : (
                     <BreadcrumbLink
                       href={breadcrumb.href}
-                      className="text-akin-turquoise hover:text-akin-turquoise/80"
+                      className="w-full text-akin-turquoise hover:text-akin-turquoise/80"
                     >
                       {breadcrumb.label}
                     </BreadcrumbLink>
