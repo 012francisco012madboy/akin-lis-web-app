@@ -39,12 +39,14 @@ export default function PatientByIdProfile({ params }: IPatientById) {
     }
   })
 
+
   const queryClient = useQueryClient();
 
   const getPatientInfo = useQuery({
     queryKey: ['patient-info', params.id],
     queryFn: async () => {
-      return await _axios.get<PatientType>(`/pacients/${params.id}`);
+      const repsonse = await _axios.get<PatientType>(`/pacients/${params.id}`);
+      return repsonse.data;
     }
   })
 
@@ -60,7 +62,7 @@ export default function PatientByIdProfile({ params }: IPatientById) {
     return <p className="text-center text-red-500">{getPatientInfo.error.message}</p>;
   }
 
-  if (!getPatientInfo.data?.data) {
+  if (!getPatientInfo.data) {
     return <PatientNotFound id={params.id} />;
   }
 
@@ -69,7 +71,7 @@ export default function PatientByIdProfile({ params }: IPatientById) {
 
       <div className="flex gap-4 bg-red px-2 md:px-0 md:pr-2 text-akin-white-smoke p-0 rounded-lg w-full h-full">
         <PatientResumeInfo
-          patient={getPatientInfo.data!.data}
+          patient={getPatientInfo.data}
           basicExamHistory={getBasicExamHistory.data?.data}
           basicNextExam={data?.data}
           userRole={userRole.data?.data?.tipo}

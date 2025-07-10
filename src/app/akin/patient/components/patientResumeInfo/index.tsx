@@ -51,7 +51,8 @@ export function PatientResumeInfo({
       nome: patient.sexo.nome
     }
   });
-    const date = new Date();
+
+  const date = new Date();
   const currentYear = date.getFullYear();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -199,7 +200,7 @@ export function PatientResumeInfo({
 
       <div className="space-y-5 w-ful">
         {/* Card de histórico */}
-        <Card className="w-full  h-max shadow-lg rounded-lg border border-gray-200">
+        {/* <Card className="w-full  h-max shadow-lg rounded-lg border border-gray-200">
           <CardHeader className="bg-gray-50 p-4 border-b">
             <CardTitle className="text-lg font-semibold text-gray-800">Histórico de Exames</CardTitle>
           </CardHeader>
@@ -243,7 +244,7 @@ export function PatientResumeInfo({
             </CardFooter>
           )
           }
-        </Card>
+        </Card> */}
 
         {/* Card de Proximos exames */}
         <Card className="w-full h-max shadow-lg rounded-lg border border-gray-200">
@@ -272,14 +273,14 @@ export function PatientResumeInfo({
             )}
           </CardContent>
           {/* {basicNextExam!.data.length > 2 ? ( */}
-            <CardFooter className="bg-gray-50 p-4 border-t w-full">
-              <Link href={`${patient.id}/next-exam`} passHref>
-                <Button className="w-[295px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
-                  Ver próximos
-                </Button>
-              </Link>
-            </CardFooter>
-            {/* ) : (
+          <CardFooter className="bg-gray-50 p-4 border-t w-full">
+            <Link href={`${patient.id}/next-exam`} passHref>
+              <Button className="w-[295px] h-8 bg-akin-turquoise text-white font-medium hover:bg-akin-turquoise-dark transition">
+                Ver próximos
+              </Button>
+            </Link>
+          </CardFooter>
+          {/* ) : (
               <></>
             )
             } */}
