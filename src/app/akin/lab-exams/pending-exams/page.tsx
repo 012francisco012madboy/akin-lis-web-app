@@ -3,6 +3,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +33,8 @@ import {
 import { usePendingExams } from "@/hooks/usePendingExams";
 import { ExamCard } from "@/components/akin/lab-exams/ExamCard";
 import { ExamTable } from "@/components/akin/lab-exams/ExamTable";
+import { AlerDialogNextExam } from "@/app/akin/patient/[id]/next-exam/_alertDialog";
+import { MedicalMaterialsModal } from "@/app/akin/patient/[id]/next-exam/_materialModal";
 import { toast } from "sonner";
 
 const SkeletonCard = () => (
@@ -56,11 +59,17 @@ const SkeletonCard = () => (
 );
 
 export default function PendingExamsPage() {
+  const router = useRouter();
   const [viewMode, setViewMode] = useState<"card" | "table">("card");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
   const [dateFilter, setDateFilter] = useState<string>("all");
+
+  // Estados para controlar os modais
+  const [isProtocolModalOpen, setIsProtocolModalOpen] = useState(false);
+  const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState(false);
+  const [selectedExam, setSelectedExam] = useState<ExamsType | null>(null);
 
   const { data: pendingExams, isLoading, error, refetch } = usePendingExams();
 
@@ -107,7 +116,31 @@ export default function PendingExamsPage() {
 
   const handleExamStart = (exam: ExamsType) => {
     console.log(`Iniciando exame: `, exam);
-    window.location.href = `/akin/lab-exams/ready-exam/${exam.Agendamento.Paciente.id}/${exam.Tipo_Exame.id}`;
+    setSelectedExam(exam);
+    setIsProtocolModalOpen(true);
+  };
+
+  const handleProtocolClose = () => {
+    setIsProtocolModalOpen(false);
+    setSelectedExam(null);
+  };
+
+  const handleProtocolIgnore = () => {
+    setIsProtocolModalOpen(false);
+    setIsMaterialsModalOpen(true);
+  };
+
+  const handleMaterialsClose = () => {
+    setIsMaterialsModalOpen(false);
+    setSelectedExam(null);
+  };
+
+  const handleMaterialsContinue = () => {
+    if (selectedExam) {
+      setIsMaterialsModalOpen(false);
+      // Usar router.push do Next.js para navegação sem reload
+      router.push(`/akin/lab-exams/ready-exam/${selectedExam.Agendamento.Paciente.id}/${selectedExam.Tipo_Exame.id}`);
+    }
   };
 
   const handleRefresh = () => {
@@ -372,6 +405,26 @@ export default function PendingExamsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Modais para o fluxo de iniciar exame */}
+      {selectedExam && (
+        <>
+          <AlerDialogNextExam
+            isOpen={isProtocolModalOpen}
+            onClose={handleProtocolClose}
+            onIgnore={handleProtocolIgnore}
+          />
+
+          <MedicalMaterialsModal
+            isOpen={isMaterialsModalOpen}
+            onClose={handleMaterialsClose}
+            onContinue={handleMaterialsContinue}
+            exam_id={String(selectedExam.Tipo_Exame.id)}
+            patient_name={selectedExam.Agendamento.Paciente.nome_completo}
+            exam_name={selectedExam.Tipo_Exame.nome}
+          />
+        </>
+      )}
     </div>
   );
 }

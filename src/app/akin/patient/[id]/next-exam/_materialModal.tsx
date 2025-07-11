@@ -30,10 +30,11 @@ type Material = {
 export const MedicalMaterialsModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
+  onContinue?: () => void;
   exam_id: string;
   patient_name: string;
   exam_name: string;
-}> = ({ isOpen, onClose, exam_id, patient_name, exam_name }) => {
+}> = ({ isOpen, onClose, onContinue, exam_id, patient_name, exam_name }) => {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [selectedMaterial, setSelectedMaterial] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<string>("");
@@ -178,15 +179,28 @@ export const MedicalMaterialsModal: React.FC<{
             Cancelar
           </Button>
 
-          <Link href={`/akin/patient/${id}/ready-exam/${exam_id}`} passHref>
+          {onContinue ? (
             <Button
               className="bg-akin-turquoise hover:bg-akin-turquoise/80"
-              onClick={handleClose}
+              onClick={() => {
+                handleClose();
+                onContinue();
+              }}
               disabled={materials.length === 0}
             >
               Continuar ({materials.length} materiais)
             </Button>
-          </Link>
+          ) : (
+            <Link href={`/akin/patient/${id}/ready-exam/${exam_id}`} passHref>
+              <Button
+                className="bg-akin-turquoise hover:bg-akin-turquoise/80"
+                onClick={handleClose}
+                disabled={materials.length === 0}
+              >
+                Continuar ({materials.length} materiais)
+              </Button>
+            </Link>
+          )}
         </div>
       </AlertDialogContent>
     </AlertDialog>

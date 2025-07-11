@@ -32,6 +32,7 @@ import { UserData } from '@/app/akin/profile/page';
 import { AlerDialogNextExam } from './_alertDialog';
 import { MedicalMaterialsModal } from './_materialModal';
 import { EditScheduleFormModal } from '@/app/akin/schedule/editScheduleData';
+import { formatCurrency } from '@/utils/formartCurrency';
 
 // Função auxiliar para formatar status em português
 const getStatusInPortuguese = (status: string) => {
@@ -216,10 +217,7 @@ const ExamCardModern = ({
                 <DollarSign className="h-4 w-4 text-gray-500" />
                 <span className="font-medium">Preço:</span>
                 <span className="font-semibold">
-                  {exam.Tipo_Exame.preco.toLocaleString("pt-ao", {
-                    style: "currency",
-                    currency: "AOA",
-                  })}
+                  {formatCurrency(exam.Tipo_Exame.preco)}
                 </span>
               </div>
             </div>
