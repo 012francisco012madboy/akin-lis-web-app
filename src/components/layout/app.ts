@@ -68,7 +68,7 @@ export const APP_CONFIG = {
           { label: "Painel", icon: LayoutDashboard, path: "/akin/lab-exams", access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] },
           { label: "Exames Pendentes", icon: SquareActivity, path: "/akin/lab-exams/pending-exams", access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] },
           { label: "Historico de Exames", icon: History, path: "/akin/lab-exams/exams-history", access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] },
-           { label: "Exames Prontos", icon: Play, path: "/akin/lab-exams/ready-exam", access: [ "CHEFE", "TECNICO"] },
+          { label: "Exames Prontos", icon: Play, path: "/akin/lab-exams/ready-exam", access: ["CHEFE", "TECNICO"] },
         ]
       },
       {
@@ -89,14 +89,10 @@ export const APP_CONFIG = {
       },
       {
         label: "Gestão de stock",
-        icon: PackageOpen,
-        path: "/akin/stock-control/dashboard",
+        icon: Package,
+        path: "/akin/stock/",
         access: ["CHEFE", "TECNICO", "RECEPCIONISTA"],
-        subItems: [
-          { label: "Painel", icon: Package, path: "/akin/stock-control/dashboard", access: ["CHEFE", "TECNICO", "RECEPCIONISTA"] },
-          { label: "Productos", icon: PackageSearch, path: "/akin/stock-control/product", access: ["CHEFE", "TECNICO"] },
-          // { label: "Saídas", icon: Mail, path: "/akin/stock-control/exit", access: ["CHEFE", "TECNICO"] }
-        ]
+
       },
       {
         label: "Pagamentos",
