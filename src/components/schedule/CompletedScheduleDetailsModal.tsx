@@ -28,17 +28,14 @@ import {
   Clock,
   User,
   Phone,
-  CreditCard,
   Stethoscope,
   CheckCircle,
   XCircle,
   AlertCircle,
-  UserCheck,
   DollarSign,
   Edit3,
   Save,
   X,
-  MapPin,
   Mail,
   Calendar,
   Users
@@ -148,11 +145,6 @@ export function CompletedScheduleDetailsModal({
           data.scheduleId,
           data.chiefId,
         )
-
-      // const response = await _axios.patch(`/schedulings/${data.scheduleId}`, {
-      //   id_chefe_alocado: data.chiefId,
-      // });
-      // return response.data;
     },
     onSuccess: () => {
       ___showSuccessToastNotification({

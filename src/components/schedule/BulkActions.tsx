@@ -51,9 +51,9 @@ export function BulkActions({
   });
 
   const bulkRejectMutation = useMutation({
-    mutationFn: async ({ scheduleIds, reason }: { scheduleIds: number[]; reason: string }) => {
+    mutationFn: async ({ scheduleIds }: { scheduleIds: number[] }) => {
       const results = await Promise.allSettled(
-        scheduleIds.map(id => scheduleRoutes.rejectSchedule(id, reason))
+        scheduleIds.map(id => scheduleRoutes.rejectSchedule(id))
       );
       return results;
     },
@@ -91,7 +91,6 @@ export function BulkActions({
     if (selectedSchedules.length > 0 && rejectReason.trim()) {
       bulkRejectMutation.mutate({
         scheduleIds: selectedSchedules,
-        reason: rejectReason
       });
     }
   };

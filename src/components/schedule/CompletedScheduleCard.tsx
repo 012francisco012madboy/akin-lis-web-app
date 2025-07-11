@@ -8,7 +8,6 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import {
   CalendarDays,
-  Clock,
   User,
   Phone,
   CreditCard,
