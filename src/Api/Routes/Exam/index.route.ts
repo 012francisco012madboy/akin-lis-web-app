@@ -7,6 +7,11 @@ class ExamRoute {
     const response = await _axios.patch(`/exams/${examId}`, updates);
     return response.data;
   }
+
+  async getPendingExams() {
+    const response = await _axios.get('/exams/pending');
+    return response.data;
+  }
 }
 
 export const examRoutes = new ExamRoute();

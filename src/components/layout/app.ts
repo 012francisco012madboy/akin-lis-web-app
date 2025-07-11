@@ -1,18 +1,13 @@
 import osapiLogo from "@/assets/images/osapi-logo.png";
 import osapiLogoWhite from "@/assets/images/osapi-logo-white.png";
 import {
-  Home,
   CalendarCheck,
   LayoutDashboard,
   UserRound,
   CreditCard,
   MessageSquareMore,
-  Send,
-  Mail,
   LogOut,
-  Settings2,
   Settings,
-  Cog,
   SquareActivity,
   UsersRound,
   CalendarPlus2,
@@ -23,7 +18,9 @@ import {
   PackageOpen,
   PackageSearch,
   FileText,
-  Bell
+  Bell,
+  History,
+  Play
 } from "lucide-react";
 
 export const APP_CONFIG = {
@@ -66,7 +63,13 @@ export const APP_CONFIG = {
         label: "Exames Laboratoriais",
         icon: SquareActivity,
         path: "/akin/lab-exams",
-        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"]
+        access: ["RECEPCIONISTA", "CHEFE", "TECNICO"],
+        subItems: [
+          { label: "Painel", icon: LayoutDashboard, path: "/akin/lab-exams", access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] },
+          { label: "Exames Pendentes", icon: SquareActivity, path: "/akin/lab-exams/pending-exams", access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] },
+          { label: "Historico de Exames", icon: History, path: "/akin/lab-exams/exams-history", access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] },
+           { label: "Exames Prontos", icon: Play, path: "/akin/lab-exams/ready-exam", access: [ "CHEFE", "TECNICO"] },
+        ]
       },
       {
         label: "Gestão de Laudo",

@@ -1,171 +1,402 @@
+
+
 "use client";
 
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { format, isWithinInterval, parseISO } from "date-fns";
-import { CalendarIcon, FlaskConical } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-
-type LabExam = {
-  id: string;
-  patientName: string;
-  examType: string;
-  scheduledAt: string;
-};
-
-
-const mockExams: LabExam[] = [
-  { id: "1", patientName: "Ana Silva", examType: "Covid-19", scheduledAt: "2025-06-25T09:00:00Z" },
-  { id: "2", patientName: "João Pedro", examType: "HIV", scheduledAt: "2025-06-25T10:00:00Z" },
-  { id: "3", patientName: "Maria José", examType: "Covid-19", scheduledAt: "2025-06-26T11:00:00Z" },
-  { id: "4", patientName: "Carlos Miguel", examType: "HIV", scheduledAt: "2025-06-27T11:30:00Z" },
-  { id: "5", patientName: "Paula André", examType: "Malária", scheduledAt: "2025-06-28T12:00:00Z" },
-];
-
-const uniqueExamTypes = Array.from(new Set(mockExams.map((e) => e.examType)));
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  FlaskConical,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+  Calendar,
+  TrendingUp,
+  Search,
+  Filter,
+  RefreshCw,
+  BarChart3,
+  FileText,
+  Users,
+  Activity
+} from "lucide-react";
+import { ExamMetrics, generateExamMetrics } from "@/components/akin/lab-exams/ExamMetrics";
+import { usePendingExams } from "@/hooks/usePendingExams";
+import { ExamCard } from "@/components/akin/lab-exams/ExamCard";
+import { ExamTable } from "@/components/akin/lab-exams/ExamTable";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { toast } from "sonner";
 
 export default function LabExamsPage() {
-  const [search, setSearch] = useState("");
-  const [selectedType, setSelectedType] = useState<string | undefined>();
-  const [dateRange, setDateRange] = useState<{ from: Date | null; to: Date | null }>({
-    from: null,
-    to: null,
-  });
+  const [viewMode, setViewMode] = useState<"card" | "table">("card");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [paymentFilter, setPaymentFilter] = useState<string>("all");
 
-  const filteredExams = mockExams.filter((exam) => {
-    const matchesType = selectedType ? exam.examType === selectedType : true;
-    const matchesSearch = search
-      ? exam.patientName.toLowerCase().includes(search.toLowerCase())
-      : true;
-    const examDate = parseISO(exam.scheduledAt);
-    const matchesDate =
-      dateRange.from && dateRange.to
-        ? isWithinInterval(examDate, { start: dateRange.from, end: dateRange.to })
-        : true;
-    return matchesType && matchesSearch && matchesDate;
-  });
+  const { data: pendingExams, isLoading, error, refetch } = usePendingExams();
 
-  const grouped = filteredExams.reduce<Record<string, LabExam[]>>((acc, exam) => {
-    if (!acc[exam.examType]) acc[exam.examType] = [];
-    acc[exam.examType].push(exam);
-    return acc;
-  }, {});
+  const examMetrics = generateExamMetrics();
+
+  // Simulação de dados de exames recentes para o dashboard
+  const recentExams = [
+    {
+      id: 1,
+      patient: "Maria Silva",
+      exam: "Hemograma Completo",
+      time: "09:30",
+      status: "Em Andamento",
+      type: "progress"
+    },
+    {
+      id: 2,
+      patient: "João Santos",
+      exam: "Glicemia",
+      time: "10:15",
+      status: "Concluído",
+      type: "complete"
+    },
+    {
+      id: 3,
+      patient: "Ana Costa",
+      exam: "Urina Tipo I",
+      time: "11:00",
+      status: "Pendente",
+      type: "pending"
+    }
+  ];
+
+  const getStatusBadge = (status: string, type: string) => {
+    const variants = {
+      complete: "bg-green-100 text-green-800 border-green-200",
+      progress: "bg-blue-100 text-blue-800 border-blue-200",
+      pending: "bg-yellow-100 text-yellow-800 border-yellow-200"
+    };
+    return variants[type as keyof typeof variants] || variants.pending;
+  };
+
+  const handleExamEdit = (exam: ExamsType) => {
+    toast.info("Função de edição será implementada");
+  };
+
+  const handleExamView = (exam: ExamsType) => {
+    toast.info("Função de visualização será implementada");
+  };
+
+  const handleExamStart = (exam: ExamsType) => {
+    toast.info("Função de iniciar exame será implementada");
+  };
+
+  const handleRefresh = () => {
+    refetch();
+    toast.success("Dados atualizados com sucesso");
+  };
 
   return (
-    <div className="h-full mb-3 p-0 space-y-6 ">
-
-      {/* Filtros */}
-      <Card className="p-4 space-y-4">
-        <div className="flex flex-col lg:flex-row gap-4 lg:items-end">
-          <Input
-            placeholder="Buscar por nome do paciente..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full lg:w-1/3"
-          />
-
-          <Select
-            onValueChange={(value) => setSelectedType(value === "all" ? undefined : value)}
-            value={selectedType ?? "all"}
-          >
-            <SelectTrigger className="w-full lg:w-48">
-              <SelectValue placeholder="Tipo de exame" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              {uniqueExamTypes.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full lg:w-64 justify-start text-left font-normal"
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateRange.from && dateRange.to ? (
-                  <>
-                    {format(dateRange.from, "dd/MM/yyyy")} - {format(dateRange.to, "dd/MM/yyyy")}
-                  </>
-                ) : (
-                  "Selecionar período"
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="range"
-                //@ts-ignore
-                selected={dateRange}
-                //@ts-ignore
-                onSelect={setDateRange}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
-
-          <Button
-            variant="ghost"
-            className="text-sm text-blue-600 hover:underline ml-auto"
-            onClick={() => {
-              setSearch("");
-              setSelectedType(undefined);
-              setDateRange({ from: null, to: null });
-            }}
-          >
-            Limpar filtros
+    <div className="min-h-screen bg-gray-50/30 p-6 space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Exames Laboratoriais</h1>
+          <p className="text-gray-600">Gestão completa de exames médicos</p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button variant="outline" size="sm" onClick={handleRefresh}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Atualizar
+          </Button>
+          <Button variant="outline" size="sm">
+            <Calendar className="h-4 w-4 mr-2" />
+            Hoje
+          </Button>
+          <Button variant="outline" size="sm">
+            <FileText className="h-4 w-4 mr-2" />
+            Relatório
           </Button>
         </div>
-      </Card>
+      </div>
 
-      {/* Lista de exames agrupados */}
-      <ScrollArea className="h-[calc(100vh-100px)] pr-2 mt-4">
-        {Object.keys(grouped).length === 0 ? (
-          <p className="text-muted-foreground text-center mt-10">Nenhum exame encontrado.</p>
-        ) : (
-          <div className="space-y-10">
-            {Object.entries(grouped).map(([examType, exams]) => (
-              <Card key={examType} className="p-4 shadow-md border rounded-xl">
-                <div className="flex items-center gap-2 mb-4">
-                  <FlaskConical className="text-blue-600 w-5 h-5" />
-                  <h2 className="text-xl font-semibold">{examType}</h2>
-                </div>
-                <Separator className="mb-4" />
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {exams.map((exam) => (
-                    <Card
-                      key={exam.id}
-                      className="border border-muted shadow-sm hover:shadow-md transition rounded-lg"
-                    >
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-lg font-medium">{exam.patientName}</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground">Agendado para:</p>
-                        <p className="text-base font-medium">
-                          {format(parseISO(exam.scheduledAt), "dd/MM/yyyy 'às' HH:mm")}
-                        </p>
-                      </CardContent>
-                    </Card>
+      {/* Métricas */}
+      <ExamMetrics metrics={examMetrics} />
+
+      {/* Conteúdo Principal */}
+      <Tabs defaultValue="dashboard" className="space-y-6">
+        <TabsList className="grid w-full lg:w-[500px] grid-cols-4">
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="pending">Pendentes</TabsTrigger>
+          <TabsTrigger value="history">Histórico</TabsTrigger>
+          <TabsTrigger value="analytics">Análises</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="dashboard" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Atividade Recente */}
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Activity className="h-5 w-5 mr-2" />
+                  Atividade Recente
+                </CardTitle>
+                <CardDescription>
+                  Últimos exames realizados hoje
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {recentExams.map((exam) => (
+                    <div key={exam.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <FlaskConical className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{exam.patient}</p>
+                          <p className="text-sm text-gray-600">{exam.exam}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <span className="text-sm text-gray-500">{exam.time}</span>
+                        <Badge className={getStatusBadge(exam.status, exam.type)}>
+                          {exam.status}
+                        </Badge>
+                      </div>
+                    </div>
                   ))}
                 </div>
-              </Card>
-            ))}
+              </CardContent>
+            </Card>
+
+            {/* Estatísticas Rápidas */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <BarChart3 className="h-5 w-5 mr-2" />
+                  Estatísticas Rápidas
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Taxa de Conclusão</span>
+                    <span className="text-2xl font-bold text-green-600">94%</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Tempo Médio</span>
+                    <span className="text-2xl font-bold text-blue-600">45min</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Satisfação</span>
+                    <span className="text-2xl font-bold text-purple-600">4.8/5</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        )}
-      </ScrollArea>
+
+          {/* Alertas e Notificações */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <AlertTriangle className="h-5 w-5 mr-2" />
+                Alertas e Notificações
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <div className="flex items-center space-x-3">
+                    <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                    <div>
+                      <p className="text-sm font-medium text-yellow-900">4 exames atrasados</p>
+                      <p className="text-xs text-yellow-700">Necessitam atenção imediata</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    Verificar
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center space-x-3">
+                    <Clock className="h-5 w-5 text-blue-600" />
+                    <div>
+                      <p className="text-sm font-medium text-blue-900">Próximo exame em 15min</p>
+                      <p className="text-xs text-blue-700">Hemograma - Maria Silva</p>
+                    </div>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    Preparar
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="pending" className="space-y-6">
+          {/* Filtros */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Filter className="h-5 w-5 mr-2" />
+                Filtros
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Buscar exames..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="pendente">Pendente</SelectItem>
+                    <SelectItem value="em_andamento">Em Andamento</SelectItem>
+                    <SelectItem value="concluido">Concluído</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={paymentFilter} onValueChange={setPaymentFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pagamento" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="pago">Pago</SelectItem>
+                    <SelectItem value="nao_pago">Não Pago</SelectItem>
+                  </SelectContent>
+                </Select>
+                <div className="flex space-x-2">
+                  <Button
+                    variant={viewMode === "card" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setViewMode("card")}
+                  >
+                    Cards
+                  </Button>
+                  <Button
+                    variant={viewMode === "table" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setViewMode("table")}
+                  >
+                    Tabela
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Lista de Exames Pendentes */}
+          {isLoading ? (
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-center h-32">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : error ? (
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center text-red-600">
+                  Erro ao carregar exames pendentes
+                </div>
+              </CardContent>
+            </Card>
+          ) : pendingExams?.length === 0 ? (
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center text-gray-500">
+                  Nenhum exame pendente encontrado
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div>
+              {viewMode === "card" ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {pendingExams?.map((exam: ExamsType) => (
+                    <ExamCard
+                      key={exam.id}
+                      exam={exam}
+                      onEdit={handleExamEdit}
+                      onView={handleExamView}
+                      onStart={handleExamStart}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <ExamTable
+                  exams={pendingExams || []}
+                  onEdit={handleExamEdit}
+                  onView={handleExamView}
+                  onStart={handleExamStart}
+                />
+              )}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="history" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Clock className="h-5 w-5 mr-2" />
+                Histórico de Exames
+              </CardTitle>
+              <CardDescription>
+                Consulte o histórico completo de exames realizados
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <p className="text-gray-500">
+                  Funcionalidade de histórico será implementada em breve
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <BarChart3 className="h-5 w-5 mr-2" />
+                Análises e Relatórios
+              </CardTitle>
+              <CardDescription>
+                Visualize estatísticas detalhadas sobre os exames
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <p className="text-gray-500">
+                  Funcionalidade de análises será implementada em breve
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
