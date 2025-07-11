@@ -90,8 +90,8 @@ function PendingScheduleTableRow({ schedule }: PendingScheduleTableRowProps) {
   });
 
   const rejectMutation = useMutation({
-    mutationFn: ({ scheduleId, reason }: { scheduleId: number; reason: string }) =>
-      scheduleRoutes.rejectSchedule(scheduleId, reason),
+    mutationFn: ({ scheduleId }: { scheduleId: number }) =>
+      scheduleRoutes.rejectSchedule(scheduleId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pending-schedules'] });
       setShowRejectDialog(false);
@@ -105,7 +105,7 @@ function PendingScheduleTableRow({ schedule }: PendingScheduleTableRowProps) {
 
   const handleReject = () => {
     if (rejectReason.trim()) {
-      rejectMutation.mutate({ scheduleId: schedule.id, reason: rejectReason });
+      rejectMutation.mutate({ scheduleId: schedule.id });
     }
   };
 

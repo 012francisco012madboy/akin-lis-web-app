@@ -11,10 +11,7 @@ import {
   XCircle,
   DollarSign,
   TrendingUp,
-  Users,
   Stethoscope,
-  Target,
-  AlertTriangle,
   CreditCard,
   BarChart3
 } from "lucide-react";

@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { CalendarDays, Clock, User, Phone, CreditCard, Stethoscope, CheckCircle, XCircle, AlertCircle, ChevronDown, ChevronRight } from "lucide-react";
+import { CalendarDays, Clock, Stethoscope, CheckCircle, XCircle, AlertCircle, ChevronDown, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { scheduleRoutes } from "@/Api/Routes/schedule/index.routes";
@@ -32,8 +32,8 @@ export function PendingScheduleListItem({ schedule }: PendingScheduleListItemPro
   });
 
   const rejectMutation = useMutation({
-    mutationFn: ({ scheduleId, reason }: { scheduleId: number; reason: string }) =>
-      scheduleRoutes.rejectSchedule(scheduleId, reason),
+    mutationFn: ({ scheduleId }: { scheduleId: number }) =>
+      scheduleRoutes.rejectSchedule(scheduleId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pending-schedules'] });
       setShowRejectDialog(false);
@@ -47,7 +47,7 @@ export function PendingScheduleListItem({ schedule }: PendingScheduleListItemPro
 
   const handleReject = () => {
     if (rejectReason.trim()) {
-      rejectMutation.mutate({ scheduleId: schedule.id, reason: rejectReason });
+      rejectMutation.mutate({ scheduleId: schedule.id });
     }
   };
 
