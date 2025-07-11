@@ -17,7 +17,7 @@ class ScheduleRoutes {
 
   async acceptSchedule(scheduleId: number) {
     try {
-      const response = await _axios.patch(`/schedulings/${scheduleId}/accept`);
+      const response = await _axios.patch(`/schedulings/${scheduleId}`, { status: "CONCLUIDO" });
       ___showSuccessToastNotification({
         message: "Agendamento aceito com sucesso!",
       });
@@ -30,9 +30,9 @@ class ScheduleRoutes {
     }
   }
 
-  async rejectSchedule(scheduleId: number, reason?: string) {
+  async rejectSchedule(scheduleId: number) {
     try {
-      const response = await _axios.patch(`/schedulings/${scheduleId}/reject`, { reason });
+      const response = await _axios.patch(`/schedulings/${scheduleId}`, { status: "CANCELADO" });
       ___showSuccessToastNotification({
         message: "Agendamento recusado com sucesso!",
       });

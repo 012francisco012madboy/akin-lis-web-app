@@ -36,7 +36,6 @@ export default function Request() {
   const [selectedSchedules, setSelectedSchedules] = useState<number[]>([]);
   const [showStats, setShowStats] = useState(false);
 
-  // Fetch pending schedules using TanStack Query
   const {
     data: schedules = [],
     isLoading,

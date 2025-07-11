@@ -2,7 +2,6 @@
 
 import { useParams } from "next/navigation";
 import { View } from "@/components/view";
-import CustomBreadcrumb from "@/components/custom-breadcrumb";
 import { Exam } from "./useExamHookData";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
@@ -15,158 +14,301 @@ import { isWithinInterval } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { _axios } from "@/Api/axios.config";
 import { IExamProps } from "@/module/types";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, Filter, Search, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+// Types
+interface ExamData {
+  id: number;
+  data_agendamento: string;
+  hora_agendamento: string;
+  status: string;
+  status_pagamento: string;
+  Tipo_Exame: {
+    nome: string;
+    descricao: string;
+    preco: number;
+  };
+  Agendamento: {
+    id_unidade_de_saude: number;
+    id_tecnico_alocado: string | null;
+  };
+}
+
+interface ExamHistoryFilters {
+  statusFilter: string | null;
+  selectedExam: IExamProps | null;
+  selectedDateRange: DateRange | undefined;
+  isDateFilterEnabled: boolean;
+  searchTerm: string;
+}
 
 export default function ExamsHistory() {
-  //@ts-ignore
-  const { id } = useParams();
-  const [namePatient, setNamePatient] = useState("");
+  const { id } = useParams<{ id: string }>();
+  const [namePatient, setNamePatient] = useState<string>("");
   const [exams, setExams] = useState<IExamProps[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [selectedExam, setSelectedExam] = useState<IExamProps | null>(null);
-  const [selectedDateRange, setSelectedDateRange] = useState<DateRange | undefined>(undefined);
-  const [filteredExams, setFilteredExams] = useState<Exam[]>([]);
-  const [isDateFilterEnabled, setIsDateFilterEnabled] = useState(false);
+  const [filters, setFilters] = useState<ExamHistoryFilters>({
+    statusFilter: null,
+    selectedExam: null,
+    selectedDateRange: undefined,
+    isDateFilterEnabled: false,
+    searchTerm: "",
+  });
+  const [filteredExams, setFilteredExams] = useState<ExamData[]>([]);
 
   const historyExams = useQuery({
-    queryKey: ["exams-history"],
+    queryKey: ["exams-history", id],
     queryFn: async () => {
       const response = await _axios.get<Exam>(`/exams/history/${id}`);
       return response.data;
     },
+    enabled: !!id,
   });
 
+  // Fetch patient and exam types data
   useEffect(() => {
-    const fetchExams = async () => {
-      try {
-        const patientData = await _axios.get(`/pacients/${id}`);
-        setNamePatient(patientData.data.nome_completo);
+    if (!id) return;
 
-        const examTypes = await _axios.get("/exam-types");
+    const fetchData = async () => {
+      try {
+        const [patientData, examTypes] = await Promise.all([
+          _axios.get(`/pacients/${id}`),
+          _axios.get("/exam-types"),
+        ]);
+
+        setNamePatient(patientData.data.nome_completo);
         setExams(examTypes.data.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-    fetchExams();
+
+    fetchData();
   }, [id]);
 
+  // Filter exams based on criteria
   useEffect(() => {
-    const filtered = historyExams.data?.data.filter((exam) => {
+    if (!historyExams.data?.data) return;
+
+    const filtered = historyExams.data.data.filter((exam) => {
       const isWithinDateRange =
-        !isDateFilterEnabled ||
-        (
-          selectedDateRange &&
+        !filters.isDateFilterEnabled ||
+        (filters.selectedDateRange &&
+          filters.selectedDateRange.from &&
+          filters.selectedDateRange.to &&
           isWithinInterval(new Date(exam.data_agendamento), {
-            start: selectedDateRange.from!,
-            end: selectedDateRange.to!,
-          })
-        );
+            start: filters.selectedDateRange.from,
+            end: filters.selectedDateRange.to,
+          }));
 
       const matchesType =
-        !selectedExam || exam.Tipo_Exame.nome === selectedExam.nome;
+        !filters.selectedExam || exam.Tipo_Exame.nome === filters.selectedExam.nome;
 
       const matchesStatus =
-        !statusFilter || exam.status.toLowerCase() === statusFilter.toLowerCase();
+        !filters.statusFilter ||
+        exam.status.toLowerCase() === filters.statusFilter.toLowerCase();
 
-      return isWithinDateRange && matchesType && matchesStatus;
+      const matchesSearch =
+        !filters.searchTerm ||
+        exam.Tipo_Exame.nome.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
+        exam.status.toLowerCase().includes(filters.searchTerm.toLowerCase());
+
+      return isWithinDateRange && matchesType && matchesStatus && matchesSearch;
     });
-    //@ts-ignore
-    setFilteredExams(filtered || []);
-  }, [selectedDateRange, selectedExam, statusFilter, isDateFilterEnabled, historyExams.data]);
 
+    setFilteredExams(filtered);
+  }, [filters, historyExams.data]);
+
+  // Filter handlers
   const handleDateChange = (date: DateRange | Date | undefined) => {
-    setSelectedDateRange(date as DateRange);
+    setFilters(prev => ({ ...prev, selectedDateRange: date as DateRange }));
   };
 
-  const handleSelect = (exam: IExamProps | null) => {
-    setSelectedExam(exam);
+  const handleExamSelect = (exam: IExamProps | null) => {
+    setFilters(prev => ({ ...prev, selectedExam: exam }));
   };
 
-  const breadcrumbItems = [
-    { label: "Paciente", href: "/akin/patient" },
-    { label: "Perfil do paciente", href: `/akin/patient/${id}` },
-    { label: "Histórico de Exame" },
+  const handleStatusChange = (status: string | null) => {
+    setFilters(prev => ({ ...prev, statusFilter: status }));
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilters(prev => ({ ...prev, searchTerm: e.target.value }));
+  };
+
+  const clearAllFilters = () => {
+    setFilters({
+      statusFilter: null,
+      selectedExam: null,
+      selectedDateRange: undefined,
+      isDateFilterEnabled: false,
+      searchTerm: "",
+    });
+  };
+
+  const statusOptions = [
+    { label: "Todos", value: null },
+    { label: "Pendente", value: "pendente" },
+    { label: "Concluído", value: "concluido" },
+    { label: "Cancelado", value: "cancelado" },
   ];
 
-  if (historyExams.isLoading || namePatient === "")
+  if (historyExams.isLoading || !namePatient) {
     return (
-      <View.Vertical className="flex min-h-screen bg-gray-50">
-        <CustomBreadcrumb items={breadcrumbItems} borderB />
+      <View.Vertical className="min-h-screen bg-gray-50">
         <PatientByIdProfileSkeleton />
       </View.Vertical>
     );
+  }
 
-  if (historyExams.isError)
+  if (historyExams.isError) {
     return (
       <View.Vertical className="flex justify-center items-center min-h-screen bg-gray-50">
-        <CustomBreadcrumb items={breadcrumbItems} borderB />
-        <p className="text-lg text-red-500">
-          Ocorreu um erro ao carregar os dados.
-        </p>
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-destructive">Erro</CardTitle>
+            <CardDescription>
+              Ocorreu um erro ao carregar os dados do histórico de exames.
+            </CardDescription>
+          </CardHeader>
+        </Card>
       </View.Vertical>
     );
+  }
 
   return (
-    <View.Vertical className="min-h-screen pb-5" >
-      <CustomBreadcrumb items={breadcrumbItems} borderB />
+    <View.Vertical className="min-h-screen bg-gray-50 p-4 space-y-6">
+      {/* Header Section */}
+      <Card className="shadow-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            Histórico de Exames
+          </CardTitle>
+          <CardDescription className="flex items-center gap-2">
+            <span className="font-medium">Paciente:</span>
+            <Badge variant="outline" className="text-sm">
+              {namePatient}
+            </Badge>
+          </CardDescription>
+        </CardHeader>
+      </Card>
 
-      <div className="bg-white shadow-md rounded-lg px-3  md:px-5 py-4 flex items-center">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between w-full 
-        ">
-          <p className="text-md text-gray-600">
-            Nome do Paciente:{" "}
-            <span className="font-medium text-gray-800">{namePatient}</span>
-          </p>
-          <Separator orientation="vertical" />
-          <div>
-            <DatePickerWithRange
-              enableRange={true}
-              enableDateFilter={true} //Sempre permitir a filtragem de data
-              //@ts-ignore
-              onDateChange={handleDateChange}
-              setEnableDateFilter={setIsDateFilterEnabled} // Passa a função de ativação de filtragem
-            />
+      {/* Filters Section */}
+      <Card className="shadow-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Filter className="h-5 w-5" />
+            Filtros
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {/* Search Input */}
+            <div className="space-y-2">
+              <Label htmlFor="search">Buscar</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  id="search"
+                  placeholder="Buscar por exame ou status..."
+                  value={filters.searchTerm}
+                  onChange={handleSearchChange}
+                  className="pl-9"
+                />
+              </div>
+            </div>
+
+            {/* Date Range Filter */}
+            <div className="space-y-2">
+              <Label>Data</Label>
+              <DatePickerWithRange
+                enableRange={true}
+                enableDateFilter={true}
+                onDateChange={handleDateChange}
+                setEnableDateFilter={(enable) =>
+                  setFilters(prev => ({ ...prev, isDateFilterEnabled: enable }))
+                }
+                placeholderText="Selecionar período"
+              />
+            </div>
+
+            {/* Status Filter */}
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <Combobox
+                data={statusOptions}
+                displayKey="label"
+                onSelect={(item) => handleStatusChange(item?.value || null)}
+                placeholder="Filtrar por status"
+                clearLabel="Limpar"
+                width="full"
+              />
+            </div>
+
+            {/* Exam Type Filter */}
+            <div className="space-y-2">
+              <Label>Tipo de Exame</Label>
+              <Combobox
+                data={exams}
+                displayKey="nome"
+                onSelect={handleExamSelect}
+                placeholder="Selecionar exame"
+                clearLabel="Limpar"
+                width="full"
+              />
+            </div>
           </div>
 
-          <Combobox
-            data={[
-              { label: "Todos", value: null },
-              { label: "Pendente", value: "pendente" },
-              { label: "Concluído", value: "concluido" },
-              { label: "Cancelado", value: "cancelado" },
-            ]}
-            displayKey="label"
-            onSelect={(item) => setStatusFilter(item?.value || null)}
-            placeholder="Filtrar por status"
-            clearLabel="Limpar"
-            width="full"
-          />
-
-          <Combobox
-            data={exams}
-            displayKey="nome"
-            onSelect={handleSelect}
-            placeholder="Selecionar exame"
-            clearLabel="Limpar"
-            width="full"
-          />
-        </div>
-      </div>
-
-      <div className="bg-white shadow-md rounded-lg p-6 overflow-auto">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">
-          Exames Realizados
-        </h2>
-        {filteredExams && filteredExams.length > 0 ? (
-          console.log("Filtered Exams", filteredExams),
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-            <ExamCard data={filteredExams} />
+          {/* Clear Filters Button */}
+          <div className="mt-4 flex justify-end">
+            <Button
+              variant="outline"
+              onClick={clearAllFilters}
+              className="flex items-center gap-2"
+            >
+              <Filter className="h-4 w-4" />
+              Limpar Filtros
+            </Button>
           </div>
-        ) : (
-          <p className="text-gray-600">Nenhum exame encontrado com os filtros aplicados.</p>
-        )}
-      </div>
+        </CardContent>
+      </Card>
+
+      {/* Results Section */}
+      <Card className="shadow-md">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Exames Realizados
+            </span>
+            <Badge variant="secondary" className="text-sm">
+              {filteredExams.length} resultado(s)
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {filteredExams && filteredExams.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <ExamCard data={filteredExams} />
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600 text-lg font-medium">
+                Nenhum exame encontrado
+              </p>
+              <p className="text-gray-500 text-sm mt-2">
+                Ajuste os filtros para encontrar os exames desejados
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </View.Vertical>
   );
 }

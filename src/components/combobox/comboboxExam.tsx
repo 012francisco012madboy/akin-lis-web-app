@@ -26,7 +26,6 @@ interface ComboboxProps<T> {
   clearLabel?: string // Texto do botão de limpar
   width?: string // Largura do componente
 }
-
 export function Combobox<T>({
   data,
   displayKey,
@@ -59,7 +58,10 @@ export function Combobox<T>({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={`w-[${width}] w-full flex justify-between`}
+          className={cn(
+            "w-full justify-between font-normal",
+            !selected && "text-muted-foreground"
+          )}
         >
           {selected
             ? String(selected[displayKey])
@@ -95,15 +97,15 @@ export function Combobox<T>({
         </Command>
         {/* Clear Button */}
         {selected && (
-          <div className="mt-2 flex justify-end">
+          <div className="border-t p-2">
             <Button
               variant="ghost"
               onClick={handleClear}
               size="sm"
-              className="flex items-center space-x-2"
+              className="w-full justify-start text-muted-foreground hover:text-foreground"
             >
-              <X className="h-4 w-4" />
-              <span>{clearLabel}</span>
+              <X className="h-4 w-4 mr-2" />
+              {clearLabel}
             </Button>
           </div>
         )}

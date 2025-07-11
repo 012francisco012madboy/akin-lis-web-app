@@ -36,7 +36,6 @@ interface PatientType {
   };
 }
 
-
 export default function SampleVisualizationPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [capturedImages, setCapturedImages] = useState<string[]>([]);
@@ -53,18 +52,22 @@ export default function SampleVisualizationPage() {
     queryKey: ['patient-info', id],
     queryFn: async () => {
       return await _axios.get<PatientType>(`/pacients/${id}`);
-    }
+    },
+    enabled: !!id,
+    retry: 1
   })
 
   const getExamById = useQuery({
     queryKey: ['Exam-Info', exam_id],
     queryFn: async () => {
       return await _axios.get(`/exam-types/${exam_id}`);
-    }
+    },
+    enabled: !!exam_id,
+    retry: 1
   })
 
   // Helper functions
-  const getInitials = (name: string) => {
+  const getInitials = (name?: string) => {
     if (!name) return "P";
     return name
       .split(" ")
@@ -74,7 +77,8 @@ export default function SampleVisualizationPage() {
       .slice(0, 2);
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "Data não disponível";
     try {
       const date = new Date(dateString);
       return date.toLocaleDateString('pt-BR');
@@ -126,10 +130,14 @@ export default function SampleVisualizationPage() {
     console.log("Enviando à IA:", imagesWithNotes);
   };
 
+  // Dados auxiliares para evitar repetição
+  const patientData = getPatientInfo.data?.data;
+  const examData = getExamById.data?.data?.data || getExamById.data?.data;
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto space-y-6">
-        {getPatientInfo.isLoading || getExamById.isLoading ? (
+        {getPatientInfo.isLoading || getExamById.isLoading || !getPatientInfo.data || !getExamById.data ? (
           /* Loading State */
           <div className="space-y-6">
             <Card>
@@ -163,6 +171,31 @@ export default function SampleVisualizationPage() {
               </CardContent>
             </Card>
           </div>
+        ) : getPatientInfo.isError || getExamById.isError ? (
+          /* Error State */
+          <div className="space-y-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-red-600 mb-2">Erro ao carregar dados</h3>
+                  <p className="text-gray-600">
+                    {getPatientInfo.isError && "Erro ao carregar informações do paciente. "}
+                    {getExamById.isError && "Erro ao carregar informações do exame."}
+                  </p>
+                  <Button 
+                    onClick={() => {
+                      getPatientInfo.refetch();
+                      getExamById.refetch();
+                    }}
+                    className="mt-4"
+                    variant="outline"
+                  >
+                    Tentar novamente
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         ) : (
           <>
             {/* Header Card */}
@@ -174,20 +207,20 @@ export default function SampleVisualizationPage() {
                     <Avatar className="h-16 w-16">
                       <AvatarImage src="/placeholder-user.jpg" />
                       <AvatarFallback className="bg-blue-100 text-blue-700 text-lg font-semibold">
-                        {getInitials(getPatientInfo.data?.data.nome_completo || "")}
+                        {getInitials(patientData?.nome_completo || "")}
                       </AvatarFallback>
                     </Avatar>
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
                         <User className="h-4 w-4 text-gray-500" />
                         <h2 className="text-xl font-semibold text-gray-900">
-                          {getPatientInfo.data?.data.nome_completo}
+                          {patientData?.nome_completo || "Nome não disponível"}
                         </h2>
                       </div>
                       <div className="flex items-center space-x-2">
                         <FileText className="h-4 w-4 text-gray-500" />
                         <p className="text-gray-600 font-medium">
-                          {getExamById.data?.data.data.nome}
+                          {examData?.nome || "Exame não disponível"}
                         </p>
                       </div>
                       <div className="flex items-center space-x-2">

@@ -32,8 +32,8 @@ export function PendingScheduleCard({ schedule }: PendingScheduleCardProps) {
   });
 
   const rejectMutation = useMutation({
-    mutationFn: ({ scheduleId, reason }: { scheduleId: number; reason: string }) =>
-      scheduleRoutes.rejectSchedule(scheduleId, reason),
+    mutationFn: ({ scheduleId }: { scheduleId: number}) =>
+      scheduleRoutes.rejectSchedule(scheduleId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pending-schedules'] });
       setShowRejectDialog(false);
@@ -47,7 +47,7 @@ export function PendingScheduleCard({ schedule }: PendingScheduleCardProps) {
 
   const handleReject = () => {
     if (rejectReason.trim()) {
-      rejectMutation.mutate({ scheduleId: schedule.id, reason: rejectReason });
+      rejectMutation.mutate({ scheduleId: schedule.id });
     }
   };
 
