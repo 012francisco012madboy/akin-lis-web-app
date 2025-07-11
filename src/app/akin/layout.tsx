@@ -173,7 +173,6 @@ function generateBreadcrumbs(pathname: string) {
 
   return breadcrumbs;
 }
-
 interface IDashboard {
   children: ReactNode;
 }
