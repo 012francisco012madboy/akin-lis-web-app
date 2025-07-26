@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import AutomatedAnalysis from "../modalAutomatiImage";
 import { ManualExam } from "../manualExam";
-import { ImageModal, Shape } from "../components/selectedCaptureImages";
+import { ImageModal } from "../components/selectedCaptureImages";
 import { CapturedImages } from "../components/listCaptureImages";
 import { LaudoModal } from "../laudo";
 import { _axios } from "@/Api/axios.config";
@@ -18,8 +18,17 @@ import {
   Calendar,
   FileText,
   Images,
-  ClipboardList
+  ClipboardList,
+  Settings,
+  BarChart3,
+  Microscope
 } from "lucide-react";
+import {
+  Ontology,
+  AnnotationWithClassification,
+  ExamSession,
+  StatisticsData
+} from "@/types/annotation-system";
 
 interface PatientType {
   id: string;
@@ -42,8 +51,13 @@ export default function SampleVisualizationPage() {
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAutomatedAnalysisOpen, setIsAutomatedAnalysisOpen] = useState(false);
-  const [imageAnnotations, setImageAnnotations] = useState<Record<string, Shape[]>>({});
+  const [imageAnnotations, setImageAnnotations] = useState<Record<string, AnnotationWithClassification[]>>({});
   const [laudoModalOpen, setLaudoModalOpen] = useState(false);
+
+  // Novos estados para ontologia e classificação
+  const [currentOntology, setCurrentOntology] = useState<Ontology | null>(null);
+  const [examSession, setExamSession] = useState<ExamSession | null>(null);
+  const [sessionStatistics, setSessionStatistics] = useState<StatisticsData | null>(null);
 
   //@ts-ignore
   const { patient_id: id, exam_id } = useParams();
@@ -102,6 +116,87 @@ export default function SampleVisualizationPage() {
 
   const handleAutomatedAnalysisOpen = () => {
     setIsAutomatedAnalysisOpen(true);
+  };
+
+  // Novas funções para ontologia e classificação
+  const handleOntologyChange = (ontology: Ontology) => {
+    setCurrentOntology(ontology);
+
+    // Criar ou atualizar sessão de exame
+    const newSession: ExamSession = {
+      id: `session_${Date.now()}`,
+      examId: exam_id as string,
+      patientId: id as string,
+      ontologyId: ontology.id,
+      startedAt: new Date(),
+      status: 'in_progress',
+      annotationsCount: 0,
+      classificationsCount: 0,
+      aiAssistanceUsed: false,
+      reviewRequired: false,
+    };
+
+    setExamSession(newSession);
+  };
+
+  const updateSessionStatistics = () => {
+    if (!examSession) return;
+
+    const totalAnnotations = Object.values(imageAnnotations).reduce(
+      (sum, annotations) => sum + annotations.length, 0
+    );
+
+    const classificationsCount = Object.values(imageAnnotations).reduce(
+      (sum, annotations) => sum + annotations.filter(ann => ann.classification).length, 0
+    );
+
+    // Calcular estatísticas mais detalhadas
+    const stats: StatisticsData = {
+      totalAnnotations,
+      classificationsByType: {},
+      classificationsByCategory: {},
+      confidenceDistribution: { high: 0, medium: 0, low: 0 },
+      aiVsManualClassifications: { ai: 0, manual: 0, hybrid: 0 },
+      reviewStatus: { pending: 0, confirmed: 0, rejected: 0, needsReview: 0 }
+    };
+
+    // Processar todas as anotações
+    Object.values(imageAnnotations).forEach(annotations => {
+      annotations.forEach(annotation => {
+        if (annotation.classification) {
+          const classification = annotation.classification;
+
+          // Distribuição de confiança
+          if (classification.confidence >= 80) stats.confidenceDistribution.high++;
+          else if (classification.confidence >= 50) stats.confidenceDistribution.medium++;
+          else stats.confidenceDistribution.low++;
+
+          // Por tipo de classificação
+          stats.aiVsManualClassifications[classification.classifiedBy]++;
+
+          // Por status (mapeamento correto)
+          const statusMap: Record<string, keyof typeof stats.reviewStatus> = {
+            'pending': 'pending',
+            'confirmed': 'confirmed',
+            'rejected': 'rejected',
+            'needs_review': 'needsReview'
+          };
+
+          const mappedStatus = statusMap[classification.status] || 'pending';
+          stats.reviewStatus[mappedStatus]++;
+        }
+      });
+    });
+
+    setSessionStatistics(stats);
+
+    // Atualizar sessão
+    setExamSession(prev => prev ? {
+      ...prev,
+      annotationsCount: totalAnnotations,
+      classificationsCount,
+      aiAssistanceUsed: prev.aiAssistanceUsed || stats.aiVsManualClassifications.ai > 0,
+    } : null);
   };
 
   const handleClickOnGenerateLaudo = () => {
@@ -182,7 +277,7 @@ export default function SampleVisualizationPage() {
                     {getPatientInfo.isError && "Erro ao carregar informações do paciente. "}
                     {getExamById.isError && "Erro ao carregar informações do exame."}
                   </p>
-                  <Button 
+                  <Button
                     onClick={() => {
                       getPatientInfo.refetch();
                       getExamById.refetch();
@@ -255,7 +350,7 @@ export default function SampleVisualizationPage() {
             </Card>
 
             {/* Status Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card className="border-0 shadow-sm">
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
@@ -279,7 +374,7 @@ export default function SampleVisualizationPage() {
                     <div>
                       <p className="text-sm font-medium text-gray-600">Anotações</p>
                       <p className="text-2xl font-bold text-gray-900">
-                        {Object.keys(notes).filter(key => notes[key]).length}
+                        {Object.values(imageAnnotations).reduce((sum, annotations) => sum + annotations.length, 0)}
                       </p>
                     </div>
                   </div>
@@ -290,13 +385,31 @@ export default function SampleVisualizationPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
                     <div className="p-2 bg-purple-100 rounded-lg">
-                      <FileText className="h-5 w-5 text-purple-600" />
+                      <Microscope className="h-5 w-5 text-purple-600" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Status</p>
-                      <Badge className="mt-1 bg-yellow-100 text-yellow-800 border-yellow-200">
-                        Em Andamento
-                      </Badge>
+                      <p className="text-sm font-medium text-gray-600">Classificações</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {Object.values(imageAnnotations).reduce(
+                          (sum, annotations) => sum + annotations.filter(ann => ann.classification).length, 0
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-0 shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-orange-100 rounded-lg">
+                      <Settings className="h-5 w-5 text-orange-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Ontologia</p>
+                      <p className="text-sm font-bold text-gray-900">
+                        {currentOntology ? currentOntology.name : 'Não selecionada'}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -349,6 +462,8 @@ export default function SampleVisualizationPage() {
               handleNoteChanged={handleNoteChange}
               setImageAnnotations={setImageAnnotations}
               moreFuncIsShow={true}
+              currentOntology={currentOntology || undefined}
+              onOntologyChange={handleOntologyChange}
             />
 
             {/* Generate Report Section */}

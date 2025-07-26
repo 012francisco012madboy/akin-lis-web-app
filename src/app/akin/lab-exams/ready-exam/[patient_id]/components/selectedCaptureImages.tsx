@@ -33,8 +33,23 @@ import {
     Save,
     Edit,
     Trash2,
-    Plus
+    Plus,
+    Settings,
+    Target,
+    Bot,
+    BarChart3,
+    Filter,
+    Tag,
+    Microscope
 } from "lucide-react";
+import { OntologyManager } from './OntologyManager';
+import { ClassificationPanel } from './ClassificationPanel';
+import {
+    Ontology,
+    AnnotationWithClassification,
+    Classification,
+    StatisticsData
+} from '@/types/annotation-system';
 
 interface ImageModalProps {
     selectedImage: string | null;
@@ -42,7 +57,9 @@ interface ImageModalProps {
     handleNoteChanged?: (image: string, value: string) => void;
     setSelectedImage: (image: string | null) => void;
     moreFuncIsShow?: boolean;
-    setImageAnnotations?: (annotations: Record<string, Shape[]>) => void;
+    setImageAnnotations?: (annotations: Record<string, AnnotationWithClassification[]>) => void;
+    currentOntology?: Ontology;
+    onOntologyChange?: (ontology: Ontology) => void;
 }
 
 export interface Shape {
@@ -77,6 +94,13 @@ export interface Annotation {
     height: number;
     text: string;
     isOpen: boolean;
+    // Novos campos para classificação avançada
+    classification?: Classification;
+    alternativeClassifications?: Classification[];
+    annotationType: 'cell_identification' | 'measurement' | 'observation' | 'artifact' | 'quality_assessment';
+    priority: 'low' | 'medium' | 'high' | 'critical';
+    tags?: string[];
+    linkedAnnotations?: string[];
 }
 
 export type Tool = "select" | "draw" | "pan" | "zoom";
@@ -87,7 +111,9 @@ export const ImageModal: React.FC<ImageModalProps> = ({
     setSelectedImage,
     setImageAnnotations,
     moreFuncIsShow,
-    handleNoteChanged
+    handleNoteChanged,
+    currentOntology,
+    onOntologyChange
 }) => {
     // Estados para ferramentas e formas
     const [activeTool, setActiveTool] = useState<Tool>("select");
@@ -100,28 +126,38 @@ export const ImageModal: React.FC<ImageModalProps> = ({
         { id: "5", name: "Texto", shape: "text", color: "#8b5cf6" },
     ]);
 
-    // Estados para anotações
-    const [annotations, setAnnotations] = useState<Annotation[]>([]);
+    // Estados para anotações com classificação
+    const [annotations, setAnnotations] = useState<AnnotationWithClassification[]>([]);
     const [selectedAnnotation, setSelectedAnnotation] = useState<string | null>(null);
 
     // Estados para canvas
     const [zoomLevel, setZoomLevel] = useState(100);
     const [canvasPosition, setCanvasPosition] = useState({ x: 0, y: 0 });
 
+    // Estados para ontologia e classificação
+    const [ontologyManagerOpen, setOntologyManagerOpen] = useState(false);
+    const [classificationPanelOpen, setClassificationPanelOpen] = useState(false);
+    const [selectedOntology, setSelectedOntology] = useState<Ontology | null>(currentOntology || null);
+    const [showStatistics, setShowStatistics] = useState(false);
+    const [statistics, setStatistics] = useState<StatisticsData | null>(null);
+
     // Estados legacy para compatibilidade
     const [shapesByImage, setShapesByImage] = useState<Record<string, Shape[]>>({});
     const [shapeNotesByImage, setShapeNotesByImage] = useState<Record<string, Record<string, string>>>({});
 
-    // Funções para gerenciar anotações
-    const addAnnotation = useCallback((annotation: Omit<Annotation, "id">) => {
-        const newAnnotation: Annotation = {
+    // Funções para gerenciar anotações com classificação
+    const addAnnotation = useCallback((annotation: Omit<AnnotationWithClassification, "id">) => {
+        const newAnnotation: AnnotationWithClassification = {
             ...annotation,
             id: Date.now().toString(),
+            annotationType: 'cell_identification',
+            priority: 'medium',
+            tags: [],
         };
         setAnnotations((prev) => [...prev, newAnnotation]);
     }, []);
 
-    const updateAnnotation = useCallback((id: string, updates: Partial<Annotation>) => {
+    const updateAnnotation = useCallback((id: string, updates: Partial<AnnotationWithClassification>) => {
         setAnnotations((prev) => prev.map((ann) => (ann.id === id ? { ...ann, ...updates } : ann)));
     }, []);
 
@@ -131,6 +167,77 @@ export const ImageModal: React.FC<ImageModalProps> = ({
             setSelectedAnnotation(null);
         }
     }, [selectedAnnotation]);
+
+    // Função para calcular estatísticas
+    const calculateStatistics = useCallback(() => {
+        const classifiedAnnotations = annotations.filter(ann => ann.classification);
+
+        const stats: StatisticsData = {
+            totalAnnotations: annotations.length,
+            classificationsByType: {},
+            classificationsByCategory: {},
+            confidenceDistribution: { high: 0, medium: 0, low: 0 },
+            aiVsManualClassifications: { ai: 0, manual: 0, hybrid: 0 },
+            reviewStatus: { pending: 0, confirmed: 0, rejected: 0, needsReview: 0 }
+        };
+
+        classifiedAnnotations.forEach(ann => {
+            const classification = ann.classification!;
+
+            // Distribuição de confiança
+            if (classification.confidence >= 80) stats.confidenceDistribution.high++;
+            else if (classification.confidence >= 50) stats.confidenceDistribution.medium++;
+            else stats.confidenceDistribution.low++;
+
+            // Por tipo de classificação
+            stats.aiVsManualClassifications[classification.classifiedBy]++;
+
+            // Por status (mapeamento correto)
+            const statusMap: Record<string, keyof typeof stats.reviewStatus> = {
+                'pending': 'pending',
+                'confirmed': 'confirmed',
+                'rejected': 'rejected',
+                'needs_review': 'needsReview'
+            };
+
+            const mappedStatus = statusMap[classification.status] || 'pending';
+            stats.reviewStatus[mappedStatus]++;
+        });
+
+        setStatistics(stats);
+    }, [annotations]);
+
+    // Função para salvar classificação
+    const handleSaveClassification = useCallback((annotationId: string, classification: Classification) => {
+        updateAnnotation(annotationId, { classification });
+        // Calcular estatísticas após a atualização
+        setTimeout(() => calculateStatistics(), 0);
+        ___showSuccessToastNotification({
+            message: "Classificação salva com sucesso!",
+        });
+    }, [updateAnnotation, calculateStatistics]);
+
+    // Função para gerenciar ontologias
+    const handleOntologySelect = useCallback((ontology: Ontology) => {
+        setSelectedOntology(ontology);
+        if (onOntologyChange) {
+            onOntologyChange(ontology);
+        }
+    }, [onOntologyChange]);
+
+    // Função para abrir painel de classificação
+    const handleOpenClassification = useCallback((annotationId: string) => {
+        setSelectedAnnotation(annotationId);
+        setClassificationPanelOpen(true);
+    }, []);
+
+    // Função para solicitar sugestões de IA
+    const handleRequestAISuggestions = useCallback(async (annotationId: string) => {
+        // Implementar chamada para API de IA
+        console.log('Solicitando sugestões de IA para anotação:', annotationId);
+        // Mock de resposta
+        return [];
+    }, []);
 
     // Funções para gerenciar figuras
     const addFigure = useCallback((figure: Omit<Figure, "id">) => {
@@ -211,7 +318,36 @@ export const ImageModal: React.FC<ImageModalProps> = ({
         <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
             <DialogContent className="max-w-[99vw] w-full h-[99vh] p-2 md:p-4 overflow-hidden">
                 <DialogHeader className="pb-2">
-                    <DialogTitle className="text-base md:text-lg xl:text-xl">Sistema de Anotação de Imagens</DialogTitle>
+                    <div className="flex justify-between items-center">
+                        <DialogTitle className="text-base md:text-lg xl:text-xl">
+                            Sistema de Anotação de Imagens Avançado
+                        </DialogTitle>
+                        <div className="flex items-center gap-2">
+                            {/* Botão de Ontologia */}
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setOntologyManagerOpen(true)}
+                                className="flex items-center gap-2"
+                            >
+                                <Settings className="h-4 w-4" />
+                                <span className="hidden sm:inline">
+                                    {selectedOntology ? selectedOntology.name : 'Ontologia'}
+                                </span>
+                            </Button>
+
+                            {/* Botão de Estatísticas */}
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setShowStatistics(!showStatistics)}
+                                className="flex items-center gap-2"
+                            >
+                                <BarChart3 className="h-4 w-4" />
+                                <span className="hidden sm:inline">Estatísticas</span>
+                            </Button>
+                        </div>
+                    </div>
                 </DialogHeader>
 
                 {/* Toolbar */}
@@ -256,6 +392,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                                     onSelectFigure={handleFigureSelect}
                                     onUpdateAnnotation={updateAnnotation}
                                     onDeleteAnnotation={deleteAnnotation}
+                                    onOpenClassification={handleOpenClassification}
                                 />
                             </div>
                         </div>
@@ -321,6 +458,119 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                     </Button>
                 </DialogFooter>
             </DialogContent>
+
+            {/* Modais adicionais */}
+
+            {/* Gerenciador de Ontologias */}
+            <OntologyManager
+                isOpen={ontologyManagerOpen}
+                onClose={() => setOntologyManagerOpen(false)}
+                currentOntology={selectedOntology || undefined}
+                onSelectOntology={handleOntologySelect}
+                onCreateOntology={(ontologyData) => {
+                    // Implementar criação de ontologia
+                    console.log('Criando ontologia:', ontologyData);
+                    setOntologyManagerOpen(false);
+                }}
+                onUpdateOntology={(id, updates) => {
+                    // Implementar atualização de ontologia
+                    console.log('Atualizando ontologia:', id, updates);
+                }}
+                onDeleteOntology={(id) => {
+                    // Implementar exclusão de ontologia
+                    console.log('Excluindo ontologia:', id);
+                }}
+            />
+
+            {/* Painel de Classificação */}
+            <ClassificationPanel
+                isOpen={classificationPanelOpen}
+                onClose={() => setClassificationPanelOpen(false)}
+                annotation={selectedAnnotation ? annotations.find(a => a.id === selectedAnnotation) || null : null}
+                ontology={selectedOntology || {
+                    id: 'default',
+                    name: 'Ontologia Padrão',
+                    description: 'Selecione uma ontologia para usar classificações avançadas',
+                    version: '1.0.0',
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    isActive: true,
+                    categories: [],
+                    cellTypes: [],
+                    characteristics: [],
+                    metadata: {
+                        author: 'Sistema',
+                        applicableExamTypes: [],
+                    },
+                }}
+                onSaveClassification={handleSaveClassification}
+                onUpdateAnnotation={updateAnnotation}
+                onRequestAISuggestions={handleRequestAISuggestions}
+            />
+
+            {/* Modal de Estatísticas */}
+            {showStatistics && statistics && (
+                <Dialog open={showStatistics} onOpenChange={setShowStatistics}>
+                    <DialogContent className="max-w-4xl">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2">
+                                <BarChart3 className="h-5 w-5" />
+                                Estatísticas da Sessão
+                            </DialogTitle>
+                        </DialogHeader>
+
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm text-gray-600">Total de Anotações</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-2xl font-bold">{statistics.totalAnnotations}</p>
+                                </CardContent>
+                            </Card>
+
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm text-gray-600">Alta Confiança</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-2xl font-bold text-green-600">
+                                        {statistics.confidenceDistribution.high}
+                                    </p>
+                                </CardContent>
+                            </Card>
+
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm text-gray-600">Classificações Manuais</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-2xl font-bold text-blue-600">
+                                        {statistics.aiVsManualClassifications.manual}
+                                    </p>
+                                </CardContent>
+                            </Card>
+
+                            <Card>
+                                <CardHeader className="pb-3">
+                                    <CardTitle className="text-sm text-gray-600">Confirmadas</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-2xl font-bold text-green-600">
+                                        {statistics.reviewStatus.confirmed}
+                                    </p>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setShowStatistics(false)}>
+                                Fechar
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            )}
         </Dialog>
     );
 };
@@ -588,113 +838,189 @@ const FigureManager: React.FC<{
 
 // Componente Painel de Anotações
 const AnnotationPanel: React.FC<{
-    annotations: Annotation[];
+    annotations: AnnotationWithClassification[];
     figures: Figure[];
     selectedAnnotation: string | null;
     selectedFigure: Figure | null;
     onSelectAnnotation: (id: string | null) => void;
     onSelectFigure: (figure: Figure) => void;
-    onUpdateAnnotation: (id: string, updates: Partial<Annotation>) => void;
+    onUpdateAnnotation: (id: string, updates: Partial<AnnotationWithClassification>) => void;
     onDeleteAnnotation: (id: string) => void;
-}> = ({ annotations, figures, selectedAnnotation, onSelectAnnotation, onUpdateAnnotation, onDeleteAnnotation }) => {
-    const [editingAnnotation, setEditingAnnotation] = useState<string | null>(null);
-    const [editText, setEditText] = useState("");
+    onOpenClassification?: (annotationId: string) => void;
+}> = ({
+    annotations,
+    figures,
+    selectedAnnotation,
+    onSelectAnnotation,
+    onUpdateAnnotation,
+    onDeleteAnnotation,
+    onOpenClassification
+}) => {
+        const [editingAnnotation, setEditingAnnotation] = useState<string | null>(null);
+        const [editText, setEditText] = useState("");
 
-    const handleEditStart = (annotation: Annotation) => {
-        setEditingAnnotation(annotation.id);
-        setEditText(annotation.text);
-    };
+        const handleEditStart = (annotation: AnnotationWithClassification) => {
+            setEditingAnnotation(annotation.id);
+            setEditText(annotation.text);
+        };
 
-    const handleEditSave = (id: string) => {
-        onUpdateAnnotation(id, { text: editText });
-        setEditingAnnotation(null);
-        setEditText("");
-    };
+        const handleEditSave = (id: string) => {
+            onUpdateAnnotation(id, { text: editText });
+            setEditingAnnotation(null);
+            setEditText("");
+        };
 
-    return (
-        <Card className="h-full flex flex-col">
-            <CardHeader className="pb-2 flex-shrink-0">
-                <CardTitle className="text-sm">Anotações ({annotations.length})</CardTitle>
-            </CardHeader>
-            <CardContent className="p-2 md:p-3 space-y-2 flex-1 overflow-y-auto min-h-0">
-                {annotations.length === 0 ? (
-                    <p className="text-sm text-gray-500 text-center py-4">Nenhuma anotação criada</p>
-                ) : (
-                    annotations.map((annotation, index) => {
-                        const figure = figures.find((f) => f.id === annotation.figureId);
-                        if (!figure) return null;
+        return (
+            <Card className="h-full flex flex-col">
+                <CardHeader className="pb-2 flex-shrink-0">
+                    <CardTitle className="text-sm">Anotações ({annotations.length})</CardTitle>
+                </CardHeader>
+                <CardContent className="p-2 md:p-3 space-y-2 flex-1 overflow-y-auto min-h-0">
+                    {annotations.length === 0 ? (
+                        <p className="text-sm text-gray-500 text-center py-4">Nenhuma anotação criada</p>
+                    ) : (
+                        annotations.map((annotation, index) => {
+                            const figure = figures.find((f) => f.id === annotation.figureId);
+                            if (!figure) return null;
 
-                        return (
-                            <Card
-                                key={annotation.id}
-                                className={`border-l-4 cursor-pointer flex-shrink-0 ${selectedAnnotation === annotation.id ? "bg-blue-50" : ""
-                                    }`}
-                                style={{ borderLeftColor: figure.color }}
-                                onClick={() => onSelectAnnotation(selectedAnnotation === annotation.id ? null : annotation.id)}
-                            >
-                                <CardContent className="p-2">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                                            <span className="font-medium text-sm">Anotação {index + 1}</span>
-                                            <Badge variant="secondary" className="text-xs">
-                                                {figure.name}
-                                            </Badge>
-                                        </div>
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                onDeleteAnnotation(annotation.id);
-                                            }}
-                                            className="h-7 w-7 p-0"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-
-                                    {editingAnnotation === annotation.id ? (
-                                        <div className="space-y-2">
-                                            <Textarea
-                                                value={editText}
-                                                onChange={(e) => setEditText(e.target.value)}
-                                                className="text-sm"
-                                                rows={2}
-                                            />
-                                            <div className="flex gap-1">
-                                                <Button size="sm" onClick={() => handleEditSave(annotation.id)} className="h-7">
-                                                    <Save className="h-4 w-4" />
-                                                </Button>
-                                                <Button size="sm" variant="ghost" onClick={() => setEditingAnnotation(null)} className="h-7">
-                                                    <X className="h-4 w-4" />
-                                                </Button>
+                            return (
+                                <Card
+                                    key={annotation.id}
+                                    className={`border-l-4 cursor-pointer flex-shrink-0 ${selectedAnnotation === annotation.id ? "bg-blue-50" : ""
+                                        }`}
+                                    style={{ borderLeftColor: figure.color }}
+                                    onClick={() => onSelectAnnotation(selectedAnnotation === annotation.id ? null : annotation.id)}
+                                >
+                                    <CardContent className="p-2">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                                                <span className="font-medium text-sm">Anotação {index + 1}</span>
+                                                <Badge variant="secondary" className="text-xs">
+                                                    {figure.name}
+                                                </Badge>
                                             </div>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-2">
-                                            <p className="text-sm text-gray-700 break-words line-clamp-2">{annotation.text || "Sem texto"}</p>
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleEditStart(annotation);
+                                                    onDeleteAnnotation(annotation.id);
                                                 }}
                                                 className="h-7 w-7 p-0"
                                             >
-                                                <Edit className="h-4 w-4" />
+                                                <Trash2 className="h-4 w-4" />
                                             </Button>
                                         </div>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        );
-                    })
-                )}
-            </CardContent>
-        </Card>
-    );
-};
+
+                                        {editingAnnotation === annotation.id ? (
+                                            <div className="space-y-2">
+                                                <Textarea
+                                                    value={editText}
+                                                    onChange={(e) => setEditText(e.target.value)}
+                                                    className="text-sm"
+                                                    rows={2}
+                                                />
+                                                <div className="flex gap-1">
+                                                    <Button size="sm" onClick={() => handleEditSave(annotation.id)} className="h-7">
+                                                        <Save className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button size="sm" variant="ghost" onClick={() => setEditingAnnotation(null)} className="h-7">
+                                                        <X className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-2">
+                                                <p className="text-sm text-gray-700 break-words line-clamp-2">
+                                                    {annotation.text || "Sem texto"}
+                                                </p>
+
+                                                {/* Informações de classificação */}
+                                                {annotation.classification && (
+                                                    <div className="space-y-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <Badge variant="secondary" className="text-xs">
+                                                                {annotation.classification.confidence}% confiança
+                                                            </Badge>
+                                                            <Badge
+                                                                variant={annotation.classification.status === 'confirmed' ? 'default' : 'outline'}
+                                                                className="text-xs"
+                                                            >
+                                                                {annotation.classification.status === 'confirmed' ? 'Confirmado' :
+                                                                    annotation.classification.status === 'needs_review' ? 'Revisão' :
+                                                                        annotation.classification.status}
+                                                            </Badge>
+                                                        </div>
+
+                                                        {annotation.tags && annotation.tags.length > 0 && (
+                                                            <div className="flex gap-1 flex-wrap">
+                                                                {annotation.tags.slice(0, 2).map(tag => (
+                                                                    <Badge key={tag} variant="outline" className="text-xs">
+                                                                        {tag}
+                                                                    </Badge>
+                                                                ))}
+                                                                {annotation.tags.length > 2 && (
+                                                                    <Badge variant="outline" className="text-xs">
+                                                                        +{annotation.tags.length - 2}
+                                                                    </Badge>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+
+                                                <div className="flex gap-1">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleEditStart(annotation);
+                                                        }}
+                                                        className="h-7 w-7 p-0"
+                                                        title="Editar texto"
+                                                    >
+                                                        <Edit className="h-4 w-4" />
+                                                    </Button>
+
+                                                    {/* Botão de classificação */}
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            if (onOpenClassification) {
+                                                                onOpenClassification(annotation.id);
+                                                            }
+                                                        }}
+                                                        className="h-7 w-7 p-0"
+                                                        title="Classificar célula"
+                                                    >
+                                                        <Microscope className="h-4 w-4" />
+                                                    </Button>
+
+                                                    {annotation.priority && annotation.priority !== 'medium' && (
+                                                        <Badge
+                                                            variant={annotation.priority === 'critical' ? 'destructive' :
+                                                                annotation.priority === 'high' ? 'default' : 'secondary'}
+                                                            className="text-xs ml-1"
+                                                        >
+                                                            {annotation.priority === 'critical' ? 'Crítico' :
+                                                                annotation.priority === 'high' ? 'Alto' : 'Baixo'}
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            );
+                        })
+                    )}
+                </CardContent>
+            </Card>
+        );
+    };
 
 // Interface para estados de desenho
 interface DrawingState {
@@ -1255,7 +1581,7 @@ const AnnotationCanvas: React.FC<{
                 const height = Math.abs(drawingState.currentY - drawingState.startY) / scale;
 
                 if (width > 10 && height > 10) {
-                    const newAnnotation: Omit<Annotation, "id"> = {
+                    const newAnnotation: Omit<AnnotationWithClassification, "id"> = {
                         figureId: selectedFigure.id,
                         x,
                         y,
@@ -1263,6 +1589,8 @@ const AnnotationCanvas: React.FC<{
                         height,
                         text: "",
                         isOpen: false,
+                        annotationType: 'cell_identification',
+                        priority: 'medium',
                     };
 
                     onAddAnnotation(newAnnotation);
