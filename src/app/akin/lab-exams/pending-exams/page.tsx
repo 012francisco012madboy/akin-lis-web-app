@@ -110,10 +110,6 @@ export default function PendingExamsPage() {
     toast.info(`Editando exame: ${exam.Tipo_Exame.nome}`);
   };
 
-  const handleExamView = (exam: ExamsType) => {
-    toast.info(`Visualizando exame: ${exam.Tipo_Exame.nome}`);
-  };
-
   const handleExamStart = (exam: ExamsType) => {
     console.log(`Iniciando exame: `, exam);
     setSelectedExam(exam);
@@ -388,7 +384,6 @@ export default function PendingExamsPage() {
                       key={exam.id}
                       exam={exam}
                       onEdit={handleExamEdit}
-                      onView={handleExamView}
                       onStart={handleExamStart}
                     />
                   ))}
@@ -397,7 +392,6 @@ export default function PendingExamsPage() {
                 <ExamTable
                   exams={filteredExams}
                   onEdit={handleExamEdit}
-                  onView={handleExamView}
                   onStart={handleExamStart}
                 />
               )}

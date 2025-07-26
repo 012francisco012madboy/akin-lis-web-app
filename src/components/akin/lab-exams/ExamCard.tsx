@@ -175,12 +175,6 @@ export function ExamCard({ exam, onEdit, onView, onStart, showActions = true }: 
 
         {showActions && (
           <div className="flex flex-col gap-2 pt-4 2xl:flex-row 2xl:justify-end">
-            {onView && (
-              <Button variant="outline" size="sm" onClick={() => onView(exam)}>
-                <Eye className="h-4 w-4 mr-2" />
-                Visualizar
-              </Button>
-            )}
             {onEdit && (
               <Button variant="outline" size="sm" onClick={() => onEdit(exam)}>
                 <Edit className="h-4 w-4 mr-2" />

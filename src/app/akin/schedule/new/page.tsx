@@ -127,10 +127,9 @@ export default function New() {
     }
   };
   return (
-    <div className="min-h-screen px-6 py-2 pb-5 bg-gray-50 overflow-x-hidden">
+    <div className="min-h-screen px-6 py-2 pb-5 overflow-x-hidden">
       {/* Cabeçalho */}
       <div className={"flex flex-col md:flex-row justify-between pr-3 mb-4"}>
-        <h1 className="text-2xl font-semibold text-gray-800 mb-3">Novo Agendamento</h1>
         <ModalNewPatient onPatientSaved={handleSavePatient} />
       </div>
 

@@ -67,8 +67,8 @@ export const APP_CONFIG = {
         subItems: [
           { label: "Painel", icon: LayoutDashboard, path: "/akin/lab-exams", access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] },
           { label: "Exames Pendentes", icon: SquareActivity, path: "/akin/lab-exams/pending-exams", access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] },
+          { label: "Exame a Realizar", icon: Play, path: "/akin/lab-exams/ready-exam", access: ["CHEFE", "TECNICO"] },
           { label: "Historico de Exames", icon: History, path: "/akin/lab-exams/exams-history", access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] },
-          { label: "Exames Prontos", icon: Play, path: "/akin/lab-exams/ready-exam", access: ["CHEFE", "TECNICO"] },
         ]
       },
       {
