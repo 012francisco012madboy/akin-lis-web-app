@@ -6,6 +6,7 @@ import { BlockMode } from "./components/blockModePatients";
 import { GridOrBlockDisplayButton } from "./components/gridOrBlockButtonMode";
 import { Input } from "@/components/ui/input";
 import { ModalNewPatient } from "../schedule/new/components/ModalNewPatient";
+import { getAllDataInCookies } from "@/utils/get-data-in-cookies";
 
 interface PatientDisplay {
   patients: PatientType[];
@@ -16,6 +17,7 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
   const [allPatients, setAllPatients] = useState<PatientType[]>(patients);
   const [isSearching, setIsSearching] = useState(false);
   const [displayMode, setDisplayMode] = useState<DisplayMode>("list");
+  const recepcionista = "RECEPCIONISTA";
 
   function handleSearch(searchText: string) {
     setIsSearching(searchText.length > 0);
@@ -58,10 +60,14 @@ export default function PatientDisplay({ patients }: PatientDisplay) {
 
         {/* Botão Cadastrar Paciente e Campo de busca */}
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          {/* Botão Cadastrar Paciente */}
-          <div className="flex justify-end">
-            <ModalNewPatient onPatientSaved={handlePatientSaved} />
-          </div>
+
+          {
+            recepcionista === getAllDataInCookies().userRole ? (
+              <div className="flex justify-end">
+                <ModalNewPatient onPatientSaved={handlePatientSaved} />
+              </div>
+            ): null
+          }
 
           {/* Campo de busca */}
           <div className="w-full sm:w-96">

@@ -8,7 +8,6 @@ const ITEMS_PER_PAGE = 10;
 export function ListMode({ patientList }: { patientList: PatientType[] }) {
   const [currentPage, setCurrentPage] = useState(1);
   const date = new Date();
-  const currentYear = date.getFullYear();
 
   const totalItems = patientList.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -49,7 +48,7 @@ export function ListMode({ patientList }: { patientList: PatientType[] }) {
               <td className="px-4 py-3 text-gray-700">{patient.nome_completo}</td>
               <td className="px-4 py-3 text-gray-700">{patient.numero_identificacao}</td>
               <td className="px-4 py-3 text-gray-700">
-                {getAgeText(patient.data_nascimento, currentYear)}
+                {getAgeText(patient.data_nascimento)}
               </td>
               <td className="px-4 py-3 text-gray-700">
                 {new Date(patient.data_nascimento).toLocaleDateString()}

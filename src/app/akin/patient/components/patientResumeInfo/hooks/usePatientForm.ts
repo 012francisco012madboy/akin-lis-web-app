@@ -26,6 +26,8 @@ export const usePatientForm = (
   const [isEditing, setIsEditing] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
+  const today = new Date()
+
   const [formData, setFormData] = useState<PatientFormData>({
     nome_completo: patient.nome_completo,
     numero_identificacao: patient.numero_identificacao,
@@ -54,7 +56,14 @@ export const usePatientForm = (
 
     if (!formData.data_nascimento) {
       errors.data_nascimento = "Data de nascimento é obrigatória";
+    } else {
+      const nascimentoDate = new Date(formData.data_nascimento);
+      const today = new Date();
+      if (nascimentoDate > today) {
+        errors.data_nascimento = "A data de nascimento não pode ser futura";
+      }
     }
+
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;

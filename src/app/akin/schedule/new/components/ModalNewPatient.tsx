@@ -1,7 +1,7 @@
 "use client";
 import { DialogWindow } from "@/components/dialog";
 import { Input } from "@/components/input";
-import { Save, UserRoundPlus } from "lucide-react";
+import { UserRoundPlus } from "lucide-react";
 import { useState } from "react";
 import { schemaSchedule } from "../utils/schemaZodNewPatient";
 import { ___showErrorToastNotification, ___showSuccessToastNotification } from "@/lib/sonner";

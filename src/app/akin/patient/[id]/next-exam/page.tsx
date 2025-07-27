@@ -181,6 +181,8 @@ const ExamCardModern = ({
     }
   };
 
+  console.log("Pagameto",exam)
+
   return (
     <>
       <Card className="mb-4 hover:shadow-md transition-shadow">
@@ -254,7 +256,7 @@ const ExamCardModern = ({
 
           <div className="flex justify-end">
             {canStart && (
-              <Button onClick={handleStartExam} className="bg-teal-600 hover:bg-teal-700">
+              <Button disabled = {exam.status_pagamento.toLowerCase()!=="pago"} onClick={handleStartExam} className="bg-teal-600 hover:bg-teal-700">
                 <Play className="h-4 w-4 mr-2" />
                 Começar
               </Button>
@@ -398,7 +400,7 @@ const ExamListItem = ({
                 </span>
               </div>
               {canStart && (
-                <Button size="sm" onClick={handleStartExam} className="bg-teal-600 hover:bg-teal-700">
+                <Button disabled={false} size="sm" onClick={handleStartExam} className="bg-teal-600 hover:bg-teal-700">
                   <Play className="h-4 w-4 mr-1" />
                   Começar
                 </Button>
@@ -495,6 +497,8 @@ const UpcomingExams = () => {
       exam.Tipo_Exame.nome.toLowerCase().includes(filter.toLowerCase())
     )
     : data?.data.data;
+
+  console.log("Filtered Data:", filteredData);
 
   const handleEdit = (exam: any) => {
     console.log("Edit exam:", exam);

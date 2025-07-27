@@ -10,6 +10,7 @@ interface PatientType {
   id_sexo: number;
   id_usuario: string;
   sexo: sexoType;
+  criado_aos: Date
 }
 
 interface sexoType {

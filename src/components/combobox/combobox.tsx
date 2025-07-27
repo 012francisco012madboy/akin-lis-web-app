@@ -9,7 +9,7 @@ interface ComboboxProps {
 }
 
 export const Combobox: React.FC<ComboboxProps> = ({ options, value, onChange, placeholder }) => {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(value || "");
   const [isOpen, setIsOpen] = useState(false);
   const comboboxRef = useRef<HTMLDivElement>(null);
 

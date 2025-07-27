@@ -9,7 +9,6 @@ const ITEMS_PER_PAGE = 6;
 export function BlockMode({ patientList }: { patientList: PatientType[] }) {
   const [currentPage, setCurrentPage] = useState(1);
   const date = new Date();
-  const currentYear = date.getFullYear();
 
   const totalItems = patientList.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -52,7 +51,7 @@ export function BlockMode({ patientList }: { patientList: PatientType[] }) {
               </p>
               <p className="text-gray-700">
                 <strong className="font-medium">Idade:</strong>{" "}
-                {getAgeText(patient.data_nascimento, currentYear)}
+                {getAgeText(patient.data_nascimento)}
               </p>
               <p className="text-gray-700">
                 <strong className="font-medium">Data de Nascimento:</strong>{" "}

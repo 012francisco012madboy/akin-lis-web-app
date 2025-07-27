@@ -9,7 +9,9 @@ interface PatientStatsProps {
 }
 
 export function PatientStats({ patient, totalExams = 0, pendingExams = 0 }: PatientStatsProps) {
+  console.log("patient",patient)
   const calculateDaysSinceLastVisit = (date: string) => {
+    if (!date) return 0; // Retorna 0 se a data não estiver definida
     const lastVisit = new Date(date);
     const today = new Date();
     const diffTime = Math.abs(today.getTime() - lastVisit.getTime());
@@ -26,7 +28,7 @@ export function PatientStats({ patient, totalExams = 0, pendingExams = 0 }: Pati
   };
 
   const daysSinceLastVisit = calculateDaysSinceLastVisit(patient.data_ultima_visita);
-  const daysSinceRegistration = calculateDaysSinceRegistration(patient.data_registro);
+  const daysSinceRegistration = calculateDaysSinceRegistration(patient.criado_aos.toString());
 
   const stats = [
     {
@@ -105,7 +107,7 @@ export function PatientStats({ patient, totalExams = 0, pendingExams = 0 }: Pati
           <div className="flex items-center justify-between mt-2">
             <span className="text-sm text-gray-600">Data de Registro</span>
             <span className="text-sm font-medium text-gray-900">
-              {new Date(patient.data_registro).toLocaleDateString("pt-BR")}
+              {new Date(patient.criado_aos).toLocaleDateString("pt-BR")}
             </span>
           </div>
         </div>

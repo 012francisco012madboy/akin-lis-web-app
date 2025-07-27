@@ -102,7 +102,9 @@ export default function ExamsHistory() {
           filters.selectedDateRange.to &&
           isWithinInterval(new Date(exam.data_agendamento), {
             start: filters.selectedDateRange.from,
-            end: filters.selectedDateRange.to,
+            end: new Date(
+              filters.selectedDateRange.to.setHours(23, 59, 59, 999)
+            ),
           }));
 
       const matchesType =
@@ -244,9 +246,9 @@ export default function ExamsHistory() {
                 data={statusOptions}
                 displayKey="label"
                 onSelect={(item) => handleStatusChange(item?.value || null)}
+                selectedValue={statusOptions.find(opt => opt.value === filters.statusFilter) || null}
                 placeholder="Filtrar por status"
                 clearLabel="Limpar"
-                width="full"
               />
             </div>
 
@@ -257,9 +259,9 @@ export default function ExamsHistory() {
                 data={exams}
                 displayKey="nome"
                 onSelect={handleExamSelect}
+                selectedValue={filters.selectedExam}
                 placeholder="Selecionar exame"
                 clearLabel="Limpar"
-                width="full"
               />
             </div>
           </div>

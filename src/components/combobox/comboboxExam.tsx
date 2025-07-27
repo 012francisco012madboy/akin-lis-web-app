@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Check, ChevronsUpDown, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -19,13 +19,15 @@ import {
 } from "@/components/ui/popover"
 
 interface ComboboxProps<T> {
-  data: T[] // Array de itens para exibição
-  displayKey: keyof T // Chave do objeto para exibir no combobox
-  onSelect: (item: T | null) => void // Função chamada ao selecionar um item
-  placeholder?: string // Placeholder para o combobox
-  clearLabel?: string // Texto do botão de limpar
-  width?: string // Largura do componente
+  data: T[]
+  displayKey: keyof T
+  onSelect: (item: T | null) => void
+  placeholder?: string
+  clearLabel?: string
+  width?: string
+  selectedValue?: T | null // <--- novo
 }
+
 export function Combobox<T>({
   data,
   displayKey,
@@ -33,9 +35,14 @@ export function Combobox<T>({
   placeholder = "Select an option",
   clearLabel = "Clear",
   width = "225px",
+  selectedValue, // <--- novo
 }: ComboboxProps<T>) {
   const [open, setOpen] = useState(false)
   const [selected, setSelected] = useState<T | null>(null)
+
+  useEffect(() => {
+    setSelected(selectedValue ?? null)
+  }, [selectedValue])
 
   const handleSelect = (item: T) => {
     const isSelected = selected && selected[displayKey] === item[displayKey]
@@ -63,9 +70,7 @@ export function Combobox<T>({
             !selected && "text-muted-foreground"
           )}
         >
-          {selected
-            ? String(selected[displayKey])
-            : placeholder}
+          {selected ? String(selected[displayKey]) : placeholder}
           <ChevronsUpDown className="ml-1 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -84,7 +89,8 @@ export function Combobox<T>({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      selected && selected[displayKey] === item[displayKey]
+                      selected &&
+                      selected[displayKey] === item[displayKey]
                         ? "opacity-100"
                         : "opacity-0"
                     )}
@@ -95,7 +101,6 @@ export function Combobox<T>({
             </CommandGroup>
           </CommandList>
         </Command>
-        {/* Clear Button */}
         {selected && (
           <div className="border-t p-2">
             <Button
