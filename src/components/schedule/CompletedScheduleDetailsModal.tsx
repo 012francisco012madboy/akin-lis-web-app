@@ -381,7 +381,7 @@ export function CompletedScheduleDetailsModal({
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
+                 {/*  <div>
                     <Label className="text-sm font-medium text-gray-600">Status</Label>
                     <div className="mt-1">
                       <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
@@ -389,7 +389,7 @@ export function CompletedScheduleDetailsModal({
                         {schedule.status}
                       </Badge>
                     </div>
-                  </div>
+                  </div> */}
                   <div>
                     <Label className="text-sm font-medium text-gray-600">Data de Criação</Label>
                     <p className="font-semibold">
@@ -578,12 +578,15 @@ export function CompletedScheduleDetailsModal({
                               }).format(exam.Tipo_Exame?.preco || 0)}
                             </p>
                           </div>
-                          <div>
-                            <Label className="text-gray-600">Técnico Alocado</Label>
-                            <p className="font-medium">
-                              {getTechnicianName(exam.id_tecnico_alocado)}
-                            </p>
-                          </div>
+                          {
+                            exam?.id_chefe_alocado &&
+                            <div>
+                              <Label className="text-gray-600">Chefe de Laboratório Alocado</Label>
+                              <p className="font-medium">
+                                {getChiefName(exam?.id_chefe_alocado)}
+                              </p>
+                            </div>
+                          }
                         </div>
                       )}
 

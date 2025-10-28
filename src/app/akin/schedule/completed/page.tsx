@@ -100,10 +100,10 @@ export default function CompletedSchedulesPage() {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Agendamentos Concluídos
+            Gestão de Agendamentos
           </h1>
           <p className="text-gray-600 mt-1">
-            Visualize e gerencie todos os agendamentos que foram finalizados
+            Visualize e gerencie os exames agendados (não concluídos ou finalizados)
           </p>
         </div>
 
@@ -135,75 +135,78 @@ export default function CompletedSchedulesPage() {
       </div>
 
       {/* Quick Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mr-4">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Concluídos</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {isLoading ? <Skeleton className="h-8 w-16" /> : statistics.totalSchedules}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+      {
+        !showStats &&
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card>
+            <CardContent className="flex items-center p-6">
+              <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mr-4">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total de Agendamentos</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {isLoading ? <Skeleton className="h-8 w-16" /> : statistics.totalSchedules}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mr-4">
-              <FileText className="w-6 h-6 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total de Exames</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {isLoading ? <Skeleton className="h-8 w-16" /> : statistics.totalExams}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardContent className="flex items-center p-6">
+              <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mr-4">
+                <FileText className="w-6 h-6 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total de Exames</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {isLoading ? <Skeleton className="h-8 w-16" /> : statistics.totalExams}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mr-4">
-              <TrendingUp className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-600">Receita Total</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {isLoading ? (
-                  <Skeleton className="h-8 w-24" />
-                ) : (
-                  new Intl.NumberFormat('pt-AO', {
-                    style: 'currency',
-                    currency: 'AOA',
-                    notation: 'compact'
-                  }).format(statistics.totalRevenue)
-                )}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardContent className="flex items-center p-6">
+              <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mr-4">
+                <TrendingUp className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-600">Receita Total</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {isLoading ? (
+                    <Skeleton className="h-8 w-24" />
+                  ) : (
+                    new Intl.NumberFormat('pt-AO', {
+                      style: 'currency',
+                      currency: 'AOA',
+                      notation: 'compact'
+                    }).format(statistics.totalRevenue)
+                  )}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-lg mr-4">
-              <CheckCircle className="w-6 h-6 text-orange-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-600">Taxa Conclusão</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {isLoading ? (
-                  <Skeleton className="h-8 w-16" />
-                ) : (
-                  `${statistics.totalExams > 0 ? ((statistics.completedExams / statistics.totalExams) * 100).toFixed(1) : 0}%`
-                )}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          <Card>
+            <CardContent className="flex items-center p-6">
+              <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-lg mr-4">
+                <CheckCircle className="w-6 h-6 text-orange-600" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-600">Taxa Conclusão</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {isLoading ? (
+                    <Skeleton className="h-8 w-16" />
+                  ) : (
+                    `${statistics.totalExams > 0 ? ((statistics.completedExams / statistics.totalExams) * 100).toFixed(1) : 0}%`
+                  )}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      }
 
       {/* Detailed Statistics (conditionally shown) */}
       {showStats && (

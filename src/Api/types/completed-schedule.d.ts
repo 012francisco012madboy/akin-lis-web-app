@@ -17,6 +17,7 @@ interface CompletedExamType extends ExamsType {
   duracao?: number | null;
   status_pagamento: "PENDENTE" | "PAGO" | "CANCELADO";
   id_tecnico_alocado: string | null;
+  id_chefe_alocado?: string | null;
 }
 
 interface CompletedScheduleFilters {

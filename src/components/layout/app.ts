@@ -46,7 +46,7 @@ export const APP_CONFIG = {
           { label: "Painel", icon: LayoutDashboard, path: "/akin/schedule/dashboard", access: ["RECEPCIONISTA", "CHEFE", "TECNICO"] },
           { label: "Novo", icon: CalendarPlus2, path: "/akin/schedule/new", access: ["RECEPCIONISTA"] },
           { label: "Solicitações", icon: CalendarSearch, path: "/akin/schedule/request", access: ["RECEPCIONISTA"] },
-          { label: "Confirmados", icon: CalendarCheck2, path: "/akin/schedule/completed", access: ["CHEFE", "RECEPCIONISTA"] }
+          { label: "Gestão de agendamento", icon: CalendarCheck2, path: "/akin/schedule/completed", access: ["CHEFE", "RECEPCIONISTA"] }
         ]
       },
       {

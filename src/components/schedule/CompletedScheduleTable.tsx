@@ -173,7 +173,7 @@ export function CompletedScheduleTable({
                 <TableHead>Status dos Exames</TableHead>
                 <TableHead>Pagamento</TableHead>
                 <TableHead>Valor Total</TableHead>
-                <TableHead>Técnico</TableHead>
+                {/* <TableHead>Técnico</TableHead> */}
                 <TableHead className="w-16">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -212,16 +212,6 @@ export function CompletedScheduleTable({
                         <div>
                           <div className="font-medium text-gray-900">
                             {schedule.Paciente?.nome_completo || "Nome não disponível"}
-                          </div>
-                          <div className="text-sm text-gray-500 flex items-center gap-4">
-                            <span className="flex items-center gap-1">
-                              <User className="w-3 h-3" />
-                              {getPatientAge(schedule.Paciente?.data_nascimento || "")}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Phone className="w-3 h-3" />
-                              {schedule.Paciente?.contacto_telefonico || "N/A"}
-                            </span>
                           </div>
                         </div>
                       </div>
@@ -271,9 +261,6 @@ export function CompletedScheduleTable({
 
                     <TableCell>
                       <div className="space-y-1">
-                        <div className="text-sm font-medium">
-                          {completedExams}/{totalExams} concluídos
-                        </div>
                         <div className="flex flex-wrap gap-1">
                           {schedule.Exame?.slice(0, 2).map((exam, idx) => (
                             <div key={idx}>
@@ -286,9 +273,6 @@ export function CompletedScheduleTable({
 
                     <TableCell>
                       <div className="space-y-1">
-                        <div className="text-sm font-medium">
-                          {paidExams}/{totalExams} pagos
-                        </div>
                         <div className="flex flex-wrap gap-1">
                           {schedule.Exame?.slice(0, 2).map((exam, idx) => (
                             <div key={idx}>
@@ -308,7 +292,7 @@ export function CompletedScheduleTable({
                       </div>
                     </TableCell>
 
-                    <TableCell>
+                    {/* <TableCell>
                       <div className="flex items-center gap-2">
                         {hasAllocatedTechnician ? (
                           <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
@@ -322,7 +306,7 @@ export function CompletedScheduleTable({
                           </Badge>
                         )}
                       </div>
-                    </TableCell>
+                    </TableCell> */}
 
                     <TableCell>
                       <DropdownMenu>

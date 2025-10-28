@@ -240,7 +240,7 @@ const ExamCardModern = ({
                   <span className="truncate">{chiefName}</span>
                 )}
               </div>
-              <div className="flex items-center space-x-2 text-sm">
+              {/* <div className="flex items-center space-x-2 text-sm">
                 <User className="h-4 w-4 text-gray-500" />
                 <span className="font-medium">Técnico:</span>
                 {isLoadingTechData ? (
@@ -248,7 +248,7 @@ const ExamCardModern = ({
                 ) : (
                   <span className="truncate">{techName}</span>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
 

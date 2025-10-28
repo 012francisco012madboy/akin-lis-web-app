@@ -91,7 +91,7 @@ export function CompletedScheduleCard({
     }
   };
 
-  const getExamStatusIcon = (status: string) => {
+/*   const getExamStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case 'concluido':
         return <CheckCircle className="w-3 h-3" />;
@@ -100,7 +100,7 @@ export function CompletedScheduleCard({
       default:
         return <AlertCircle className="w-3 h-3" />;
     }
-  };
+  }; */
 
   // Calculate summary metrics
   const completedExams = schedule.Exame?.filter(exam => exam.status === "CONCLUIDO").length || 0;
@@ -134,10 +134,10 @@ export function CompletedScheduleCard({
               </div>
             </div>
           </div>
-          <Badge className="bg-green-100 text-green-800 border-green-200" variant="outline">
+          {/* <Badge className="bg-green-100 text-green-800 border-green-200" variant="outline">
             <CheckCircle className="w-3 h-3 mr-1" />
             {schedule.status}
-          </Badge>
+          </Badge> */}
         </div>
       </CardHeader>
 
@@ -210,10 +210,10 @@ export function CompletedScheduleCard({
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium text-gray-900">{exam.Tipo_Exame?.nome}</p>
-                    <Badge className={getExamStatusColor(exam.status)} variant="outline">
+                    {/* <Badge className={getExamStatusColor(exam.status)} variant="outline">
                       {getExamStatusIcon(exam.status)}
                       {exam.status}
-                    </Badge>
+                    </Badge> */}
                   </div>
                   <div className="flex items-center gap-4 mt-1">
                     <p className="text-xs text-gray-500">

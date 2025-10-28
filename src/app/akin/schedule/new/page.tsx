@@ -163,7 +163,7 @@ export default function New() {
           </div>
         </div>
 
-        <Button type="submit" className="bg-akin-turquoise hover:bg-akin-turquoise/80">
+        <Button type="submit" disabled={isSaving} className="bg-akin-turquoise hover:bg-akin-turquoise/80">
           {isSaving ? "Agendando..." : "Agendar"}
         </Button>
       </form>

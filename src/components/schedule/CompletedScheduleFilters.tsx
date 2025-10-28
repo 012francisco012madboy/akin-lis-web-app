@@ -140,9 +140,9 @@ export function CompletedScheduleFilters({
                         mode="single"
                         selected={filters.dateFrom}
                         onSelect={(date) => handleFilterChange("dateFrom", date)}
-                        disabled={(date) => {
+                        /* disabled={(date) => {
                           return date > new Date() || date < new Date("1900-01-01");
-                        }}
+                        }} */
                         initialFocus
                       />
                     </PopoverContent>
@@ -174,7 +174,7 @@ export function CompletedScheduleFilters({
                         mode="single"
                         selected={filters.dateTo}
                         onSelect={(date) => handleFilterChange("dateTo", date)}
-                        disabled={(date) => {
+                        /* disabled={(date) => {
                           if (date > new Date() || date < new Date("1900-01-01")) {
                             return true;
                           }
@@ -182,7 +182,7 @@ export function CompletedScheduleFilters({
                             return true;
                           }
                           return false;
-                        }}
+                        }} */
                         initialFocus
                       />
                     </PopoverContent>
@@ -232,27 +232,6 @@ export function CompletedScheduleFilters({
                     </SelectContent>
                   </Select>
                 </div>
-
-                {/* Technician Filter */}
-                <div className="space-y-2 md:col-span-2 lg:col-span-1">
-                  <Label className="flex items-center gap-1">
-                    <UserCheck className="w-4 h-4" />
-                    Técnico
-                  </Label>
-                  <Select
-                    value={filters.technicianFilter}
-                    onValueChange={(value) => handleFilterChange("technicianFilter", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecionar filtro" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="TODOS">Todos</SelectItem>
-                      <SelectItem value="ALOCADO">Com técnico alocado</SelectItem>
-                      <SelectItem value="NAO_ALOCADO">Sem técnico alocado</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
 
               {/* Quick Filters */}
@@ -275,15 +254,6 @@ export function CompletedScheduleFilters({
                 >
                   <DollarSign className="w-3 h-3 mr-1" />
                   Pagamentos Pendentes
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleFilterChange("technicianFilter", "NAO_ALOCADO")}
-                  className="text-xs"
-                >
-                  <AlertCircle className="w-3 h-3 mr-1" />
-                  Sem Técnico
                 </Button>
               </div>
             </div>

@@ -150,6 +150,8 @@ export default function ExamsHistory() {
       isDateFilterEnabled: false,
       searchTerm: "",
     });
+
+    handleDateChange(undefined)
   };
 
   const statusOptions = [

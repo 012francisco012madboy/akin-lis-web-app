@@ -28,16 +28,19 @@ export function ScheduleDetails({
       const dateValue = value instanceof Date ? value : new Date(value);
 
       if (!isNaN(dateValue.getTime())) {
-        // Ajusta para horário local
-        const localDate = new Date(dateValue.getTime() - dateValue.getTimezoneOffset() * 60 * 1000);
-        formattedValue = localDate.toISOString().split("T")[0]; // Formato 'YYYY-MM-DD'
-      } 
+        if (key === "date") {
+          const dateValue = value instanceof Date ? value : new Date(value);
+          if (!isNaN(dateValue.getTime())) {
+            formattedValue = dateValue; // mantém como Date
+          }
+        }
+      }
     } else if (key === "time") {
       const timeValue = value instanceof Date ? value : new Date(`1970-01-01T${value}`);
 
       if (!isNaN(timeValue.getTime())) {
         formattedValue = timeValue.toTimeString().split(" ")[0].slice(0, 5); // Formato 'HH:mm'
-      } 
+      }
     }
 
     // Atualiza os agendamentos com o valor formatado
@@ -58,6 +61,9 @@ export function ScheduleDetails({
     return <Skeleton className="w-full h-12 rounded-md" />;
   }
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   return (
     <div className="space-y-4">
       {schedules.map((schedule, index) => (
@@ -77,11 +83,13 @@ export function ScheduleDetails({
               Data
             </label>
             <Calendar
+              minDate={today}
               id="buttondisplay"
+              value={schedule.date ? new Date(schedule.date) : null}
               className="w-full h-10 px-4 bg-gray-50 rounded-md shadow-sm border-gray-300 focus:ring-0 focus:border-none focus-visible:ring-0"
-              onChange={(date) => handleScheduleChange(index, "date", date)}
+              onChange={(date) => handleScheduleChange(index, "date", date.value)}
               showIcon
-              dateFormat="yy/m/d"
+              dateFormat="yy/mm/dd"
             />
           </div>
 
