@@ -91,17 +91,6 @@ export function CompletedScheduleCard({
     }
   };
 
-/*   const getExamStatusIcon = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'concluido':
-        return <CheckCircle className="w-3 h-3" />;
-      case 'cancelado':
-        return <XCircle className="w-3 h-3" />;
-      default:
-        return <AlertCircle className="w-3 h-3" />;
-    }
-  }; */
-
   // Calculate summary metrics
   const completedExams = schedule.Exame?.filter(exam => exam.status === "CONCLUIDO").length || 0;
   const pendingExams = schedule.Exame?.filter(exam => exam.status === "PENDENTE").length || 0;
@@ -134,10 +123,6 @@ export function CompletedScheduleCard({
               </div>
             </div>
           </div>
-          {/* <Badge className="bg-green-100 text-green-800 border-green-200" variant="outline">
-            <CheckCircle className="w-3 h-3 mr-1" />
-            {schedule.status}
-          </Badge> */}
         </div>
       </CardHeader>
 
@@ -202,49 +187,6 @@ export function CompletedScheduleCard({
               <div className="font-semibold text-red-800">{cancelledExams}</div>
               <div className="text-xs text-red-600">Cancelados</div>
             </div>
-          </div>
-
-          <div className="space-y-2 max-h-32 overflow-y-auto custom-scrollbar">
-            {schedule.Exame?.slice(0, 3).map((exam, index) => (
-              <div key={exam.id} className="flex justify-between items-center p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-900">{exam.Tipo_Exame?.nome}</p>
-                    {/* <Badge className={getExamStatusColor(exam.status)} variant="outline">
-                      {getExamStatusIcon(exam.status)}
-                      {exam.status}
-                    </Badge> */}
-                  </div>
-                  <div className="flex items-center gap-4 mt-1">
-                    <p className="text-xs text-gray-500">
-                      {formatDate(exam.data_agendamento)} às {formatTime(exam.hora_agendamento)}
-                    </p>
-                    <Badge className={getPaymentStatusColor(exam.status_pagamento)} variant="outline">
-                      <DollarSign className="w-3 h-3 mr-1" />
-                      {exam.status_pagamento}
-                    </Badge>
-                  </div>
-                  {exam.id_tecnico_alocado && (
-                    <p className="text-xs text-blue-600 flex items-center mt-1">
-                      <UserCheck className="w-3 h-3 mr-1" />
-                      Técnico alocado
-                    </p>
-                  )}
-                </div>
-                <span className="text-sm text-purple-700 font-bold bg-purple-100 px-2 py-1 rounded-md ml-2">
-                  {new Intl.NumberFormat('pt-AO', {
-                    style: 'currency',
-                    currency: 'AOA',
-                    notation: 'compact'
-                  }).format(exam.Tipo_Exame?.preco || 0)}
-                </span>
-              </div>
-            ))}
-            {schedule.Exame && schedule.Exame.length > 3 && (
-              <div className="text-center text-sm text-gray-500 py-2">
-                +{schedule.Exame.length - 3} exames adicionais
-              </div>
-            )}
           </div>
         </div>
 

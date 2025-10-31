@@ -69,7 +69,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
         )}
         placeholder={placeholder}
       />
-      {isFocused && filteredSuggestions.length > 0 && (
+      {/* isFocused && */ filteredSuggestions.length > 0 && (
         <ul
           className={clsx(
             "absolute z-10 mt-2 w-full rounded-md border border-gray-300 bg-white shadow-lg",

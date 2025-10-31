@@ -150,8 +150,6 @@ export default function ExamsHistory() {
       isDateFilterEnabled: false,
       searchTerm: "",
     });
-
-    handleDateChange(undefined)
   };
 
   const statusOptions = [
@@ -237,6 +235,7 @@ export default function ExamsHistory() {
                 setEnableDateFilter={(enable) =>
                   setFilters(prev => ({ ...prev, isDateFilterEnabled: enable }))
                 }
+                key={filters.selectedDateRange ? "with-date" : "no-date"}
                 placeholderText="Selecionar período"
               />
             </div>

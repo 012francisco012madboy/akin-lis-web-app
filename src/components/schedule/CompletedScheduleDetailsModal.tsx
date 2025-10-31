@@ -141,10 +141,10 @@ export function CompletedScheduleDetailsModal({
   // Mutação para alocar chefe
   const allocateChiefMutation = useMutation({
     mutationFn: async (data: { scheduleId: number; chiefId: string }) => {
-        const response = await labChiefRoutes.allocateLabChief(
-          data.scheduleId,
-          data.chiefId,
-        )
+      const response = await labChiefRoutes.allocateLabChief(
+        data.scheduleId,
+        data.chiefId,
+      )
     },
     onSuccess: () => {
       ___showSuccessToastNotification({
@@ -381,7 +381,7 @@ export function CompletedScheduleDetailsModal({
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                 {/*  <div>
+                  {/*  <div>
                     <Label className="text-sm font-medium text-gray-600">Status</Label>
                     <div className="mt-1">
                       <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
@@ -468,8 +468,18 @@ export function CompletedScheduleDetailsModal({
                           {exam.Tipo_Exame?.nome || "Exame não especificado"}
                         </h4>
                         <div className="flex items-center gap-2">
-                          {getExamStatusBadge(exam.status)}
-                          {getPaymentStatusBadge(exam.status_pagamento)}
+                          <div>
+                            <Label className="text-sm font-medium text-gray-600">Exame</Label>
+                            <p className="font-semibold">
+                              {getExamStatusBadge(exam.status)}
+                            </p>
+                          </div>
+                          <div>
+                            <Label className="text-sm font-medium text-gray-600">Pagamento</Label>
+                            <p className="font-semibold">
+                              {getPaymentStatusBadge(exam.status_pagamento)}
+                            </p>
+                          </div>
                           <Button
                             variant="outline"
                             size="sm"
@@ -486,7 +496,7 @@ export function CompletedScheduleDetailsModal({
                         <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <Label htmlFor={`status-${exam.id}`}>Status</Label>
+                              <Label htmlFor={`status-${exam.id}`}>Status do exame</Label>
                               <Select
                                 value={editedExam.status}
                                 onValueChange={(value) =>
@@ -517,7 +527,6 @@ export function CompletedScheduleDetailsModal({
                                 <SelectContent>
                                   <SelectItem value="PENDENTE">Pendente</SelectItem>
                                   <SelectItem value="PAGO">Pago</SelectItem>
-                                  <SelectItem value="CANCELADO">Cancelado</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>

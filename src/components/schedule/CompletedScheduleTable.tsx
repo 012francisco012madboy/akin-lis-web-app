@@ -172,8 +172,8 @@ export function CompletedScheduleTable({
                 <TableHead>Data do Agendamento</TableHead>
                 <TableHead>Status dos Exames</TableHead>
                 <TableHead>Pagamento</TableHead>
-                <TableHead>Valor Total</TableHead>
-                {/* <TableHead>Técnico</TableHead> */}
+                <TableHead>Valor a pagar</TableHead>
+                <TableHead>Chefes de laboratório</TableHead>
                 <TableHead className="w-16">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -188,7 +188,7 @@ export function CompletedScheduleTable({
 
                 const paidExams = schedule.Exame?.filter(exam => exam.status_pagamento === "PAGO").length || 0;
 
-                const hasAllocatedTechnician = schedule.Exame?.some(exam => exam.id_tecnico_alocado);
+                const hasAllocatedChefe = schedule.Exame?.some(exam => exam.id_chefe_alocado);
 
                 return (
                   <TableRow key={schedule.id}>
@@ -292,9 +292,9 @@ export function CompletedScheduleTable({
                       </div>
                     </TableCell>
 
-                    {/* <TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-2">
-                        {hasAllocatedTechnician ? (
+                        {hasAllocatedChefe ? (
                           <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
                             <UserCheck className="w-3 h-3 mr-1" />
                             Alocado
@@ -306,7 +306,7 @@ export function CompletedScheduleTable({
                           </Badge>
                         )}
                       </div>
-                    </TableCell> */}
+                    </TableCell>
 
                     <TableCell>
                       <DropdownMenu>
